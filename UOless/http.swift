@@ -49,8 +49,10 @@ class APIController {
 		
 		if credentials_present {
 			logged_in = true
+			
+			//TODO: verify whether user_name and default_currency are still up to date
 		}
-}
+	}
 	
     func login(username: String, password: String, loginCompleted : (succeeded: Bool, msg: String) -> ()) {
 		//TODO: if logged in already, first log out
@@ -108,6 +110,8 @@ class APIController {
 		
 		//Clear local array
 		userDictionary = [:]
+		
+		//TODO: invalidate session at server
 	}
 	
 	func is_loggedIn()-> Bool {
@@ -126,7 +130,14 @@ class APIController {
 		return userDictionary["default_currency"] ?? "" //Where "" is the default
 	}
 	
+	func set_defaultCurrency(abbrev: String) {
+		//TODO: fix API
+		println("TODO: Default currency should be changed to: "+abbrev)
+	}
+	
 	func request(url : String, method: String, formdata : NSDictionary?, secure: Bool, requestCompleted : (succeeded: Bool, data: NSDictionary) -> ()) -> NSURLSessionDataTask? {
+//TODO: make private and set transactions as extension
+		
 /*TODO: add 
 -> NSURLSessionDataTask?
 and return the task, if started (or if nil, task not started)

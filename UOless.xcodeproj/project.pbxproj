@@ -19,6 +19,11 @@
 		540C218A1A59C46C00E9A29A /* transactions_tabicon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 540C21871A59C46C00E9A29A /* transactions_tabicon@2x.png */; };
 		540C218B1A59C46C00E9A29A /* transactions_tabicon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 540C21881A59C46C00E9A29A /* transactions_tabicon@3x.png */; };
 		540C218D1A5C855400E9A29A /* keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540C218C1A5C855400E9A29A /* keychain.swift */; };
+		542A4A721A5DD4BD00FF865A /* settings_tabicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 542A4A6F1A5DD4BD00FF865A /* settings_tabicon.png */; };
+		542A4A731A5DD4BD00FF865A /* settings_tabicon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 542A4A701A5DD4BD00FF865A /* settings_tabicon@2x.png */; };
+		542A4A741A5DD4BD00FF865A /* settings_tabicon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 542A4A711A5DD4BD00FF865A /* settings_tabicon@3x.png */; };
+		542A4A7A1A5DEA5100FF865A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542A4A791A5DEA5100FF865A /* SettingsViewController.swift */; };
+		542A4A7F1A5F342700FF865A /* CurrenciesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */; };
 		543FEFD61A51861C00C18230 /* u189.png in Resources */ = {isa = PBXBuildFile; fileRef = 543FEFD41A51861C00C18230 /* u189.png */; };
 		543FEFD71A51861C00C18230 /* u189@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 543FEFD51A51861C00C18230 /* u189@2x.png */; };
 		543FEFD91A518ACE00C18230 /* settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 543FEFD81A518ACE00C18230 /* settings.plist */; };
@@ -61,6 +66,11 @@
 		540C21871A59C46C00E9A29A /* transactions_tabicon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "transactions_tabicon@2x.png"; sourceTree = "<group>"; };
 		540C21881A59C46C00E9A29A /* transactions_tabicon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "transactions_tabicon@3x.png"; sourceTree = "<group>"; };
 		540C218C1A5C855400E9A29A /* keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = keychain.swift; sourceTree = "<group>"; };
+		542A4A6F1A5DD4BD00FF865A /* settings_tabicon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings_tabicon.png; sourceTree = "<group>"; };
+		542A4A701A5DD4BD00FF865A /* settings_tabicon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings_tabicon@2x.png"; sourceTree = "<group>"; };
+		542A4A711A5DD4BD00FF865A /* settings_tabicon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings_tabicon@3x.png"; sourceTree = "<group>"; };
+		542A4A791A5DEA5100FF865A /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsViewController.swift; path = ../SettingsViewController.swift; sourceTree = "<group>"; };
+		542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrenciesViewController.swift; sourceTree = "<group>"; };
 		543FEFD41A51861C00C18230 /* u189.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = u189.png; sourceTree = "<group>"; };
 		543FEFD51A51861C00C18230 /* u189@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "u189@2x.png"; sourceTree = "<group>"; };
 		543FEFD81A518ACE00C18230 /* settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = settings.plist; sourceTree = "<group>"; };
@@ -102,10 +112,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		542A4A801A6BDE9800FF865A /* Type classes */ = {
+			isa = PBXGroup;
+			children = (
+				540C21661A5717E400E9A29A /* Transaction.swift */,
+			);
+			name = "Type classes";
+			sourceTree = "<group>";
+		};
+		542A4A811A6BDFDF00FF865A /* General functions */ = {
+			isa = PBXGroup;
+			children = (
+				543FEFDD1A542D8C00C18230 /* HMAC.swift */,
+				54DF036D1A55A9E20078AE8B /* generalFunctions.swift */,
+				540C218C1A5C855400E9A29A /* keychain.swift */,
+			);
+			name = "General functions";
+			sourceTree = "<group>";
+		};
 		54DF03661A55939E0078AE8B /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
 				54F9EA481A0831D7009DC930 /* LoginViewController.swift */,
+				542A4A791A5DEA5100FF865A /* SettingsViewController.swift */,
+				542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */,
 				543FEFDA1A541B6200C18230 /* TransactionsViewController.swift */,
 			);
 			name = ViewControllers;
@@ -116,10 +146,6 @@
 			children = (
 				544731C11A3A3C0A0008829C /* http.swift */,
 				543FEFDF1A543CBC00C18230 /* Transactions.swift */,
-				540C21661A5717E400E9A29A /* Transaction.swift */,
-				543FEFDD1A542D8C00C18230 /* HMAC.swift */,
-				54DF036D1A55A9E20078AE8B /* generalFunctions.swift */,
-				540C218C1A5C855400E9A29A /* keychain.swift */,
 			);
 			name = API;
 			sourceTree = "<group>";
@@ -154,7 +180,9 @@
 		54F9EA431A0831D7009DC930 /* UOless */ = {
 			isa = PBXGroup;
 			children = (
+				542A4A811A6BDFDF00FF865A /* General functions */,
 				54DF03671A5593A90078AE8B /* API */,
+				542A4A801A6BDE9800FF865A /* Type classes */,
 				54DF03661A55939E0078AE8B /* ViewControllers */,
 				54DF036A1A5597060078AE8B /* ViewClasses */,
 				54F9EA4A1A0831D7009DC930 /* Main.storyboard */,
@@ -173,6 +201,9 @@
 			children = (
 				540C216E1A57453100E9A29A /* ios_attention.png */,
 				540C216F1A57453100E9A29A /* ios_attention@2x.png */,
+				542A4A6F1A5DD4BD00FF865A /* settings_tabicon.png */,
+				542A4A701A5DD4BD00FF865A /* settings_tabicon@2x.png */,
+				542A4A711A5DD4BD00FF865A /* settings_tabicon@3x.png */,
 				540C21861A59C46C00E9A29A /* transactions_tabicon.png */,
 				540C21871A59C46C00E9A29A /* transactions_tabicon@2x.png */,
 				540C21881A59C46C00E9A29A /* transactions_tabicon@3x.png */,
@@ -291,18 +322,21 @@
 				540C21761A57453100E9A29A /* ios_attention@3x.png in Resources */,
 				540C218B1A59C46C00E9A29A /* transactions_tabicon@3x.png in Resources */,
 				540C21791A57453100E9A29A /* ios_new@3x.png in Resources */,
+				542A4A741A5DD4BD00FF865A /* settings_tabicon@3x.png in Resources */,
 				54F9EA4C1A0831D7009DC930 /* Main.storyboard in Resources */,
 				540C218A1A59C46C00E9A29A /* transactions_tabicon@2x.png in Resources */,
 				540C21751A57453100E9A29A /* ios_attention@2x.png in Resources */,
 				543FEFD91A518ACE00C18230 /* settings.plist in Resources */,
 				543FEFD71A51861C00C18230 /* u189@2x.png in Resources */,
 				54F9EA511A0831D7009DC930 /* LaunchScreen.xib in Resources */,
+				542A4A721A5DD4BD00FF865A /* settings_tabicon.png in Resources */,
 				540C21891A59C46C00E9A29A /* transactions_tabicon.png in Resources */,
 				540C21741A57453100E9A29A /* ios_attention.png in Resources */,
 				543FEFD61A51861C00C18230 /* u189.png in Resources */,
 				540C21771A57453100E9A29A /* ios_new.png in Resources */,
 				54DF036C1A55A7F00078AE8B /* u189@3x.png in Resources */,
 				54F9EA4E1A0831D7009DC930 /* Images.xcassets in Resources */,
+				542A4A731A5DD4BD00FF865A /* settings_tabicon@2x.png in Resources */,
 				540C21781A57453100E9A29A /* ios_new@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -323,6 +357,7 @@
 			files = (
 				54DF036E1A55A9E20078AE8B /* generalFunctions.swift in Sources */,
 				543FEFE01A543CBC00C18230 /* Transactions.swift in Sources */,
+				542A4A7F1A5F342700FF865A /* CurrenciesViewController.swift in Sources */,
 				54F9EA491A0831D7009DC930 /* LoginViewController.swift in Sources */,
 				543FEFDE1A542D8C00C18230 /* HMAC.swift in Sources */,
 				54F9EA471A0831D7009DC930 /* AppDelegate.swift in Sources */,
@@ -332,6 +367,7 @@
 				544731C21A3A3C0A0008829C /* http.swift in Sources */,
 				540C21671A5717E400E9A29A /* Transaction.swift in Sources */,
 				540C217F1A5819FF00E9A29A /* footerView.swift in Sources */,
+				542A4A7A1A5DEA5100FF865A /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

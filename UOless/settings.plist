@@ -5,6 +5,6 @@
 	<key>transactions_nr_of_results</key>
 	<integer>20</integer>
 	<key>server</key>
-	<string>http://127.0.0.1/memodude/api/</string>
+	<string>http://127.0.0.1/api/</string>
 </dict>
 </plist>

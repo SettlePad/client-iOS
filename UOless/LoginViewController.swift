@@ -110,6 +110,7 @@ class LoginViewController: UIViewController {
     }
     
     func enter_app() {
+        //TODO: sometimes gives notice: Unbalanced calls to begin/end appearance transitions for <UOless.LoginViewController: 0x7ffd9971c8d0>.
         dispatch_async(dispatch_get_main_queue()) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController") as UIViewController
