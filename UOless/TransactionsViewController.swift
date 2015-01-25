@@ -103,83 +103,18 @@ class TransactionsViewController: UITableViewController {
             let floatFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
             cell.amountLabel.text = transaction.currency+" \(transaction.amount.format(floatFormat))"
             if (transaction.amount < 0) {
-                cell.amountLabel.textColor = UIColor(red: 0xbb/255, green: 0x00/255, blue: 0x05/255, alpha: 1.0) //Hex BB0005
+                let printamount = -1*transaction.amount
+                cell.amountLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0) //Hex 777777, was: BB0005
+                cell.amountLabel.text = "- " + transaction.currency+" \(printamount.format(floatFormat))"
             } else {
                 cell.amountLabel.textColor = UIColor(red: 0x08/255, green: 0x99/255, blue: 0x00/255, alpha: 1.0) //Hex 089900
+                cell.amountLabel.text = "+ " + transaction.currency+" \(transaction.amount.format(floatFormat))"
+
             }
 
         //Counterpart
             cell.counterpartLabel.text = transaction.counterpart_name
             
-        //Status (text and image)
-            var statusString = "Unknown"
-            if (transaction.status == 0) {
-                //processed
-                if (transaction.reduced == false) {
-                    //not reduced (yet)
-                    statusString = ""
-                } else {
-                    //reduced
-                    statusString = ""
-                }
-                //cell.statusImageView.image = UIImage(named: "ios_new")
-                cell.statusImageView.image = nil
-            } else if (transaction.status == 1) { // 1 = recipient should accept first
-                if (transaction.is_sender == true) { // 0 = recipient
-                    statusString = "Pending approval"
-                } else {
-                    statusString = "Swipe to approve"
-                    //cell.counterpartLabel.textColor = UIColor(red: 0xff/255, green: 0x90/255, blue: 0x17/255, alpha: 1.0) //Hex ff9017, orange
-                }
-                cell.statusImageView.image = UIImage(named: "ios_attention")
-
-
-                //all other labels in grey (Hex 777777)
-
-            } else { // 3 = cancelled/ rejected
-                //transaction canceled
-                cell.statusImageView.image = nil
-                 if (transaction.is_sender == false) {
-                    //recipient
-                    statusString = "Rejected by "+transaction.counterpart_name
-                } else {
-                    //sender
-                    statusString = "Rejected by you"
-                }
-                
-                //all labels in grey (Hex 777777)
-                cell.counterpartLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
-                cell.amountLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
-                cell.descriptionLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
-                cell.statusLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
-                cell.timeLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
-
-                
-                //all labels strikethrough
-                var attributedcounterpartText = NSMutableAttributedString(string: cell.counterpartLabel.text!)
-                attributedcounterpartText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedcounterpartText.length))
-                cell.counterpartLabel.attributedText = attributedcounterpartText
-                
-                var attributedamountText = NSMutableAttributedString(string: cell.amountLabel.text!)
-                attributedamountText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedamountText.length))
-                cell.amountLabel.attributedText = attributedamountText
-                
-                var attributeddescriptionText = NSMutableAttributedString(string: cell.descriptionLabel.text!)
-                attributeddescriptionText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributeddescriptionText.length))
-                cell.descriptionLabel.attributedText = attributeddescriptionText
-                
-                var attributedstatusText = NSMutableAttributedString(string: cell.statusLabel.text!)
-                attributedstatusText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedstatusText.length))
-                cell.statusLabel.attributedText = attributedcounterpartText
-                
-                var attributedtimeText = NSMutableAttributedString(string: cell.timeLabel.text!)
-                attributedtimeText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedtimeText.length))
-                cell.timeLabel.attributedText = attributedtimeText
-            }
-
-        
-            cell.statusLabel.text = statusString
-
         //Time
             //See http://stackoverflow.com/questions/24577087/comparing-nsdates-without-time-component
             let today = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate()))
@@ -203,7 +138,79 @@ class TransactionsViewController: UITableViewController {
             if (transaction.is_sender == false) {
                 cell.timeLabel.text = "Received: "+dateString
             } else {
-                cell.timeLabel.text = "Sent: "+dateString                
+                cell.timeLabel.text = "Sent: "+dateString
+            }
+            
+            
+        //Status (text and image)
+            var statusString = "Unknown"
+            if (transaction.status == 0) {
+                //processed
+                if (transaction.reduced == false) {
+                    //not reduced (yet)
+                    statusString = ""
+                } else {
+                    //reduced
+                    statusString = ""
+                }
+                //cell.statusImageView.image = UIImage(named: "ios_new")
+                cell.statusImageView.image = nil
+                cell.statusLabel.text = statusString
+            } else if (transaction.status == 1) { // 1 = recipient should accept first
+                if (transaction.is_sender == true) { // 0 = recipient
+                    statusString = "Pending approval"
+                } else {
+                    statusString = "Swipe to approve"
+                    cell.statusLabel.textColor = UIColor(red: 0x1a/255, green: 0x9a/255, blue: 0xcb/255, alpha: 1.0) //Hex 1a9acb, info-blue
+                }
+                cell.statusImageView.image = UIImage(named: "ios_attention")
+
+                cell.statusLabel.text = statusString
+
+                //all other labels in grey (Hex 777777)
+
+            } else { // 3 = cancelled/ rejected
+                //transaction canceled
+                cell.statusImageView.image = nil
+                 if (transaction.is_sender == false) {
+                    //recipient
+                    statusString = "Rejected by "+transaction.counterpart_name
+                } else {
+                    //sender
+                    statusString = "Rejected by you"
+                }
+                cell.statusLabel.text = statusString
+
+                //all labels in grey (Hex 777777)
+                cell.counterpartLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
+                cell.amountLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
+                cell.descriptionLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
+                cell.statusLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
+                cell.timeLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
+
+                
+                //all labels strikethrough
+                var attributedcounterpartText = NSMutableAttributedString(string: cell.counterpartLabel.text!)
+                attributedcounterpartText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedcounterpartText.length))
+                cell.counterpartLabel.attributedText = attributedcounterpartText
+                
+                var attributedamountText = NSMutableAttributedString(string: cell.amountLabel.text!)
+                attributedamountText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedamountText.length))
+                cell.amountLabel.attributedText = attributedamountText
+                
+                var attributeddescriptionText = NSMutableAttributedString(string: cell.descriptionLabel.text!)
+                attributeddescriptionText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributeddescriptionText.length))
+                cell.descriptionLabel.attributedText = attributeddescriptionText
+                
+                /*
+                var attributedstatusText = NSMutableAttributedString(string: cell.statusLabel.text!)
+                attributedstatusText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedstatusText.length))
+                cell.statusLabel.attributedText = attributedstatusText
+                */
+                
+                var attributedtimeText = NSMutableAttributedString(string: cell.timeLabel.text!)
+                attributedtimeText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedtimeText.length))
+                cell.timeLabel.attributedText = attributedtimeText
             }
             
 

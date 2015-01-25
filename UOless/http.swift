@@ -218,7 +218,7 @@ and cancel this if needed, because it is superseeded by another task
 			} else {
 				proceedRequest = false
 				requestCompleted(succeeded: false, data: ["code":"local_login_error", "text":"Cannot perform request, not logged in", "function":"local"])
-				//In future, one might choose to automatically log in at this point and then continuing the request
+				//TODO: in future, one might choose to automatically log in at this point and then continuing the request
 			}
 		}
 		
