@@ -9,10 +9,19 @@
 import UIKit
 
 class SettingsViewController: UITableViewController {
+    
 
+    @IBOutlet var nameText: UITextField!
+    @IBOutlet var credentialsLabel: UILabel!
+    @IBOutlet var currencyLabel: UILabel!
+   
     @IBAction func viewTapped(sender: AnyObject) {
         //To hide the keyboard, when needed
         self.view.endEditing(true)
+    }
+    
+    @IBAction func nameEdited(sender: UITextField) {
+        api.set_userName(sender.text)
     }
     
     @IBAction func logout(sender: AnyObject) {
@@ -24,8 +33,14 @@ class SettingsViewController: UITableViewController {
         }
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        updateLabels()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -98,14 +113,22 @@ class SettingsViewController: UITableViewController {
     }
     */
 
-    /*
+    
+    
     // MARK: - Navigation
-
+    /*
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using [segue destinationViewController].
         // Pass the selected object to the new view controller.
+    
     }
     */
+    
+    func updateLabels () {
+        currencyLabel.text = api.get_defaultCurrency()
+        nameText.text = api.get_userName()
+        credentialsLabel.text = "1" //TODO: set number of logins
+    }
 
 }

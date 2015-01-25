@@ -16,6 +16,10 @@
 import UIKit
 
 class TransactionsViewController: UITableViewController {
+    @IBAction func unwindToTransactions(segue: UIStoryboardSegue) {
+    
+    }
+    
     @IBOutlet var transactionsTableView: UITableView!
     @IBOutlet var transactionsSearchBar: UISearchBar!
     

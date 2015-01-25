@@ -26,7 +26,7 @@ class APIController {
 		//load plist data
 		settingsDictionary = NSDictionary(contentsOfFile: documentList!)
 		
-		//check whether logged in
+		//check whether logged in (get from keychain)
 		var expectedKeys: [String] = ["series", "token","user_id","user_name"]
 		var credentials_present = true
 		for expectedKey in expectedKeys {
@@ -37,6 +37,7 @@ class APIController {
 			}
 		}
 		
+		//Get from NSUserDefaults table
 		let defaults = NSUserDefaults.standardUserDefaults()
 		expectedKeys = ["default_currency"]
 		for expectedKey in expectedKeys {
@@ -93,6 +94,18 @@ class APIController {
 	}
 	
 	func logout() {
+		//Invalidate session at server
+		request("logout", method:"POST", formdata: [:], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			//println(data)
+			if(!succeeded) {
+				if let error_msg = data["text"] as? String {
+					println(error_msg)
+				} else {
+					println("Unknown error while logging out")
+				}
+			}
+		}
+		
 		logged_in = false
 		
 		//Clear keychain
@@ -111,7 +124,7 @@ class APIController {
 		//Clear local array
 		userDictionary = [:]
 		
-		//TODO: invalidate session at server
+
 	}
 	
 	func is_loggedIn()-> Bool {
@@ -125,14 +138,37 @@ class APIController {
 	func get_userName() -> String {
 		return userDictionary["user_name"] ?? "" //Where "" is the default
 	}
+	
+	func set_userName (name: String) {
+		request("settings", method:"POST", formdata: ["name":name], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			//println(data)
+			if(!succeeded) {
+				if let error_msg = data["text"] as? String {
+					println(error_msg)
+				} else {
+					println("Unknown error while setting name")
+				}
+			}
+		}
+		userDictionary["user_name"] = name
+	}
 
 	func get_defaultCurrency() -> String {
 		return userDictionary["default_currency"] ?? "" //Where "" is the default
 	}
 	
 	func set_defaultCurrency(abbrev: String) {
-		//TODO: fix API
-		println("TODO: Default currency should be changed to: "+abbrev)
+		request("settings", method:"POST", formdata: ["default_currency":abbrev], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			//println(data)
+			if(!succeeded) {
+				if let error_msg = data["text"] as? String {
+					println(error_msg)
+				} else {
+					println("Unknown error while setting currency")
+				}
+			}
+		}
+		userDictionary["default_currency"] = abbrev
 	}
 	
 	func request(url : String, method: String, formdata : NSDictionary?, secure: Bool, requestCompleted : (succeeded: Bool, data: NSDictionary) -> ()) -> NSURLSessionDataTask? {
