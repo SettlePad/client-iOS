@@ -8,7 +8,7 @@
 
 import UIKit
 
-class footerView: UIView {
+class TransactionsFooterView: UIView {
     var end_reached = true
     var no_results = true
     var searching = false
@@ -38,7 +38,7 @@ class footerView: UIView {
 
         if self.end_reached || self.searching {
             let footerLabel: UILabel = UILabel(frame: rect)
-            footerLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0) //#777777
+            footerLabel.textColor = Colors.gray.textToUIColor()
             footerLabel.font = UIFont.boldSystemFontOfSize(11)
             footerLabel.textAlignment = NSTextAlignment.Center
 

@@ -25,7 +25,7 @@ class TransactionsViewController: UITableViewController {
     
     var transactionAPI = TransactionsController(api: api)
     var transactionsRefreshControl:UIRefreshControl!
-    var footer = footerView(frame: CGRectMake(0, 0, 320, 44))
+    var footer = TransactionsFooterView(frame: CGRectMake(0, 0, 320, 44))
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -95,128 +95,8 @@ class TransactionsViewController: UITableViewController {
         
         // Configure the cell...
         if let transaction = transactionAPI.getTransaction(indexPath.row)  {
-        
-        //Description
-            cell.descriptionLabel.text = transaction.description
-            
-        //Amount
-            let floatFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
-            cell.amountLabel.text = transaction.currency+" \(transaction.amount.format(floatFormat))"
-            if (transaction.amount < 0) {
-                let printamount = -1*transaction.amount
-                cell.amountLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0) //Hex 777777, was: BB0005
-                cell.amountLabel.text = "- " + transaction.currency+" \(printamount.format(floatFormat))"
-            } else {
-                cell.amountLabel.textColor = UIColor(red: 0x08/255, green: 0x99/255, blue: 0x00/255, alpha: 1.0) //Hex 089900
-                cell.amountLabel.text = "+ " + transaction.currency+" \(transaction.amount.format(floatFormat))"
-
-            }
-
-        //Counterpart
-            cell.counterpartLabel.text = transaction.counterpart_name
-            
-        //Time
-            //See http://stackoverflow.com/questions/24577087/comparing-nsdates-without-time-component
-            let today = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate()))
-            let weekAgo = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate(timeIntervalSinceNow: -60*60*24*6)))
-            
-            var labeldateFormatter = NSDateFormatter()
-            if (transaction.time_sent.compare(today!) != NSComparisonResult.OrderedAscending) {
-                //Today, display time
-                //http://makeapppie.com/tag/date-to-string-in-swift/
-                labeldateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-                labeldateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-            } else if (transaction.time_sent.compare(weekAgo!) != NSComparisonResult.OrderedAscending) {
-                //Last seven days, display day of the week
-                labeldateFormatter.dateFormat = "eeee" //http://zframework.ph/swift-ios-date-formatting-options/
-            } else {
-                //Longer than 7 days ago, display date
-                labeldateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
-                labeldateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
-            }
-            var dateString = labeldateFormatter.stringFromDate(transaction.time_sent)
-            if (transaction.is_sender == false) {
-                cell.timeLabel.text = "Received: "+dateString
-            } else {
-                cell.timeLabel.text = "Sent: "+dateString
-            }
-            
-            
-        //Status (text and image)
-            var statusString = "Unknown"
-            if (transaction.status == 0) {
-                //processed
-                if (transaction.reduced == false) {
-                    //not reduced (yet)
-                    statusString = ""
-                } else {
-                    //reduced
-                    statusString = ""
-                }
-                //cell.statusImageView.image = UIImage(named: "ios_new")
-                cell.statusImageView.image = nil
-                cell.statusLabel.text = statusString
-            } else if (transaction.status == 1) { // 1 = recipient should accept first
-                if (transaction.is_sender == true) { // 0 = recipient
-                    statusString = "Pending approval"
-                } else {
-                    statusString = "Swipe to approve"
-                    cell.statusLabel.textColor = UIColor(red: 0x1a/255, green: 0x9a/255, blue: 0xcb/255, alpha: 1.0) //Hex 1a9acb, info-blue
-                }
-                cell.statusImageView.image = UIImage(named: "ios_attention")
-
-                cell.statusLabel.text = statusString
-
-                //all other labels in grey (Hex 777777)
-
-            } else { // 3 = cancelled/ rejected
-                //transaction canceled
-                cell.statusImageView.image = nil
-                 if (transaction.is_sender == false) {
-                    //recipient
-                    statusString = "Rejected by "+transaction.counterpart_name
-                } else {
-                    //sender
-                    statusString = "Rejected by you"
-                }
-                cell.statusLabel.text = statusString
-
-                //all labels in grey (Hex 777777)
-                cell.counterpartLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
-                cell.amountLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
-                cell.descriptionLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
-                cell.statusLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
-                cell.timeLabel.textColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
-
-                
-                //all labels strikethrough
-                var attributedcounterpartText = NSMutableAttributedString(string: cell.counterpartLabel.text!)
-                attributedcounterpartText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedcounterpartText.length))
-                cell.counterpartLabel.attributedText = attributedcounterpartText
-                
-                var attributedamountText = NSMutableAttributedString(string: cell.amountLabel.text!)
-                attributedamountText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedamountText.length))
-                cell.amountLabel.attributedText = attributedamountText
-                
-                var attributeddescriptionText = NSMutableAttributedString(string: cell.descriptionLabel.text!)
-                attributeddescriptionText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributeddescriptionText.length))
-                cell.descriptionLabel.attributedText = attributeddescriptionText
-                
-                /*
-                var attributedstatusText = NSMutableAttributedString(string: cell.statusLabel.text!)
-                attributedstatusText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedstatusText.length))
-                cell.statusLabel.attributedText = attributedstatusText
-                */
-                
-                var attributedtimeText = NSMutableAttributedString(string: cell.timeLabel.text!)
-                attributedtimeText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedtimeText.length))
-                cell.timeLabel.attributedText = attributedtimeText
-            }
-            
-
+            cell.markup(transaction)
         }
-        
-
         
         return cell
     }
@@ -261,7 +141,7 @@ class TransactionsViewController: UITableViewController {
                 var cancelAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Cancel" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
                         self.changeTransaction("cancel", transaction: transaction)
                 })
-                cancelAction.backgroundColor = UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0) //#777777
+                cancelAction.backgroundColor = Colors.gray.textToUIColor()
                 return [cancelAction]
 
             } else if transaction.can_be_accepted {
@@ -269,12 +149,12 @@ class TransactionsViewController: UITableViewController {
                 var acceptAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Accept" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
                     self.changeTransaction("accept", transaction: transaction)
                 })
-                acceptAction.backgroundColor = UIColor(red: 0x08/255, green: 0x99/255, blue: 0x00/255, alpha: 1.0) //#089900
+                acceptAction.backgroundColor = Colors.success.textToUIColor()
                 
                 var rejectAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Reject" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
                     self.changeTransaction("reject", transaction: transaction)
                 })
-                rejectAction.backgroundColor = UIColor(red: 0xbb/255, green: 0x00/255, blue: 0x05/255, alpha: 1.0) //#bb0005
+                rejectAction.backgroundColor = Colors.danger.textToUIColor()
                 return [acceptAction,rejectAction]
             } else {
                 return nil

@@ -28,4 +28,126 @@ class TransactionsCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
+    func markup(transaction: Transaction){
+        //Description
+        descriptionLabel.text = transaction.description
+        
+        //Amount
+        let floatFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
+        amountLabel.text = transaction.currency+" \(transaction.amount.format(floatFormat))"
+        if (transaction.amount < 0) {
+            let printamount = -1*transaction.amount
+            amountLabel.textColor = Colors.gray.textToUIColor()
+            amountLabel.text = "- " + transaction.currency+" \(printamount.format(floatFormat))"
+        } else {
+            amountLabel.textColor = Colors.success.textToUIColor()
+            amountLabel.text = "+ " + transaction.currency+" \(transaction.amount.format(floatFormat))"
+            
+        }
+        
+        //Counterpart
+        counterpartLabel.text = transaction.counterpart_name
+        
+        //Time
+        //See http://stackoverflow.com/questions/24577087/comparing-nsdates-without-time-component
+        let today = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate()))
+        let weekAgo = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate(timeIntervalSinceNow: -60*60*24*6)))
+        
+        var labeldateFormatter = NSDateFormatter()
+        if (transaction.time_sent.compare(today!) != NSComparisonResult.OrderedAscending) {
+            //Today, display time
+            //http://makeapppie.com/tag/date-to-string-in-swift/
+            labeldateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+            labeldateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+        } else if (transaction.time_sent.compare(weekAgo!) != NSComparisonResult.OrderedAscending) {
+            //Last seven days, display day of the week
+            labeldateFormatter.dateFormat = "eeee" //http://zframework.ph/swift-ios-date-formatting-options/
+        } else {
+            //Longer than 7 days ago, display date
+            labeldateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
+            labeldateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
+        }
+        var dateString = labeldateFormatter.stringFromDate(transaction.time_sent)
+        if (transaction.is_sender == false) {
+            timeLabel.text = "Received: "+dateString
+        } else {
+            timeLabel.text = "Sent: "+dateString
+        }
+        
+        
+        //Status (text and image)
+        var statusString = "Unknown"
+        if (transaction.status == .Processed) {
+            //processed
+            if (transaction.reduced == false) {
+                //not reduced (yet)
+                statusString = ""
+            } else {
+                //reduced
+                statusString = ""
+            }
+            //cell.statusImageView.image = UIImage(named: "ios_new")
+            statusImageView.image = nil
+            statusLabel.text = statusString
+        } else if (transaction.status == .AwaitingValidation) { // recipient should accept first
+            if (transaction.is_sender == true) { // 0 = recipient
+                statusString = "Pending approval"
+            } else {
+                statusString = "Swipe to approve"
+                statusLabel.textColor = Colors.primary.textToUIColor()
+            }
+            statusImageView.image = UIImage(named: "ios_attention")
+            
+            statusLabel.text = statusString
+            
+        } else if (transaction.status == .Draft) {
+            statusLabel.textColor = Colors.primary.textToUIColor()
+            statusImageView.image = nil
+            statusLabel.text = "Swipe to delete"
+        } else { // cancelled/ rejected
+            //transaction canceled
+            statusImageView.image = nil
+            if (transaction.is_sender == false) {
+                //recipient
+                statusString = "Rejected by "+transaction.counterpart_name
+            } else {
+                //sender
+                statusString = "Rejected by you"
+            }
+            statusLabel.text = statusString
+            
+            //all labels in grey (Hex 777777)
+            counterpartLabel.textColor = Colors.gray.textToUIColor()
+            amountLabel.textColor = Colors.gray.textToUIColor()
+            descriptionLabel.textColor = Colors.gray.textToUIColor()
+            statusLabel.textColor = Colors.gray.textToUIColor()
+            timeLabel.textColor = Colors.gray.textToUIColor()
+            
+            
+            //all labels strikethrough
+            var attributedcounterpartText = NSMutableAttributedString(string: counterpartLabel.text!)
+            attributedcounterpartText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedcounterpartText.length))
+            counterpartLabel.attributedText = attributedcounterpartText
+            
+            var attributedamountText = NSMutableAttributedString(string: amountLabel.text!)
+            attributedamountText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedamountText.length))
+            amountLabel.attributedText = attributedamountText
+            
+            var attributeddescriptionText = NSMutableAttributedString(string: descriptionLabel.text!)
+            attributeddescriptionText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributeddescriptionText.length))
+            descriptionLabel.attributedText = attributeddescriptionText
+            
+            /*
+            var attributedstatusText = NSMutableAttributedString(string: statusLabel.text!)
+            attributedstatusText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedstatusText.length))
+            statusLabel.attributedText = attributedstatusText
+            */
+            
+            var attributedtimeText = NSMutableAttributedString(string: timeLabel.text!)
+            attributedtimeText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedtimeText.length))
+            timeLabel.attributedText = attributedtimeText
+        }
+        
+    }
+    
 }

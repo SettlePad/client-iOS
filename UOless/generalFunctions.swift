@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 func JSONStringify(jsonObj: AnyObject) -> String {
     var e: NSError?
@@ -24,5 +25,53 @@ func JSONStringify(jsonObj: AnyObject) -> String {
 extension Double {
     func format(f: String) -> String {
         return NSString(format: "%\(f)f", self)
+    }
+}
+
+extension String {
+    func toDouble() -> Double? {
+        return NSNumberFormatter().numberFromString(self)?.doubleValue
+    }
+}
+
+//Define colors
+enum Colors {
+    case primary
+    case gray
+    case success
+    case warning
+    case danger
+    case info
+    
+    func textToUIColor() -> UIColor{
+        switch (self) {
+        case .primary:
+            return UIColor(red: 0x1a/255, green: 0x9a/255, blue: 0xcb/255, alpha: 1.0)
+        case .gray:
+            return UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
+        case .success:
+            return UIColor(red: 0x08/255, green: 0x99/255, blue: 0x00/255, alpha: 1.0)
+        case .warning:
+            return UIColor(red: 0xbd/255, green: 0x62/255, blue: 0x00/255, alpha: 1.0)
+        case .danger:
+            return UIColor(red: 0xbb/255, green: 0x00/255, blue: 0x05/255, alpha: 1.0)
+        case .info:
+            return UIColor(red: 0x02/255, green: 0x57/255, blue: 0x77/255, alpha: 1.0)
+        }
+    }
+    
+    func backgroundToUIColor() -> UIColor{
+        switch (self) {
+        case .success:
+            return UIColor(red: 0xa1/255, green: 0xee/255, blue: 0x9d/255, alpha: 1.0)
+        case .warning:
+            return UIColor(red: 0xff/255, green: 0xd5/255, blue: 0xa8/255, alpha: 1.0)
+        case .danger:
+            return UIColor(red: 0xfe/255, green: 0xa8/255, blue: 0xaa/255, alpha: 1.0)
+        case .info:
+            return UIColor(red: 0x96/255, green: 0xca/255, blue: 0xde/255, alpha: 1.0)
+        default:
+            return UIColor.clearColor()
+        }
     }
 }

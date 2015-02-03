@@ -9,6 +9,7 @@
 import Foundation
 
 class TransactionsController {
+//extension APIController {
     var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"plist")
     var settingsDictionary: AnyObject? = nil
     
@@ -50,7 +51,7 @@ class TransactionsController {
                     self.updateParams(dataDict!) //Update request parameters
                     for transactionObj in transactions {
                         if let transactionDict = transactionObj as? NSDictionary {
-                            var transaction = Transaction(transaction: transactionDict)
+                            var transaction = Transaction(fromDict: transactionDict)
                             self.transactions.append(transaction) //Add in rear
                         } else {
                             println("Cannot parse transaction as dictionary")
@@ -78,7 +79,7 @@ class TransactionsController {
                         self.updateParams(dataDict!) //Update request parameters
                         for transactionObj in transactions {
                             if let transactionDict = transactionObj as? NSDictionary {
-                                var transaction = Transaction(transaction: transactionDict)
+                                var transaction = Transaction(fromDict: transactionDict)
                                 self.transactions.append(transaction) //Add in rear
                             } else {
                                 println("Cannot parse transaction as dictionary")
@@ -104,14 +105,14 @@ class TransactionsController {
                     //create dictionary of id (of transaction) to index (in array)
                     var transactionKeyDict = [Int:Int]()
                     for (i, transaction) in enumerate(self.transactions) {
-                        transactionKeyDict[transaction.transaction_id] = i
+                        transactionKeyDict[transaction.transaction_id!] = i //Can be unwrapped safely, as no draft transactions are created here
                     }
 
                     //Loop over updated transactions
                     for transactionObj in updatedTransactionsArray {
                         if let transactionDict = transactionObj as? NSDictionary {
-                            var transaction = Transaction(transaction: transactionDict)
-                            if let indexInt = transactionKeyDict[transaction.transaction_id] {
+                            var transaction = Transaction(fromDict: transactionDict)
+                            if let indexInt = transactionKeyDict[transaction.transaction_id!] { //Can be unwrapped safely, as no draft transactions are created here
                                 self.transactions[indexInt] = transaction //Replace
                             } else {
                                 println("Cannot find transaction in local list")
@@ -128,7 +129,7 @@ class TransactionsController {
                     for (i, transactionObj) in enumerate(newerTransactionsArray) {
                         //append
                         if let transactionDict = transactionObj as? NSDictionary {
-                            var transaction = Transaction(transaction: transactionDict)
+                            var transaction = Transaction(fromDict: transactionDict)
                             self.transactions.insert(transaction,atIndex: i)
                         } else {
                             println("Cannot parse transaction as dictionary")
