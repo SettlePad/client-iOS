@@ -21,6 +21,7 @@ class APIController {
 
 	var userDictionary = [String: String]()
 	var logged_in: Bool = false
+	var contacts = [Contact]()
 	
 	init() {
 		//load plist data
