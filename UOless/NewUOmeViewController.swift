@@ -168,7 +168,29 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         return cell
     }
 
+    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        //Editable or not
+        return true
+    }
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        //function required to have editable rows
+    }
+    
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]?  {
-        return []
+        //return []
+        var deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Delete" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
+            self.deleteTransaction(indexPath.row)
+        })
+        deleteAction.backgroundColor = Colors.danger.textToUIColor()
+        return [deleteAction]
+    }
+    
+    func deleteTransaction(index:Int){
+        transactions.removeAtIndex(index)
+        newUOmeTableView.reloadData()
+        footer.setNeedsDisplay()
+        newUOmeTableView.tableFooterView = footer
+        
     }
 }

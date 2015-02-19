@@ -21,7 +21,7 @@ class SettingsViewController: UITableViewController {
     }
     
     @IBAction func nameEdited(sender: UITextField) {
-        api.set_userName(sender.text)
+        user?.name = sender.text
     }
     
     @IBAction func logout(sender: AnyObject) {
@@ -126,8 +126,8 @@ class SettingsViewController: UITableViewController {
     */
     
     func updateLabels () {
-        currencyLabel.text = api.get_defaultCurrency()
-        nameText.text = api.get_userName()
+        currencyLabel.text = user?.defaultCurrency
+        nameText.text = user?.name
         credentialsLabel.text = "1" //TODO: set number of logins
     }
 

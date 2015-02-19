@@ -8,29 +8,20 @@
 
 import Foundation
 
-class TransactionsController {
-//extension APIController {
-    var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"plist")
-    var settingsDictionary: AnyObject? = nil
-    
+class Transactions {
     var transactions = [Transaction]()
-    var nr_of_results: String
+    var nr_of_results = 20
     var search = ""
-    var newest_id = 0
-    var oldest_id = 0
-    var last_update = 0
+    var newestID = 0
+    var oldestID = 0
+    var lastUpdate = 0
     var end_reached = false
     
-    var active_task: NSURLSessionDataTask?
-    var last_read: NSDate
-    var api: APIController
+    var lastRequest = NSDate() //Only newer requests for getInternal will be succesfully completed
+    var lastRead: NSDate
     
-    init(api: APIController) {
-        self.api = api
-        self.last_read = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate()))! //TODO: replace by CoreData
-        
-        settingsDictionary = NSDictionary(contentsOfFile: documentList!)
-        nr_of_results = String(settingsDictionary!["transactions_nr_of_results"]! as Int)
+    init() {
+        self.lastRead = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate()))! //TODO: replace by CoreData
     }
     
     func clear() {
@@ -41,7 +32,7 @@ class TransactionsController {
         
         
         self.search = search.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet())!
-        var url = "transactions/initial/"+nr_of_results+"/"+self.search
+        var url = "transactions/initial/"+String(nr_of_results)+"/"+self.search
         self.transactions = [] //already clear out before reponse
         self.end_reached = false
         getInternal(url){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
@@ -61,7 +52,7 @@ class TransactionsController {
                     //no transactions, which is fine
                 }
             }
-            if (self.transactions.count < self.settingsDictionary!["transactions_nr_of_results"]! as Int) {
+            if (self.transactions.count < self.nr_of_results) {
                 self.end_reached = true
             }
             requestCompleted(succeeded: succeeded,transactions: self.transactions,error_msg: error_msg)
@@ -69,7 +60,7 @@ class TransactionsController {
     }
     
     func getMore(requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
-        var url = "transactions/older/\(oldest_id)/"+nr_of_results+"/"+search
+        var url = "transactions/older/\(oldestID)/"+String(nr_of_results)+"/"+search
         if (self.end_reached) {
             requestCompleted(succeeded: false,transactions: self.transactions,error_msg: "End reached")
         } else {
@@ -96,7 +87,7 @@ class TransactionsController {
     }
     
     func getUpdate(requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
-        var url = "transactions/changes/\(oldest_id)/\(newest_id)/\(last_update)"+"/"+nr_of_results+"/"+search
+        var url = "transactions/changes/\(oldestID)/\(newestID)/\(lastUpdate)"+"/"+String(nr_of_results)+"/"+search
         
         getInternal(url){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
             if (succeeded) {
@@ -146,13 +137,13 @@ class TransactionsController {
     }
     
     private func getInternal(url: String, requestCompleted : (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> ()) {
-        if (self.active_task != nil) {
-            //cancel request
-            requestCompleted(succeeded: false,dataDict: nil,error_msg: "Already performing a request")
-        } else {
-            self.active_task = api.request(url, method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-                //println(data)
+        var requestDate = NSDate()
+        
+        api.request(url, method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+            //println(data)
+            if (requestDate.compare(self.lastRequest) != NSComparisonResult.OrderedAscending) { //requestDate is later than or equal to lastRequest
                 if(succeeded) {
+                    self.lastRequest = requestDate
                     if let dataDict = data["data"] as? NSDictionary {
                         requestCompleted(succeeded: true,dataDict:dataDict,error_msg:nil)
                     } else {
@@ -167,24 +158,25 @@ class TransactionsController {
                         requestCompleted(succeeded: false,dataDict: nil, error_msg: "Unknown error")
                     }
                 }
-              self.active_task = nil
+            } else {
+                requestCompleted(succeeded: false,dataDict: nil, error_msg: "Outdated request")
             }
         }
     }
     
     private func updateParams(data: NSDictionary) {
-        if let newest_id = data["newest_id"] as? Int {
-            self.newest_id = max(newest_id,self.newest_id)
+        if let newestID = data["newest_id"] as? Int {
+            self.newestID = max(newestID,self.newestID)
         }
-        if let oldest_id = data["oldest_id"] as? Int {
-            if (self.oldest_id == 0) {
-                self.oldest_id = oldest_id
+        if let oldestID = data["oldest_id"] as? Int {
+            if (self.oldestID == 0) {
+                self.oldestID = oldestID
             } else {
-                self.oldest_id = min(oldest_id,self.oldest_id)
+                self.oldestID = min(oldestID,self.oldestID)
             }
         }
-        if let last_update = data["last_update"] as? Int {
-            self.last_update = max(last_update,self.last_update)
+        if let lastUpdate = data["last_update"] as? Int {
+            self.lastUpdate = max(lastUpdate,self.lastUpdate)
         }
     }
     
@@ -202,6 +194,7 @@ class TransactionsController {
     
     func changeTransaction(action: String, transaction: Transaction, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
         var url = "transactions/"+action+"/\(transaction.transaction_id)/"
+        
         api.request(url, method: "POST", formdata: [:], secure: true){ (succeeded: Bool, data: NSDictionary) -> () in
             if(succeeded) {
                 requestCompleted(succeeded: true,error_msg: nil)

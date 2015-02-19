@@ -7,8 +7,14 @@
 //
 
 import UIKit
-var api = APIController()
 
+var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"plist")
+var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
+
+var api = APIController()
+var user: User? //If nil, not logged in
+var transactions=Transactions()
+var contacts = Contacts()
 
 class LoginViewController: UIViewController {
     /*See 
@@ -18,18 +24,17 @@ class LoginViewController: UIViewController {
     
     @IBOutlet var txtLoginUser : UITextField! //You’re marking the variables with an exclamation mark (!). This indicates the variables are optional values, but they are implicitly unwrapped. This is a fancy way of saying you can write code assuming that they are set, and your app will crash if they are not set.
     @IBOutlet var txtLoginPass : UITextField!
-
-
+    @IBOutlet var spinner: UIActivityIndicatorView!
+    @IBOutlet var loginButton: UIButton!
     @IBOutlet var loginBottomConstraint: NSLayoutConstraint!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
-        if api.is_loggedIn() {
+
+        if user != nil {
             enter_app()
         } else {
-        
             NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillChangeFrameNotification:", name: UIKeyboardWillChangeFrameNotification, object: nil)
         }
     }
@@ -44,25 +49,22 @@ class LoginViewController: UIViewController {
     }
     
     func doLogin() {
+        spinner.hidden = false
+        loginButton.hidden = true
         api.login(txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String) -> () in
+            self.spinner.hidden = true
+            self.loginButton.hidden = false
             if(succeeded) {
                 //Go to next screen (in main view)
                 self.enter_app()
-
-                
             } else {
-                var alert = UIAlertView(title: "Success!", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
-                alert.title = "Error"
-                alert.message = msg
+                var alert = UIAlertView(title: "Fail!", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
                 
                 // Move to the UI thread
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     // Show the alert
                     alert.show()
                 })
-                
-                //Note:
-                //cocoa error 3840 implies incorrect JSON, so probably no server connection
             }
         }
     }

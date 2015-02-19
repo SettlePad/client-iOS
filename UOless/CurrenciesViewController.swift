@@ -93,7 +93,7 @@ class CurrenciesViewController: UITableViewController {
         //Move to selected currency
         for (sectionindex, section) in enumerate(sections) {
             for (rowindex, currency) in enumerate(section.currencies) {
-                if currency.abbrev == api.get_defaultCurrency() {
+                if currency.abbrev == user?.defaultCurrency {
                     selectedIndexPath = NSIndexPath(forRow:rowindex, inSection:sectionindex)
                 }
             }
@@ -135,7 +135,7 @@ class CurrenciesViewController: UITableViewController {
         cell.textLabel?.text = currency.name
 
         //Determine whether the selected index path
-        if currency.abbrev == api.get_defaultCurrency() {
+        if currency.abbrev == user?.defaultCurrency {
             cell.accessoryType = .Checkmark
         } else {
             cell.accessoryType = .None
@@ -175,7 +175,7 @@ class CurrenciesViewController: UITableViewController {
         let cell = tableView.cellForRowAtIndexPath(indexPath)
         let currency = self.sections[indexPath.section].currencies[indexPath.row]
 
-        api.set_defaultCurrency(currency.abbrev)
+        user?.defaultCurrency = currency.abbrev
         cell?.accessoryType = .Checkmark
     }
     

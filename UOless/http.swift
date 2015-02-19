@@ -14,81 +14,24 @@
 
 import Foundation
 
-
 class APIController {
-	var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"plist")
-	var settingsDictionary: AnyObject? = nil
 
-	var userDictionary = [String: String]()
-	var logged_in: Bool = false
-	var contacts = [Contact]()
-	
-	init() {
-		//load plist data
-		settingsDictionary = NSDictionary(contentsOfFile: documentList!)
-		
-		//check whether logged in (get from keychain)
-		var expectedKeys: [String] = ["series", "token","user_id","user_name"]
-		var credentials_present = true
-		for expectedKey in expectedKeys {
-			if let keychainObject = Keychain.load(expectedKey)  {
-				userDictionary[expectedKey] = keychainObject.stringValue
-			} else {
-				credentials_present = false
-			}
-		}
-		
-		//Get from NSUserDefaults table
-		let defaults = NSUserDefaults.standardUserDefaults()
-		expectedKeys = ["default_currency"]
-		for expectedKey in expectedKeys {
-			if defaults.stringForKey(expectedKey) != nil {
-				userDictionary[expectedKey] = defaults.stringForKey(expectedKey)
-			} else {
-				credentials_present = false
-			}
-		}
-		
-		if credentials_present {
-			logged_in = true
-			
-			//TODO: verify whether user_name and default_currency are still up to date
-		}
-	}
-	
     func login(username: String, password: String, loginCompleted : (succeeded: Bool, msg: String) -> ()) {
 		//TODO: if logged in already, first log out
 
 		request("login", method:"POST", formdata: ["provider":"password", "user":username, "password":password], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
 			if(succeeded) {
-				let expectedKeys: [String] = ["series", "token","user_id","user_name","default_currency"]
-				self.logged_in = true
-				for expectedKey in expectedKeys {
-					if let keyValue = data[expectedKey] as? String {
-						self.userDictionary[expectedKey] = keyValue
-					} else {
-						self.logged_in = false
-					}
-				}
-
-				if (self.logged_in == true) {
-					//Set keychain
-					Keychain.save("user_id", data: (self.userDictionary["user_id"]!).dataValue)
-					Keychain.save("token", data: (self.userDictionary["token"]!).dataValue)
-					Keychain.save("series", data: (self.userDictionary["series"]!).dataValue)
-					Keychain.save("user_name", data: (self.userDictionary["user_name"]!).dataValue)
-
-					//Set NSUserdefaults
-					let defaults = NSUserDefaults.standardUserDefaults()
-					defaults.setObject(self.userDictionary["default_currency"]!, forKey: "default_currency")
-					
-					loginCompleted(succeeded: succeeded, msg: self.userDictionary["user_name"]!)
+				user = User(credentials: data as Dictionary, api: self)
+				if user != nil {
+					loginCompleted(succeeded: true, msg: user!.name)
+				} else {
+					loginCompleted(succeeded: false, msg: "Cannot initialize user class")
 				}
 			} else {
 				if let msg = data["text"] as? String {
-					loginCompleted(succeeded: succeeded, msg: msg)
+					loginCompleted(succeeded: false, msg: msg)
 				} else {
-					loginCompleted(succeeded: succeeded, msg: "Unknown error")
+					loginCompleted(succeeded: false, msg: "Unknown error")
 				}
 			}
 		}
@@ -106,84 +49,20 @@ class APIController {
 				}
 			}
 		}
-		
-		logged_in = false
-		
-		//Clear keychain
-		var expectedKeys: [String] = ["series", "token","user_id","user_name"]
-		for expectedKey in expectedKeys {
-			Keychain.delete(expectedKey)
-		}
-		
-		//Clear NSUserDefaults
-		let defaults = NSUserDefaults.standardUserDefaults()
-		expectedKeys = ["default_currency"]
-		for expectedKey in expectedKeys {
-			defaults.setObject(nil, forKey: "default_currency")
-		}
-		
-		//Clear local array
-		userDictionary = [:]
-		
-
+		self.clearUser() //Do not wait until logout is finished
 	}
 	
-	func is_loggedIn()-> Bool {
-		return logged_in
-	}
-	
-	func get_userID() -> String {
-		return userDictionary["user_id"] ?? "" //Where "" is the default
-	}
-	
-	func get_userName() -> String {
-		return userDictionary["user_name"] ?? "" //Where "" is the default
-	}
-	
-	func set_userName (name: String) {
-		request("settings", method:"POST", formdata: ["name":name], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			//println(data)
-			if(!succeeded) {
-				if let error_msg = data["text"] as? String {
-					println(error_msg)
-				} else {
-					println("Unknown error while setting name")
-				}
-			}
-		}
-		userDictionary["user_name"] = name
-	}
-
-	func get_defaultCurrency() -> String {
-		return userDictionary["default_currency"] ?? "" //Where "" is the default
-	}
-	
-	func set_defaultCurrency(abbrev: String) {
-		request("settings", method:"POST", formdata: ["default_currency":abbrev], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			//println(data)
-			if(!succeeded) {
-				if let error_msg = data["text"] as? String {
-					println(error_msg)
-				} else {
-					println("Unknown error while setting currency")
-				}
-			}
-		}
-		userDictionary["default_currency"] = abbrev
+	func clearUser() {
+		user!.wipe()
+		user = nil
+		
+		//TODO: clear out transacitons, contacts etc.
 	}
 	
 	func request(url : String, method: String, formdata : NSDictionary?, secure: Bool, requestCompleted : (succeeded: Bool, data: NSDictionary) -> ()) -> NSURLSessionDataTask? {
-//TODO: make private and set transactions as extension
-		
-/*TODO: add 
--> NSURLSessionDataTask?
-and return the task, if started (or if nil, task not started)
-and cancel this if needed, because it is superseeded by another task
-*/
 		
 		var proceedRequest = true
-		
-		var server = self.settingsDictionary!["server"]! as String
+		var server = settingsDictionary!["server"]! as String
 
 		var request = NSMutableURLRequest(URL: NSURL(string: server+url)!)
         var session = NSURLSession.sharedSession()
@@ -206,16 +85,16 @@ and cancel this if needed, because it is superseeded by another task
 		}
 		
 		if (secure) {
-			if (self.logged_in == true) {
-				request.addValue(self.userDictionary["user_id"]!, forHTTPHeaderField: "X-USER-ID")
-				request.addValue(self.userDictionary["series"]!, forHTTPHeaderField: "X-SERIES")
+			if (user != nil) {
+				request.addValue(String(user!.id), forHTTPHeaderField: "X-USER-ID")
+				request.addValue(user!.series, forHTTPHeaderField: "X-SERIES")
 
 				//SHA 256 hash of X-SERIES + X-TIME + dataString (only for non-GET), with token as key
-				var toHash = self.userDictionary["series"]!+timestamp
+				var toHash = user!.series+timestamp
 				if (method != "GET") {
 					toHash += dataString
 				}
-				request.addValue(toHash.hmac(.SHA256, key: self.userDictionary["token"]!), forHTTPHeaderField: "X-HASH")
+				request.addValue(toHash.hmac(.SHA256, key: user!.token), forHTTPHeaderField: "X-HASH")
 			} else {
 				proceedRequest = false
 				requestCompleted(succeeded: false, data: ["code":"local_login_error", "text":"Cannot perform request, not logged in", "function":"local"])
@@ -226,46 +105,64 @@ and cancel this if needed, because it is superseeded by another task
 		
 		if (proceedRequest) {
 			var err: NSError?
-			var task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
+			var task = session.dataTaskWithRequest(request, completionHandler:{(data : NSData!, response : NSURLResponse!, error : NSError!) in
+		
+				
 				//println("Response: \(response)")
-				var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
+				let strData = NSString(data: data, encoding: NSUTF8StringEncoding)
 				//println("Body: \(strData)")
 				var err: NSError?
 				var json = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &err) as? NSDictionary
 
-				// Did the JSONObjectWithData constructor return an error? If so, log the error to the console
+				// We try to parse the JSON first.
 				if(err != nil) {
-					let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
-					println("Error could not parse JSON (1): '\(jsonStr)'")
-					requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":err!.localizedDescription, "function":"local"])
-				}
-				else {
+					//Parsing resulted in an error. Next to that, we'll go for the error from the URL request itself, in the NSURLErrorDomain
+					//println("Cannot parse JSON: "+err!.debugDescription)
+					if(error != nil) {
+						//println(error.localizedFailureReason)
+						//println(error.localizedRecoverySuggestion)
+						
+						//Rediculously, the localizedDescription is uninformative (i.e. The operation couldn’t be completed.). Do we have to test for all error codes :( ?
+						//Also, see http://stackoverflow.com/questions/26741117/different-nserror-localizeddescription-between-ios-7-and-8
+						
+						if (error!.code == -1004) {
+							requestCompleted(succeeded: false, data: ["code":"cannot_connect_to_server", "text":"Cannot connect to server", "function":"local"])
+						} else {
+							requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":error!.localizedDescription, "function":"local"])
+						}
+					} else {
+						requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":err!.localizedDescription, "function":"local"])
+					}
+				} else {
 					// The JSONObjectWithData constructor didn't return an error. But, we should still
 					// check and make sure that json has a value using optional binding.
 					if let parseJSON = json {
+						//Check whether JSON contains an error key that the server sent us
 						if let data = parseJSON["error"] as? NSDictionary {
-							//check whether user should be logged out
-							requestCompleted(succeeded: false, data: data)
 							if let code = data["code"] as? String {
 								if code == "unknown_series" {
-									self.logout()
+									self.clearUser()
 								}
+							} else {
+								println("Server sent back unknown error key")
+								println(data)
 							}
+							
+							requestCompleted(succeeded: false, data: data)
 						} else {
 							let status = (response as NSHTTPURLResponse).statusCode
 							if (status == 200) {
 								requestCompleted(succeeded: true, data: parseJSON)
 							} else {
-
+								println("Server gave an error status, but no error key")
+								println(parseJSON)
 								requestCompleted(succeeded: false, data: parseJSON)
 							}
 						}
-					}
-					else {
-						// Woa, okay the json object was nil, something went worng. Maybe the server isn't running?
-						let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
-						println("Error could not parse JSON (2): \(jsonStr)")
-						requestCompleted(succeeded: false, data: ["code":"local_unknown_error", "text":"Unknown local error", "function":"local"])
+					} else {
+						//No error in the json parsing, but still no json value. That's strange
+						println("JSON has no value: \(strData)")
+						requestCompleted(succeeded: false, data: ["code":"json_has_no_value", "text":"Error in parsing request: JSON has no value", "function":"local"])
 					}
 				}
 			})

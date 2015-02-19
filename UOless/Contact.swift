@@ -13,7 +13,7 @@ class Contact {
     var name: String
     var friendlyName: String
     var favorite: Bool
-    var identifiers: [String]
+    var identifiers = [String]()
     //TODO: autolimit to implement
     
     init(id: Int? = nil, name: String, friendlyName: String, favorite: Bool, identifiers: [String]) {
@@ -24,4 +24,41 @@ class Contact {
         self.identifiers = identifiers
     }
     
+    init(fromDict: NSDictionary = [:]) {
+        if let parsed = fromDict["id"] as? Int {
+            self.id = parsed
+        } else {
+            self.id = nil
+        }
+        
+        if let parsed = fromDict["name"] as? String {
+            self.name = parsed
+        } else {
+            self.name = "Unknown"
+        }
+        
+        if let parsed = fromDict["friendly_name"] as? String {
+            self.friendlyName = parsed
+        } else {
+            self.friendlyName = "Unknown"
+        }
+        
+        if let parsed = fromDict["favorite"] as? Int {
+            if (parsed > 0) {
+                self.favorite = true
+            } else {
+                self.favorite = false
+            }
+        } else {
+                self.favorite = false
+        }
+        
+        if let parsed = fromDict["favorite"] as? Array <Dictionary <String, AnyObject> > {
+            for identifierObj in parsed {
+                println(identifierObj)
+            }
+        }
+        
+        println(self.name+" added")
+    }
 }

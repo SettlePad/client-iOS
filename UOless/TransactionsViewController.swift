@@ -23,7 +23,6 @@ class TransactionsViewController: UITableViewController {
     @IBOutlet var transactionsTableView: UITableView!
     @IBOutlet var transactionsSearchBar: UISearchBar!
     
-    var transactionAPI = TransactionsController(api: api)
     var transactionsRefreshControl:UIRefreshControl!
     var footer = TransactionsFooterView(frame: CGRectMake(0, 0, 320, 44))
     
@@ -36,10 +35,10 @@ class TransactionsViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
-        transactionAPI.clear()
+        transactions.clear()
         reload_transactions(loading: true) //want to show spinner
         
-        transactionAPI.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+        transactions.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
             if (succeeded) {
                 dispatch_async(dispatch_get_main_queue(), {
                     //so it is run now, instead of at the end of code execution
@@ -86,7 +85,7 @@ class TransactionsViewController: UITableViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return transactionAPI.getTransactions().count
+        return transactions.getTransactions().count
     }
 
     
@@ -94,7 +93,7 @@ class TransactionsViewController: UITableViewController {
         let cell = transactionsTableView.dequeueReusableCellWithIdentifier("TransactionCell", forIndexPath: indexPath) as TransactionsCell
         
         // Configure the cell...
-        if let transaction = transactionAPI.getTransaction(indexPath.row)  {
+        if let transaction = transactions.getTransaction(indexPath.row)  {
             cell.markup(transaction)
         }
         
@@ -107,7 +106,7 @@ class TransactionsViewController: UITableViewController {
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the specified item to be editable.
         //Editable or not
-        if let transaction = transactionAPI.getTransaction(indexPath.row)  {
+        if let transaction = transactions.getTransaction(indexPath.row)  {
             if (transaction.can_be_canceled || transaction.can_be_accepted) {
                 return true
             } else {
@@ -118,8 +117,6 @@ class TransactionsViewController: UITableViewController {
         }
         
         //return true
-        
-        
     }
     
 
@@ -136,7 +133,7 @@ class TransactionsViewController: UITableViewController {
     
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]?  {
-        if let transaction = transactionAPI.getTransaction(indexPath.row)  {
+        if let transaction = transactions.getTransaction(indexPath.row)  {
             if transaction.can_be_canceled {
                 var cancelAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Cancel" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
                         self.changeTransaction("cancel", transaction: transaction)
@@ -154,7 +151,7 @@ class TransactionsViewController: UITableViewController {
                 var rejectAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Reject" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
                     self.changeTransaction("reject", transaction: transaction)
                 })
-                rejectAction.backgroundColor = Colors.danger.textToUIColor()
+                rejectAction.backgroundColor = Colors.danger.backgroundToUIColor()
                 return [acceptAction,rejectAction]
             } else {
                 return nil
@@ -166,7 +163,7 @@ class TransactionsViewController: UITableViewController {
     }
     
     func changeTransaction(action:String, transaction:Transaction){
-        self.transactionAPI.changeTransaction(action,transaction: transaction) { (succeeded: Bool, error_msg: String?) -> () in
+        transactions.changeTransaction(action,transaction: transaction) { (succeeded: Bool, error_msg: String?) -> () in
             if (succeeded) {
                 dispatch_async(dispatch_get_main_queue(), {
                     //so it is run now, instead of at the end of code execution
@@ -207,7 +204,7 @@ class TransactionsViewController: UITableViewController {
     
     func searchBarShouldBeginEditing(searchBar: UISearchBar!) -> Bool // return NO to not become first responder
     {
-        transactionAPI.clear()
+        transactions.clear()
         reload_transactions(searching: true) //want to show search instructions
         
         return true
@@ -233,7 +230,7 @@ class TransactionsViewController: UITableViewController {
         //println("searched")
         
         //get new results
-        transactionAPI.get(searchBar.text){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+        transactions.get(searchBar.text){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
             if (succeeded) {
                 dispatch_async(dispatch_get_main_queue(), {
                     //so it is run now, instead of at the end of code execution
@@ -257,7 +254,7 @@ class TransactionsViewController: UITableViewController {
         self.transactionsTableView.setContentOffset(newContentOffset, animated: true)
         //self.transactionsTableView.scrollRectToVisible(CGRectMake(0, 44,0,0), animated: true)
         
-        transactionAPI.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+        transactions.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
             if (succeeded) {
                 dispatch_async(dispatch_get_main_queue(), {
                     //so it is run now, instead of at the end of code execution
@@ -272,7 +269,7 @@ class TransactionsViewController: UITableViewController {
     }
     
     func refreshTransactions() {        
-        transactionAPI.getUpdate(){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+        transactions.getUpdate(){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
             if (succeeded) {
                 dispatch_async(dispatch_get_main_queue(), {
                     //so it is run now, instead of at the end of code execution
@@ -294,12 +291,12 @@ class TransactionsViewController: UITableViewController {
     override func scrollViewDidScroll(scrollView: UIScrollView) {
         //println("scroll")
 
-        if (!transactionAPI.end_reached && transactionAPI.active_task == nil) {
+        if (!transactions.end_reached) {
             let currentOffset = scrollView.contentOffset.y
             let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
             
             if (maximumOffset - currentOffset) <= 40 {
-                transactionAPI.getMore(){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+                transactions.getMore(){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
                     if (succeeded) {
                         dispatch_async(dispatch_get_main_queue(), {
                             //so it is run now, instead of at the end of code execution
@@ -324,9 +321,9 @@ class TransactionsViewController: UITableViewController {
         if loading {
             self.footer.end_reached = false
         } else {
-            self.footer.end_reached = self.transactionAPI.end_reached
+            self.footer.end_reached = transactions.end_reached
         }
-        self.footer.no_results = (self.transactionAPI.getTransactions().count == 0)
+        self.footer.no_results = (transactions.getTransactions().count == 0)
         self.footer.setNeedsDisplay()
         self.transactionsTableView.tableFooterView = self.footer
     }
@@ -335,7 +332,7 @@ class TransactionsViewController: UITableViewController {
         println("Error: "+msg)
         
         //Goto login screen
-        if (!api.is_loggedIn()) {
+        if (user == nil) {
             dispatch_async(dispatch_get_main_queue()) {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as UIViewController
