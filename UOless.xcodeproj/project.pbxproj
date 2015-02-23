@@ -39,6 +39,8 @@
 		54DF03691A5597020078AE8B /* TransactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DF03681A5597020078AE8B /* TransactionsCell.swift */; };
 		54DF036C1A55A7F00078AE8B /* u189@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 54DF036B1A55A7F00078AE8B /* u189@3x.png */; };
 		54DF036E1A55A9E20078AE8B /* generalFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DF036D1A55A9E20078AE8B /* generalFunctions.swift */; };
+		54EA13691A9691A500654E84 /* NewUOmeAdressBook.xib in Resources */ = {isa = PBXBuildFile; fileRef = 54EA13681A9691A500654E84 /* NewUOmeAdressBook.xib */; };
+		54EA136B1A96980900654E84 /* NewUOmeAddressBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */; };
 		54F9EA471A0831D7009DC930 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F9EA461A0831D7009DC930 /* AppDelegate.swift */; };
 		54F9EA491A0831D7009DC930 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F9EA481A0831D7009DC930 /* LoginViewController.swift */; };
 		54F9EA4C1A0831D7009DC930 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 54F9EA4A1A0831D7009DC930 /* Main.storyboard */; };
@@ -91,6 +93,8 @@
 		54DF03681A5597020078AE8B /* TransactionsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionsCell.swift; sourceTree = "<group>"; };
 		54DF036B1A55A7F00078AE8B /* u189@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "u189@3x.png"; sourceTree = "<group>"; };
 		54DF036D1A55A9E20078AE8B /* generalFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = generalFunctions.swift; sourceTree = "<group>"; };
+		54EA13681A9691A500654E84 /* NewUOmeAdressBook.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewUOmeAdressBook.xib; sourceTree = "<group>"; };
+		54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewUOmeAddressBook.swift; sourceTree = "<group>"; };
 		54F9EA411A0831D7009DC930 /* UOless.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UOless.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		54F9EA451A0831D7009DC930 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		54F9EA461A0831D7009DC930 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -161,6 +165,8 @@
 			children = (
 				540C217E1A5819FF00E9A29A /* TransactionsFooterView.swift */,
 				548326411A7ED0AC004973B7 /* NewUOmeFooterView.swift */,
+				54EA13681A9691A500654E84 /* NewUOmeAdressBook.xib */,
+				54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */,
 				54DF03681A5597020078AE8B /* TransactionsCell.swift */,
 			);
 			name = ViewClasses;
@@ -327,6 +333,7 @@
 				540C21761A57453100E9A29A /* ios_attention@3x.png in Resources */,
 				540C218B1A59C46C00E9A29A /* transactions_tabicon@3x.png in Resources */,
 				540C21791A57453100E9A29A /* ios_new@3x.png in Resources */,
+				54EA13691A9691A500654E84 /* NewUOmeAdressBook.xib in Resources */,
 				542A4A741A5DD4BD00FF865A /* settings_tabicon@3x.png in Resources */,
 				54F9EA4C1A0831D7009DC930 /* Main.storyboard in Resources */,
 				540C218A1A59C46C00E9A29A /* transactions_tabicon@2x.png in Resources */,
@@ -366,6 +373,7 @@
 				542A4A7F1A5F342700FF865A /* CurrenciesViewController.swift in Sources */,
 				54F9EA491A0831D7009DC930 /* LoginViewController.swift in Sources */,
 				540165D91A82B4C0009F3405 /* Contact.swift in Sources */,
+				54EA136B1A96980900654E84 /* NewUOmeAddressBook.swift in Sources */,
 				543FEFDE1A542D8C00C18230 /* HMAC.swift in Sources */,
 				54F9EA471A0831D7009DC930 /* AppDelegate.swift in Sources */,
 				545AC3241A90C25000E62E76 /* User.swift in Sources */,

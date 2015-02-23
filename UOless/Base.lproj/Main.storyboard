@@ -61,7 +61,6 @@
                             <constraint firstItem="tOJ-9g-k1s" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="27r-kJ-5j0"/>
                             <constraint firstAttribute="centerX" secondItem="Wir-fZ-dMi" secondAttribute="centerX" id="3V6-Me-rIh"/>
                             <constraint firstItem="Wir-fZ-dMi" firstAttribute="top" relation="greaterThanOrEqual" secondItem="BDc-u0-Ici" secondAttribute="bottom" priority="500" constant="100" id="43O-Dx-eTN"/>
-                            <constraint firstItem="pLG-xO-be0" firstAttribute="top" secondItem="tOJ-9g-k1s" secondAttribute="bottom" constant="15" id="7Ia-zb-jVv"/>
                             <constraint firstAttribute="centerX" secondItem="eYs-Pd-pfd" secondAttribute="centerX" id="8We-4K-LYQ"/>
                             <constraint firstAttribute="centerX" secondItem="tOJ-9g-k1s" secondAttribute="centerX" id="DEz-y6-Y4K"/>
                             <constraint firstItem="Wir-fZ-dMi" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="F4P-WL-g5b"/>
@@ -70,9 +69,11 @@
                             <constraint firstItem="BDc-u0-Ici" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" priority="250" constant="100" id="R2B-7N-vBS"/>
                             <constraint firstItem="eYs-Pd-pfd" firstAttribute="top" secondItem="tOJ-9g-k1s" secondAttribute="bottom" constant="10" id="VsM-RL-Rsd"/>
                             <constraint firstItem="tOJ-9g-k1s" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="Y4S-Da-A9U"/>
+                            <constraint firstItem="pLG-xO-be0" firstAttribute="centerY" secondItem="eYs-Pd-pfd" secondAttribute="centerY" id="dn3-cN-8wc"/>
                             <constraint firstAttribute="centerX" secondItem="pLG-xO-be0" secondAttribute="centerX" id="f6h-tR-3lJ"/>
                             <constraint firstItem="Wir-fZ-dMi" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="gl4-mw-dpp"/>
-                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="eYs-Pd-pfd" secondAttribute="bottom" constant="30" id="yum-Xp-oEH"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="eYs-Pd-pfd" secondAttribute="bottom" priority="500" constant="30" id="shp-Be-XiT"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="eYs-Pd-pfd" secondAttribute="bottom" priority="750" constant="30" id="yum-Xp-oEH"/>
                         </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="2nn-Ny-ujP" appends="YES" id="K0K-j5-9Iw"/>
@@ -479,12 +480,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="To" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2y8-Eh-pbS">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="To" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="2y8-Eh-pbS">
                                 <rect key="frame" x="16" y="54" width="568" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next"/>
                                 <connections>
                                     <action selector="formToEditingChanged:" destination="UDK-at-4c7" eventType="editingChanged" id="uML-ib-xUb"/>
+                                    <action selector="formToEditingDidEnd:" destination="UDK-at-4c7" eventType="editingDidEnd" id="TTM-z3-qRn"/>
                                 </connections>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Description" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iyD-3p-mQo">
@@ -591,6 +593,27 @@
                                             <outlet property="timeLabel" destination="n0v-bI-4QP" id="mt0-Nm-oaC"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ContactCell" textLabel="0Zl-Ct-1Ry" detailTextLabel="we0-Yd-HOE" rowHeight="46" style="IBUITableViewCellStyleSubtitle" id="qwG-fb-Ahl">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qwG-fb-Ahl" id="4sc-5G-pzj">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="0Zl-Ct-1Ry">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="we0-Yd-HOE">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <gestureRecognizers/>
+                                    </tableViewCell>
                                 </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="UDK-at-4c7" id="r6v-uA-jB7"/>
@@ -613,6 +636,7 @@
                             <constraint firstItem="iyD-3p-mQo" firstAttribute="top" secondItem="2y8-Eh-pbS" secondAttribute="bottom" constant="10" id="1nb-xI-7W6"/>
                             <constraint firstItem="Z6x-Ue-bVd" firstAttribute="top" secondItem="W0y-mz-q1u" secondAttribute="bottom" constant="10" id="2T8-eY-Sml"/>
                             <constraint firstItem="iyD-3p-mQo" firstAttribute="leading" secondItem="wxP-Ve-X39" secondAttribute="leadingMargin" id="3xU-J5-qFv"/>
+                            <constraint firstItem="HSi-vU-gfF" firstAttribute="top" secondItem="2y8-Eh-pbS" secondAttribute="bottom" priority="750" constant="20" id="82b-aB-Wwl"/>
                             <constraint firstAttribute="centerX" secondItem="Z6x-Ue-bVd" secondAttribute="centerX" id="BEU-Jr-YSj"/>
                             <constraint firstItem="HSi-vU-gfF" firstAttribute="top" secondItem="Z6x-Ue-bVd" secondAttribute="bottom" constant="20" id="D3w-h8-gvD"/>
                             <constraint firstItem="GUm-ic-dZZ" firstAttribute="top" secondItem="iyD-3p-mQo" secondAttribute="bottom" constant="10" id="GNn-PT-CBt"/>
@@ -646,9 +670,11 @@
                         <outlet property="formAmount" destination="W0y-mz-q1u" id="Wr7-io-F33"/>
                         <outlet property="formCurrency" destination="GUm-ic-dZZ" id="R9D-zu-oaH"/>
                         <outlet property="formDescription" destination="iyD-3p-mQo" id="WIQ-6l-IQG"/>
+                        <outlet property="formSaveButton" destination="Z6x-Ue-bVd" id="Byw-cx-hib"/>
                         <outlet property="formTo" destination="2y8-Eh-pbS" id="kq2-kT-MME"/>
                         <outlet property="formType" destination="b04-kM-7rE" id="izj-aM-qqd"/>
                         <outlet property="newUOmeTableView" destination="HSi-vU-gfF" id="jUs-H9-Qs3"/>
+                        <outlet property="tableSaveContraint" destination="D3w-h8-gvD" id="O7t-wq-l4t"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4LN-Ga-iIA" userLabel="First Responder" sceneMemberID="firstResponder"/>

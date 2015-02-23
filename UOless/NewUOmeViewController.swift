@@ -10,6 +10,8 @@ import UIKit
 
 class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource  {
     var footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
+    var addressBookFooter = NewUOmeAddressBook(frame: CGRectMake(0, 0, 320, 44))
+
     @IBOutlet var newUOmeTableView: UITableView!
     
     @IBAction func closeView(sender: AnyObject) {
@@ -22,7 +24,18 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     @IBOutlet var formType: UISegmentedControl!
     @IBOutlet var formCurrency: UIButton!
     @IBOutlet var formAmount: UITextField!
+    @IBOutlet var formSaveButton: UIButton!
+    
     var transactions = [Transaction]()
+
+    enum State {
+        case Overview
+        case NewUOme
+    }
+    
+    var contactIdentifiers = [Dictionary<String,String>]() //Name, Identifier
+    
+    var state: State = .Overview
     
     @IBAction func saveUOme(sender: AnyObject) {
         if validateForm(false) {
@@ -54,10 +67,67 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         self.view.endEditing(true)
     }
     
+    @IBOutlet var tableSaveContraint: NSLayoutConstraint! //table to Save button
+    
     @IBAction func formToEditingChanged(sender: AnyObject) {
         validateForm(true)
+        
+        //If not-empty, show suggestions
+        if formTo.text != "" {
+            switchState(.NewUOme)
+            getMatchedContactIdentifiers(formTo.text)
+            self.newUOmeTableView.reloadData()
+        } else {
+            switchState(.Overview)
+        }
     }
 
+    @IBAction func formToEditingDidEnd(sender: AnyObject) {
+        //Hide suggestions
+        if formTo.text != "" {
+            switchState(.Overview)
+        }
+    }
+    
+    func switchState(explicitState: State?) {
+        if let state = explicitState {
+            self.state = state
+        } else {
+            if (self.state == .Overview) {
+                self.state = .NewUOme
+            } else {
+                self.state = .Overview
+            }
+        }
+        
+        if (self.state == .Overview) {
+            formDescription.hidden = false
+            formType.hidden = false
+            formCurrency.hidden = false
+            formAmount.hidden = false
+            formSaveButton.hidden = false
+            
+            tableSaveContraint.active = true
+            
+            footer.setNeedsDisplay()
+            newUOmeTableView.tableFooterView = footer
+        } else {
+            formDescription.hidden = true
+            formType.hidden = true
+            formCurrency.hidden = true
+            formAmount.hidden = true
+            formSaveButton.hidden = true
+            
+            tableSaveContraint.active = false
+            
+            addressBookFooter.setNeedsDisplay()
+            newUOmeTableView.tableFooterView = addressBookFooter
+        }
+        
+        newUOmeTableView.reloadData()
+    }
+    
+    
     @IBAction func formDescriptionEditingChanged(sender: AnyObject) {
         validateForm(true)
     }
@@ -72,6 +142,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         // Do any additional setup after loading the view.
         //newUOmeTableView.tableFooterView = UIView(frame:CGRectZero)
         //self.footer.setNeedsDisplay()
+        footer.setNeedsDisplay()
         newUOmeTableView.tableFooterView = footer
         formTo.becomeFirstResponder()
     }
@@ -156,16 +227,31 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return transactions.count
+        if (self.state == .Overview) {
+            return transactions.count
+        } else {
+            return contactIdentifiers.count
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("TransactionCell", forIndexPath: indexPath) as TransactionsCell
-        
-        // Configure the cell...
-        cell.markup(transactions[indexPath.row])
-        
-        return cell
+        if (self.state == .Overview) {
+            //Show draft UOme's
+            let cell = tableView.dequeueReusableCellWithIdentifier("TransactionCell", forIndexPath: indexPath) as TransactionsCell
+            
+            // Configure the cell...
+            cell.markup(transactions[indexPath.row])
+            return cell
+        } else {
+            //show contacts
+            let cell = tableView.dequeueReusableCellWithIdentifier("ContactCell", forIndexPath: indexPath) as UITableViewCell
+            
+            // Configure the cell...
+            let contactIdentifier = contactIdentifiers[indexPath.row]
+            cell.textLabel?.text = contactIdentifier["name"]
+            cell.detailTextLabel?.text =  contactIdentifier["identifier"]
+            return cell
+        }
     }
 
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -192,5 +278,16 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         footer.setNeedsDisplay()
         newUOmeTableView.tableFooterView = footer
         
+    }
+    
+    func getMatchedContactIdentifiers(needle: String){
+        contactIdentifiers.removeAll()
+        for contact in contacts.contacts {
+            for identifier in contact.identifiers {
+                if (identifier.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contact.name.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
+                    contactIdentifiers.append(["name":contact.name,"identifier":identifier])
+                }
+            }
+        }
     }
 }

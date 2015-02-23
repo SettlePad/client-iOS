@@ -78,7 +78,15 @@ class LoginViewController: UIViewController {
         let rawAnimationCurve = (notification.userInfo![UIKeyboardAnimationCurveUserInfoKey] as NSNumber).unsignedIntValue << 16
         let animationCurve = UIViewAnimationOptions(rawValue: UInt(rawAnimationCurve << 16))
         
-        self.loginBottomConstraint.constant = CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame)
+        if (CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame) > 0) {
+            //will show
+            self.loginBottomConstraint.constant = CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame)
+            self.loginBottomConstraint.priority = 750 //So that this one will overrule the other botom constraint
+        } else {
+            //will hide
+            self.loginBottomConstraint.priority = 250 //So that the other bottom constraint (with fixed height) will take over
+        }
+
         
         UIView.animateWithDuration(animationDuration, delay: 0.0, options: .BeginFromCurrentState | animationCurve, animations: {
             self.view.layoutIfNeeded()

@@ -24,8 +24,6 @@ class NewUOmeFooterView: UIView {
     
     
     override func drawRect(rect: CGRect) {
-        
-        
         //To make sure we are not adding one layer of text onto another
         for view in self.subviews {
             view.removeFromSuperview()
@@ -37,7 +35,7 @@ class NewUOmeFooterView: UIView {
         footerLabel.font = UIFont.boldSystemFontOfSize(11)
         footerLabel.textAlignment = NSTextAlignment.Center
         
-        footerLabel.text = "Saved UOmes will be listed here to be all sent at once"
+        footerLabel.text = "Saved UOmes will be listed here to be all sent at once."
         self.addSubview(footerLabel)
     }
 

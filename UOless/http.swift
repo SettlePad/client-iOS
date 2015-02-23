@@ -24,6 +24,7 @@ class APIController {
 				user = User(credentials: data as Dictionary, api: self)
 				if user != nil {
 					loginCompleted(succeeded: true, msg: user!.name)
+					contacts.updateContacts()
 				} else {
 					loginCompleted(succeeded: false, msg: "Cannot initialize user class")
 				}

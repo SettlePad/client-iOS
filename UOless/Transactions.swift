@@ -17,11 +17,10 @@ class Transactions {
     var lastUpdate = 0
     var end_reached = false
     
-    var lastRequest = NSDate() //Only newer requests for getInternal will be succesfully completed
-    var lastRead: NSDate
+    var lastRequest = NSDate(timeIntervalSinceNow: -24*60*60) //Only newer requests for getInternal will be succesfully completed. By default somewhere in the past (now one day)
     
     init() {
-        self.lastRead = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate()))! //TODO: replace by CoreData
+
     }
     
     func clear() {
@@ -138,7 +137,7 @@ class Transactions {
     
     private func getInternal(url: String, requestCompleted : (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> ()) {
         var requestDate = NSDate()
-        
+        println("Transaction request: "+url)
         api.request(url, method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             //println(data)
             if (requestDate.compare(self.lastRequest) != NSComparisonResult.OrderedAscending) { //requestDate is later than or equal to lastRequest

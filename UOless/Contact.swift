@@ -53,9 +53,15 @@ class Contact {
                 self.favorite = false
         }
         
-        if let parsed = fromDict["favorite"] as? Array <Dictionary <String, AnyObject> > {
+        if let parsed = fromDict["identifiers"] as? Array <Dictionary <String, AnyObject> > {
             for identifierObj in parsed {
-                println(identifierObj)
+                if let identifier = identifierObj["identifier"] as? String {
+                    if let active = identifierObj["active"] as? Int {
+                        if active == 1 {
+                            self.identifiers.append(identifier)
+                        }
+                    }
+                }
             }
         }
         

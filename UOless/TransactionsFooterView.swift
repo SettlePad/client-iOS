@@ -28,8 +28,6 @@ class TransactionsFooterView: UIView {
     
     
     override func drawRect(rect: CGRect) {
-
-
         //To make sure we are not adding one layer of text onto another
         for view in self.subviews {
             view.removeFromSuperview()
