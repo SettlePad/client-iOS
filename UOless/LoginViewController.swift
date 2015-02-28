@@ -12,7 +12,7 @@ var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"pli
 var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
 
 var api = APIController()
-var user: User? //If nil, not logged in
+var user = User(api: api)? //If nil, not logged in
 var transactions=Transactions()
 var contacts = Contacts()
 
@@ -33,9 +33,8 @@ class LoginViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
 
         if user != nil {
+            contacts.updateContacts()
             enter_app()
-        } else {
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillChangeFrameNotification:", name: UIKeyboardWillChangeFrameNotification, object: nil)
         }
     }
 
@@ -68,6 +67,17 @@ class LoginViewController: UIViewController {
             }
         }
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillChangeFrameNotification:", name: UIKeyboardWillChangeFrameNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillChangeFrameNotification, object: nil)
+    }
+    
     
     func keyboardWillChangeFrameNotification(notification: NSNotification) {
         let userInfo = notification.userInfo!
@@ -106,8 +116,8 @@ class LoginViewController: UIViewController {
     }
     
     func textFieldShouldReturn(textField: UITextField!) -> Bool {
-        //textField.resignFirstResponder()
-        //self.view.endEditing(true);
+        //textfields that should trigger this need to have their delegate set to the viewcontroller
+        
         if (textField!.restorationIdentifier == "email") {
             //email, goto password
             txtLoginPass.becomeFirstResponder()

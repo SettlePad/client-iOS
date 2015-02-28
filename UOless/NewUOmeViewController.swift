@@ -8,9 +8,11 @@
 
 import UIKit
 
-class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource  {
+class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate  {
+    //TODO: on keyboard show, tableview should resize!s
+    
     var footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
-    var addressBookFooter = NewUOmeAddressBook(frame: CGRectMake(0, 0, 320, 44))
+    var addressBookFooter = NewUOmeAddressBook(frame: CGRectZero) //TODO: height should be adapted to content, otherwise scrolling will fail to show bottom of footer
 
     @IBOutlet var newUOmeTableView: UITableView!
     
@@ -26,6 +28,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     @IBOutlet var formAmount: UITextField!
     @IBOutlet var formSaveButton: UIButton!
     
+    @IBOutlet var tableBottomConstraint: NSLayoutConstraint!
+    
     var transactions = [Transaction]()
 
     enum State {
@@ -38,28 +42,14 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     var state: State = .Overview
     
     @IBAction func saveUOme(sender: AnyObject) {
-        if validateForm(false) {
-            var amount: Double
-            if (formType.selectedSegmentIndex == 0) {
-                amount = formAmount.text.toDouble()!
-            } else {
-                amount = -1*formAmount.text.toDouble()!
-            }
-            
-            var transaction = Transaction(
-                counterpart_name: formTo.text,
-                description: formDescription.text,
-                currency: formCurrency.titleLabel!.text!,
-                amount: amount
-            )
-            transactions.append(transaction)
-        
-            //Clean out the form, set focus on recipient
-            newUOmeTableView.reloadData()
-            footer.setNeedsDisplay()
-            newUOmeTableView.tableFooterView = footer
-            formTo.text = ""
-            formTo.becomeFirstResponder()
+        saveUOme()
+    }
+    
+    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
+        if state == .NewUOme {
+            return false
+        } else {
+            return true
         }
     }
     
@@ -111,6 +101,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             footer.setNeedsDisplay()
             newUOmeTableView.tableFooterView = footer
+            
+            newUOmeTableView.allowsSelection = false
         } else {
             formDescription.hidden = true
             formType.hidden = true
@@ -122,6 +114,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             addressBookFooter.setNeedsDisplay()
             newUOmeTableView.tableFooterView = addressBookFooter
+            
+            newUOmeTableView.allowsSelection = true
         }
         
         newUOmeTableView.reloadData()
@@ -140,12 +134,10 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        //newUOmeTableView.tableFooterView = UIView(frame:CGRectZero)
-        //self.footer.setNeedsDisplay()
         footer.setNeedsDisplay()
         newUOmeTableView.tableFooterView = footer
-        formTo.becomeFirstResponder()
     }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -256,7 +248,11 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         //Editable or not
-        return true
+        if (self.state == .Overview) {
+            return true
+        } else {
+            return false
+        }
     }
     
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -270,6 +266,106 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         })
         deleteAction.backgroundColor = Colors.danger.textToUIColor()
         return [deleteAction]
+    }
+
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        
+        if (self.state == .NewUOme) {
+            //Set value as "to"
+            let contactIdentifier = contactIdentifiers[indexPath.row]
+            formTo.text = contactIdentifier["identifier"]
+            switchState(.Overview)
+            //goto amount
+            if formDescription.text == "" {
+                formDescription.becomeFirstResponder()
+            } else {
+                formAmount.becomeFirstResponder()
+            }
+        }
+    }
+    
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillChangeFrameNotification:", name: UIKeyboardWillChangeFrameNotification, object: nil) //This will be removed at viewWillDisappear
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        formTo.becomeFirstResponder() //If done earlier (eg. at viewWillAppear), the layouting is not done yet and keyboard will pop up before that. As that triggers an animated re-layouting, width-changes can also be seen animated. Can also do a self.view.layoutIfNeeded() before this line
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillChangeFrameNotification, object: nil)
+    }
+    
+    func keyboardWillChangeFrameNotification(notification: NSNotification) {
+        let userInfo = notification.userInfo!
+        
+        let animationDuration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as NSNumber).doubleValue
+        let keyboardEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as NSValue).CGRectValue()
+        let convertedKeyboardEndFrame = view.convertRect(keyboardEndFrame, fromView: view.window)
+        let rawAnimationCurve = (notification.userInfo![UIKeyboardAnimationCurveUserInfoKey] as NSNumber).unsignedIntValue << 16
+        let animationCurve = UIViewAnimationOptions(rawValue: UInt(rawAnimationCurve << 16))
+        
+        /*
+        if (CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame) > 0) {
+            //will show
+        } else {
+            //will hide
+        }
+        */
+        
+        tableBottomConstraint.constant = CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame)
+        
+        
+        UIView.animateWithDuration(animationDuration, delay: 0.0, options: .BeginFromCurrentState | animationCurve, animations: {
+            self.view.layoutIfNeeded()
+            }, completion: nil
+        )
+    }
+    
+    func textFieldShouldReturn(textField: UITextField!) -> Bool {
+        //textfields that should trigger this need to have their delegate set to the viewcontroller
+        
+        if (textField!.restorationIdentifier == "to") {
+            //goto description
+            formDescription.becomeFirstResponder()
+        } else if (textField!.restorationIdentifier == "description") {
+            //goto amount
+            formAmount.becomeFirstResponder()
+        } else if (textField!.restorationIdentifier == "amount") {
+            saveUOme()
+        }
+        return true;
+    }
+    
+    func saveUOme() {
+        if validateForm(false) {
+            var amount: Double
+            if (formType.selectedSegmentIndex == 0) {
+                amount = formAmount.text.toDouble()!
+            } else {
+                amount = -1*formAmount.text.toDouble()!
+            }
+            
+            var transaction = Transaction(
+                counterpart_name: formTo.text,
+                description: formDescription.text,
+                currency: formCurrency.titleLabel!.text!,
+                amount: amount
+            )
+            transactions.append(transaction)
+            
+            //Clean out the form, set focus on recipient
+            newUOmeTableView.reloadData()
+            footer.setNeedsDisplay()
+            newUOmeTableView.tableFooterView = footer
+            formTo.text = ""
+            formTo.becomeFirstResponder()
+        }
     }
     
     func deleteTransaction(index:Int){
@@ -289,5 +385,6 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
                 }
             }
         }
+        //println(contactIdentifiers.count)
     }
 }

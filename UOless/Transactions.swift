@@ -60,8 +60,10 @@ class Transactions {
     
     func getMore(requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
         var url = "transactions/older/\(oldestID)/"+String(nr_of_results)+"/"+search
-        if (self.end_reached) {
+        if self.end_reached {
             requestCompleted(succeeded: false,transactions: self.transactions,error_msg: "End reached")
+        } else if  transactions.count  == 0 {
+            requestCompleted(succeeded: false,transactions: self.transactions,error_msg: "No transactions yet")
         } else {
             getInternal(url){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
                 if (succeeded) {
@@ -137,7 +139,7 @@ class Transactions {
     
     private func getInternal(url: String, requestCompleted : (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> ()) {
         var requestDate = NSDate()
-        println("Transaction request: "+url)
+        //println("Transaction request: "+url)
         api.request(url, method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             //println(data)
             if (requestDate.compare(self.lastRequest) != NSComparisonResult.OrderedAscending) { //requestDate is later than or equal to lastRequest

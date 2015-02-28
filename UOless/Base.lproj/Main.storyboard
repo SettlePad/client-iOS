@@ -480,29 +480,32 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="To" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="2y8-Eh-pbS">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="to" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="To" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="2y8-Eh-pbS">
                                 <rect key="frame" x="16" y="54" width="568" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next"/>
                                 <connections>
                                     <action selector="formToEditingChanged:" destination="UDK-at-4c7" eventType="editingChanged" id="uML-ib-xUb"/>
                                     <action selector="formToEditingDidEnd:" destination="UDK-at-4c7" eventType="editingDidEnd" id="TTM-z3-qRn"/>
+                                    <outlet property="delegate" destination="UDK-at-4c7" id="wXz-0S-Jl8"/>
                                 </connections>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Description" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iyD-3p-mQo">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="description" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Description" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="iyD-3p-mQo">
                                 <rect key="frame" x="16" y="94" width="568" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="next"/>
                                 <connections>
                                     <action selector="formDescriptionEditingChanged:" destination="UDK-at-4c7" eventType="editingChanged" id="Nsh-KG-vdz"/>
+                                    <outlet property="delegate" destination="UDK-at-4c7" id="xPq-gg-Hxt"/>
                                 </connections>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Amount" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="W0y-mz-q1u">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="amount" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Amount" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="W0y-mz-q1u">
                                 <rect key="frame" x="174" y="134" width="410" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="go"/>
                                 <connections>
                                     <action selector="formAmountEditingChanged:" destination="UDK-at-4c7" eventType="editingChanged" id="VZv-07-4Qn"/>
+                                    <outlet property="delegate" destination="UDK-at-4c7" id="g1f-0u-K09"/>
                                 </connections>
                             </textField>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="b04-kM-7rE">
@@ -636,7 +639,7 @@
                             <constraint firstItem="iyD-3p-mQo" firstAttribute="top" secondItem="2y8-Eh-pbS" secondAttribute="bottom" constant="10" id="1nb-xI-7W6"/>
                             <constraint firstItem="Z6x-Ue-bVd" firstAttribute="top" secondItem="W0y-mz-q1u" secondAttribute="bottom" constant="10" id="2T8-eY-Sml"/>
                             <constraint firstItem="iyD-3p-mQo" firstAttribute="leading" secondItem="wxP-Ve-X39" secondAttribute="leadingMargin" id="3xU-J5-qFv"/>
-                            <constraint firstItem="HSi-vU-gfF" firstAttribute="top" secondItem="2y8-Eh-pbS" secondAttribute="bottom" priority="750" constant="20" id="82b-aB-Wwl"/>
+                            <constraint firstItem="HSi-vU-gfF" firstAttribute="top" secondItem="2y8-Eh-pbS" secondAttribute="bottom" priority="750" constant="10" id="82b-aB-Wwl"/>
                             <constraint firstAttribute="centerX" secondItem="Z6x-Ue-bVd" secondAttribute="centerX" id="BEU-Jr-YSj"/>
                             <constraint firstItem="HSi-vU-gfF" firstAttribute="top" secondItem="Z6x-Ue-bVd" secondAttribute="bottom" constant="20" id="D3w-h8-gvD"/>
                             <constraint firstItem="GUm-ic-dZZ" firstAttribute="top" secondItem="iyD-3p-mQo" secondAttribute="bottom" constant="10" id="GNn-PT-CBt"/>
@@ -674,6 +677,7 @@
                         <outlet property="formTo" destination="2y8-Eh-pbS" id="kq2-kT-MME"/>
                         <outlet property="formType" destination="b04-kM-7rE" id="izj-aM-qqd"/>
                         <outlet property="newUOmeTableView" destination="HSi-vU-gfF" id="jUs-H9-Qs3"/>
+                        <outlet property="tableBottomConstraint" destination="IEa-na-rZu" id="sqF-U9-EQc"/>
                         <outlet property="tableSaveContraint" destination="D3w-h8-gvD" id="O7t-wq-l4t"/>
                     </connections>
                 </viewController>
@@ -681,6 +685,7 @@
                 <tapGestureRecognizer id="ojV-Cn-V7h">
                     <connections>
                         <action selector="viewTapped:" destination="UDK-at-4c7" id="OYe-0g-cV5"/>
+                        <outlet property="delegate" destination="UDK-at-4c7" id="IhQ-f7-Mzg"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

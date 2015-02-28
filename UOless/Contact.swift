@@ -65,6 +65,6 @@ class Contact {
             }
         }
         
-        println(self.name+" added")
+        //println(self.name+" added")
     }
 }
