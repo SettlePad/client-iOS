@@ -41,6 +41,7 @@
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="EYf-bf-BSm" secondAttribute="trailing" constant="20" id="sQj-Eo-wtt"/>
             </constraints>
             <connections>
+                <outlet property="buttonToDetailConstraint" destination="CxK-vl-EAl" id="Hle-Lk-bdl"/>
                 <outlet property="detailLabel" destination="qkw-nF-R90" id="mo7-DF-qWM"/>
                 <outlet property="requestAdressBookAccessButton" destination="EYf-bf-BSm" id="ZSw-M3-OYb"/>
             </connections>

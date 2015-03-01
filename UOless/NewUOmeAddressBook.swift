@@ -11,7 +11,10 @@
 import UIKit
 
 class NewUOmeAddressBook: UIView {
-
+    typealias footerUpdatedDelegate = (NewUOmeAddressBook,CGFloat?) -> ()
+    var footerUpdated: footerUpdatedDelegate?
+    
+    @IBOutlet var buttonToDetailConstraint: NSLayoutConstraint!
     @IBOutlet var requestAdressBookAccessButton: UIButton!
     
     @IBOutlet var detailLabel: UILabel!
@@ -38,21 +41,47 @@ class NewUOmeAddressBook: UIView {
         //Determine address book status
         switch contacts.localStatus{
             case .Authorized:
-                requestAdressBookAccessButton.hidden = true
-                detailLabel.hidden = true
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.requestAdressBookAccessButton.hidden = true
+                    self.buttonToDetailConstraint.active = false
+                    self.detailLabel.hidden = true
+                })
             case .Denied:
-                requestAdressBookAccessButton.hidden = true
-                detailLabel.hidden = false
-                detailLabel.text = "You denied UOless access to your local address book, which is why we can only show contacts you've already exchanged UOmes with. You can allow access to your address book in the iOS settings (Privacy, Contacts)."
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.requestAdressBookAccessButton.hidden = true
+                    self.buttonToDetailConstraint.active = false
+                    self.detailLabel.hidden = false
+                    self.detailLabel.text = "You denied UOless access to your local address book, which is why we can only show contacts you've already exchanged UOmes with. You can allow access to your address book in the iOS settings (Privacy, Contacts)."
+                })
             case .NotDetermined:
-                requestAdressBookAccessButton.hidden = false
-                detailLabel.hidden = false
-                detailLabel.text = "UOless will not upload any personal data from your contacts to its servers. The technical details: a salted hash of the email addresses and phone numbers of your contacts will at some point in the future created and stored at the servers, to be able to tell you who of your contacts is using our service."
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.requestAdressBookAccessButton.hidden = false
+                    self.buttonToDetailConstraint.active = true
+                    self.detailLabel.hidden = false
+                    self.detailLabel.text = "UOless will not upload any personal data from your contacts to its servers. The technical details: a salted hash of the email addresses and phone numbers of your contacts will at some point in the future created and stored at the servers, to be able to tell you who of your contacts is using our service."
+                })
             case .Restricted:
-                requestAdressBookAccessButton.hidden = true
-                detailLabel.hidden = false
-                detailLabel.text = "UOless cannot access your contacts, possibly due to restrictions such as parental controls."
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.requestAdressBookAccessButton.hidden = true
+                    self.buttonToDetailConstraint.active = false
+                    self.detailLabel.hidden = false
+                    self.detailLabel.text = "UOless cannot access your contacts, possibly due to restrictions such as parental controls."
+                })
+        }
+
+        if (contacts.localStatus == .Authorized) {
+            footerUpdated?(self, 0) //no height for footer
+        } else {
+            footerUpdated?(self, nil)
         }
     }
+    
+    /*
+    // Only override drawRect: if you perform custom drawing.
+    // An empty implementation adversely affects performance during animation.
+    override func drawRect(rect: CGRect) {
+    // Drawing code
+    }
+    */
 
 }

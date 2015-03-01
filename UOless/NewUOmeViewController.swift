@@ -65,9 +65,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         
         //If not-empty, show suggestions
         if formTo.text != "" {
-            switchState(.NewUOme)
             getMatchedContactIdentifiers(formTo.text)
-            self.newUOmeTableView.reloadData()
+            switchState(.NewUOme)
         } else {
             switchState(.Overview)
         }
@@ -112,22 +111,28 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             formSaveButton.hidden = true
             
             tableSaveContraint.active = false
-            relayoutAddressBookFooter()
+            relayoutAddressBookFooter(nil)
             newUOmeTableView.tableFooterView = addressBookFooter
             
             newUOmeTableView.allowsSelection = true
         }
         
-        newUOmeTableView.reloadData()
+        dispatch_async(dispatch_get_main_queue(), {
+            self.newUOmeTableView.reloadData()
+        })
     }
     
-    func relayoutAddressBookFooter(){
 
+    
+    func relayoutAddressBookFooter(height: CGFloat?){
         addressBookFooter.frame.size.width = newUOmeTableView.frame.width
+         addressBookFooter.detailLabel.preferredMaxLayoutWidth = newUOmeTableView.frame.width - 40 //margin of 20 left and right
         
-        addressBookFooter.detailLabel.preferredMaxLayoutWidth = newUOmeTableView.frame.width - 40 //margin of 20 left and right
-        addressBookFooter.frame.size.height = addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
-        
+        if let setHeight = height {
+            addressBookFooter.frame.size.height = setHeight
+        } else {
+            addressBookFooter.frame.size.height = addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
+        }
         addressBookFooter.setNeedsDisplay()
     }
     
@@ -145,9 +150,14 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         // Do any additional setup after loading the view.
         newUOmeTableView.rowHeight = UITableViewAutomaticDimension
         
-        footer.setNeedsDisplay()
-        newUOmeTableView.tableFooterView = footer
-
+        switchState(.Overview)
+        
+        addressBookFooter.footerUpdated = {(sender, height) in
+            self.relayoutAddressBookFooter(height)
+            dispatch_async(dispatch_get_main_queue(), {
+                self.newUOmeTableView.reloadData()
+            })
+        }
     }
     
 
@@ -166,6 +176,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         */
         
         if formTo.text != "" {
+            //TODO: check that it is an email address
             formTo.backgroundColor = nil
             formTo.textColor = nil
         } else {
@@ -397,6 +408,5 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
                 }
             }
         }
-        //println(contactIdentifiers.count)
     }
 }

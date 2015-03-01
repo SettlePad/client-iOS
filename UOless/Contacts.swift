@@ -58,7 +58,10 @@ class Contacts {
             if let adressBook: ABAddressBookRef = createAddressBook() {
                 ABAddressBookRequestAccessWithCompletion(adressBook,
                     {(granted: Bool, error: CFError!) in
-                        requestCompleted(succeeded: granted);
+                        if granted {
+                         //TODO: process contents   
+                        }
+                        requestCompleted(succeeded: granted)
                 })
             }
         }
