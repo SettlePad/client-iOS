@@ -73,6 +73,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     }
 
     @IBAction func formToEditingDidEnd(sender: AnyObject) {
+        validateForm(true)
+
         //Hide suggestions
         if formTo.text != "" {
             switchState(.Overview)
@@ -177,8 +179,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             formTo.layer.borderColor = Colors.danger.textToUIColor().CGColor
         */
         
-        if formTo.text != "" {
-            //TODO: check that it is an email address
+        if formTo.text.isEmail() {
             formTo.backgroundColor = nil
             formTo.textColor = nil
         } else {
@@ -410,5 +411,6 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
                 }
             }
         }
+        contactIdentifiers.sort({$0["name"] < $1["name"] }) //Sort by name ASC
     }
 }

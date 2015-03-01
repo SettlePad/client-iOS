@@ -32,6 +32,11 @@ extension String {
     func toDouble() -> Double? {
         return NSNumberFormatter().numberFromString(self)?.doubleValue
     }
+
+    func isEmail() -> Bool {
+        let regex = NSRegularExpression(pattern: "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", options: .CaseInsensitive, error: nil)
+        return regex?.firstMatchInString(self, options: nil, range: NSMakeRange(0, countElements(self))) != nil
+    }
 }
 
 //Define colors
