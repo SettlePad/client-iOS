@@ -12,7 +12,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     //TODO: on keyboard show, tableview should resize!s
     
     let footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
-    let addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as NewUOmeAddressBook
+    var addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as NewUOmeAddressBook
 
     
     @IBOutlet var newUOmeTableView: UITableView!
@@ -111,7 +111,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             formSaveButton.hidden = true
             
             tableSaveContraint.active = false
-            relayoutAddressBookFooter(nil)
+            layoutAddressBookFooter()
+            addressBookFooter.setNeedsDisplay()
             newUOmeTableView.tableFooterView = addressBookFooter
             
             newUOmeTableView.allowsSelection = true
@@ -124,16 +125,11 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     
 
     
-    func relayoutAddressBookFooter(height: CGFloat?){
+    func layoutAddressBookFooter() {
         addressBookFooter.frame.size.width = newUOmeTableView.frame.width
-         addressBookFooter.detailLabel.preferredMaxLayoutWidth = newUOmeTableView.frame.width - 40 //margin of 20 left and right
-        
-        if let setHeight = height {
-            addressBookFooter.frame.size.height = setHeight
-        } else {
-            addressBookFooter.frame.size.height = addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
-        }
-        addressBookFooter.setNeedsDisplay()
+        addressBookFooter.detailLabel.preferredMaxLayoutWidth = newUOmeTableView.frame.width - 40 //margin of 20 left and right
+
+        addressBookFooter.frame.size.height = addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
     }
     
     @IBAction func formDescriptionEditingChanged(sender: AnyObject) {
@@ -152,8 +148,14 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         
         switchState(.Overview)
         
-        addressBookFooter.footerUpdated = {(sender, height) in
-            self.relayoutAddressBookFooter(height)
+        addressBookFooter.footerUpdated = {(sender) in
+            self.addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as NewUOmeAddressBook
+            self.layoutAddressBookFooter()
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                self.newUOmeTableView.tableFooterView = self.addressBookFooter
+            })
+            
             dispatch_async(dispatch_get_main_queue(), {
                 self.newUOmeTableView.reloadData()
             })

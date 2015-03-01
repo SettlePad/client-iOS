@@ -11,20 +11,22 @@
 import UIKit
 
 class NewUOmeAddressBook: UIView {
-    typealias footerUpdatedDelegate = (NewUOmeAddressBook,CGFloat?) -> ()
+    typealias footerUpdatedDelegate = (NewUOmeAddressBook) -> ()
     var footerUpdated: footerUpdatedDelegate?
     
-    @IBOutlet var buttonToDetailConstraint: NSLayoutConstraint!
     @IBOutlet var requestAdressBookAccessButton: UIButton!
     
     @IBOutlet var detailLabel: UILabel!
     
     @IBAction func giveAccessButton(sender: AnyObject) {
-        contacts.requestLocalAccess { (succeeded) -> () in
-            self.updateFooter()
+        contacts.requestLocalAccess(){ succeeded in
+            self.footerUpdated?(self)
+            return //to overcome implicit return, see http://expertland.net/question/p8n2l8193m8218a9c2t50fl71940ebbxz1/detail.html
         }
     }
-        
+    
+ 
+    
     required init(coder aDecoder: NSCoder) {
         //fatalError("This class does not support NSCoding")
         super.init(coder: aDecoder)
@@ -32,47 +34,20 @@ class NewUOmeAddressBook: UIView {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        //setTranslatesAutoresizingMaskIntoConstraints(false)
 
-        updateFooter()
-    }
-    
-    func updateFooter() {
         //Determine address book status
         switch contacts.localStatus{
             case .Authorized:
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.requestAdressBookAccessButton.hidden = true
-                    self.buttonToDetailConstraint.active = false
-                    self.detailLabel.hidden = true
-                })
+                self.requestAdressBookAccessButton.removeFromSuperview()
+                self.detailLabel.removeFromSuperview()
             case .Denied:
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.requestAdressBookAccessButton.hidden = true
-                    self.buttonToDetailConstraint.active = false
-                    self.detailLabel.hidden = false
-                    self.detailLabel.text = "You denied UOless access to your local address book, which is why we can only show contacts you've already exchanged UOmes with. You can allow access to your address book in the iOS settings (Privacy, Contacts)."
-                })
+                self.requestAdressBookAccessButton.removeFromSuperview()
+                self.detailLabel.text = "You denied UOless access to your local address book, which is why we can only show contacts you've already exchanged UOmes with. You can allow access to your address book in the iOS settings (Privacy, Contacts)."
             case .NotDetermined:
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.requestAdressBookAccessButton.hidden = false
-                    self.buttonToDetailConstraint.active = true
-                    self.detailLabel.hidden = false
-                    self.detailLabel.text = "UOless will not upload any personal data from your contacts to its servers. The technical details: a salted hash of the email addresses and phone numbers of your contacts will at some point in the future created and stored at the servers, to be able to tell you who of your contacts is using our service."
-                })
+                self.detailLabel.text = "UOless will not upload any personal data from your contacts to its servers. The technical details: a salted hash of the email addresses and phone numbers of your contacts will at some point in the future created and stored at the servers, to be able to tell you who of your contacts is using our service."
             case .Restricted:
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.requestAdressBookAccessButton.hidden = true
-                    self.buttonToDetailConstraint.active = false
-                    self.detailLabel.hidden = false
-                    self.detailLabel.text = "UOless cannot access your contacts, possibly due to restrictions such as parental controls."
-                })
-        }
-
-        if (contacts.localStatus == .Authorized) {
-            footerUpdated?(self, 0) //no height for footer
-        } else {
-            footerUpdated?(self, nil)
+                self.requestAdressBookAccessButton.removeFromSuperview()
+                self.detailLabel.text = "UOless cannot access your contacts, possibly due to restrictions such as parental controls."
         }
     }
     
