@@ -21,23 +21,7 @@ class NewUOmeAddressBook: UIView {
             self.updateFooter()
         }
     }
-    
-    override init(frame: CGRect) {
-        // properties
-        super.init(frame: frame)
         
-        // Setup
-        let view = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as UIView
-        self.opaque = false
-        
-        view.frame = self.bounds
-
-        //view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
-        addSubview(view)
-        
-
-    }
-    
     required init(coder aDecoder: NSCoder) {
         //fatalError("This class does not support NSCoding")
         super.init(coder: aDecoder)
@@ -45,6 +29,8 @@ class NewUOmeAddressBook: UIView {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        //setTranslatesAutoresizingMaskIntoConstraints(false)
+
         updateFooter()
     }
     

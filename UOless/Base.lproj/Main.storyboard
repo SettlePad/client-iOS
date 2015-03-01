@@ -532,21 +532,15 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Museum ticket FOAM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XLc-tC-dL0">
-                                                    <rect key="frame" x="25" y="28" width="477" height="16"/>
+                                                    <rect key="frame" x="25" y="27.5" width="477" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="Anna" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0OL-NY-5mO">
-                                                    <rect key="frame" x="25" y="8" width="36" height="18"/>
+                                                    <rect key="frame" x="25" y="8" width="567" height="18"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                                     <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EUR -15.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ydl-ub-2qP">
-                                                    <rect key="frame" x="522" y="28" width="69.5" height="16"/>
-                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
-                                                    <color key="textColor" red="0.40784313729999999" green="0.40784313729999999" blue="0.40784313729999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ios_attention.png" translatesAutoresizingMaskIntoConstraints="NO" id="l7I-Bs-RVt">
@@ -557,15 +551,21 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="Swipe to accept" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="su0-w7-bAe">
-                                                    <rect key="frame" x="494" y="46" width="97.5" height="16"/>
+                                                    <rect key="frame" x="494" y="45.5" width="97.5" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="3 months ago" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n0v-bI-4QP">
-                                                    <rect key="frame" x="25" y="46" width="449" height="16"/>
+                                                    <rect key="frame" x="25" y="45.5" width="449" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EUR -15.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ydl-ub-2qP">
+                                                    <rect key="frame" x="522" y="27.5" width="69.5" height="16"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
+                                                    <color key="textColor" red="0.40784313729999999" green="0.40784313729999999" blue="0.40784313729999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -574,6 +574,7 @@
                                                 <constraint firstItem="Ydl-ub-2qP" firstAttribute="trailing" secondItem="bZs-O5-9Rr" secondAttribute="trailingMargin" id="57u-Uj-QTE"/>
                                                 <constraint firstItem="l7I-Bs-RVt" firstAttribute="leading" secondItem="bZs-O5-9Rr" secondAttribute="leading" id="5HB-ih-yLr"/>
                                                 <constraint firstItem="XLc-tC-dL0" firstAttribute="leading" secondItem="bZs-O5-9Rr" secondAttribute="leading" constant="25" id="HDc-gG-6Dx"/>
+                                                <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="n0v-bI-4QP" secondAttribute="bottom" id="Lb8-ZE-eYT"/>
                                                 <constraint firstItem="Ydl-ub-2qP" firstAttribute="top" secondItem="0OL-NY-5mO" secondAttribute="bottom" constant="2" id="OPU-4B-pl7"/>
                                                 <constraint firstItem="0OL-NY-5mO" firstAttribute="leading" secondItem="bZs-O5-9Rr" secondAttribute="leading" constant="25" id="PS1-ex-Al1"/>
                                                 <constraint firstItem="n0v-bI-4QP" firstAttribute="leading" secondItem="bZs-O5-9Rr" secondAttribute="leadingMargin" constant="17" id="PTN-DU-kDa"/>
@@ -584,6 +585,7 @@
                                                 <constraint firstItem="n0v-bI-4QP" firstAttribute="top" secondItem="XLc-tC-dL0" secondAttribute="bottom" constant="2" id="kYZ-Qs-JeX"/>
                                                 <constraint firstItem="Ydl-ub-2qP" firstAttribute="leading" secondItem="XLc-tC-dL0" secondAttribute="trailing" constant="20" id="o11-5f-3fN"/>
                                                 <constraint firstItem="0OL-NY-5mO" firstAttribute="top" secondItem="bZs-O5-9Rr" secondAttribute="topMargin" id="srd-38-J4X"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="0OL-NY-5mO" secondAttribute="trailing" id="tsz-u5-4Gl"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <gestureRecognizers/>

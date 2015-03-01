@@ -11,9 +11,10 @@ import UIKit
 class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate  {
     //TODO: on keyboard show, tableview should resize!s
     
-    var footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
-    var addressBookFooter = NewUOmeAddressBook(frame: CGRectZero) //TODO: height should be adapted to content, otherwise scrolling will fail to show bottom of footer
+    let footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
+    let addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as NewUOmeAddressBook
 
+    
     @IBOutlet var newUOmeTableView: UITableView!
     
     @IBAction func closeView(sender: AnyObject) {
@@ -111,8 +112,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             formSaveButton.hidden = true
             
             tableSaveContraint.active = false
-            
-            addressBookFooter.setNeedsDisplay()
+            relayoutAddressBookFooter()
             newUOmeTableView.tableFooterView = addressBookFooter
             
             newUOmeTableView.allowsSelection = true
@@ -121,6 +121,15 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         newUOmeTableView.reloadData()
     }
     
+    func relayoutAddressBookFooter(){
+
+        addressBookFooter.frame.size.width = newUOmeTableView.frame.width
+        
+        addressBookFooter.detailLabel.preferredMaxLayoutWidth = newUOmeTableView.frame.width - 40 //margin of 20 left and right
+        addressBookFooter.frame.size.height = addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
+        
+        addressBookFooter.setNeedsDisplay()
+    }
     
     @IBAction func formDescriptionEditingChanged(sender: AnyObject) {
         validateForm(true)
@@ -134,8 +143,11 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        newUOmeTableView.rowHeight = UITableViewAutomaticDimension
+        
         footer.setNeedsDisplay()
         newUOmeTableView.tableFooterView = footer
+
     }
     
 

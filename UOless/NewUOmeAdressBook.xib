@@ -6,7 +6,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" verticalHuggingPriority="1000" id="iN0-l3-epB" customClass="NewUOmeAddressBook" customModule="UOless" customModuleProvider="target">
+        <view contentMode="scaleToFill" verticalCompressionResistancePriority="1000" id="iN0-l3-epB" customClass="NewUOmeAddressBook" customModule="UOless" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -20,8 +20,8 @@
                         <action selector="giveAccessButton:" destination="iN0-l3-epB" eventType="touchUpInside" id="IA7-mU-Hqj"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Details label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qkw-nF-R90">
-                    <rect key="frame" x="268" y="63" width="63" height="13.5"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="1000" text="Details label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="qkw-nF-R90">
+                    <rect key="frame" x="20" y="63" width="560" height="13.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="11"/>
                     <color key="textColor" red="0.46666666666666667" green="0.46666666666666667" blue="0.46666666666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
@@ -33,17 +33,18 @@
                 <constraint firstAttribute="centerX" secondItem="EYf-bf-BSm" secondAttribute="centerX" id="Htj-Bz-JiE"/>
                 <constraint firstAttribute="centerX" secondItem="qkw-nF-R90" secondAttribute="centerX" id="JpY-XC-VPf"/>
                 <constraint firstItem="EYf-bf-BSm" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="25.5" id="hnV-8e-aTZ"/>
-                <constraint firstAttribute="right" relation="greaterThanOrEqual" secondItem="qkw-nF-R90" secondAttribute="right" priority="800" constant="20" id="ipx-E0-DBs"/>
-                <constraint firstItem="qkw-nF-R90" firstAttribute="left" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="left" priority="800" constant="20" id="j35-tI-xES"/>
+                <constraint firstAttribute="right" secondItem="qkw-nF-R90" secondAttribute="right" constant="20" id="ipx-E0-DBs"/>
+                <constraint firstItem="qkw-nF-R90" firstAttribute="left" secondItem="iN0-l3-epB" secondAttribute="left" constant="20" id="j35-tI-xES"/>
                 <constraint firstItem="EYf-bf-BSm" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="k8I-Gu-lIP"/>
-                <constraint firstItem="qkw-nF-R90" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" priority="750" constant="26" id="kUN-Gn-Lo5"/>
-                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="qkw-nF-R90" secondAttribute="bottom" priority="750" constant="26" id="m3D-7U-ugO"/>
+                <constraint firstItem="qkw-nF-R90" firstAttribute="top" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="top" constant="26" id="kUN-Gn-Lo5"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="qkw-nF-R90" secondAttribute="bottom" constant="26" id="m3D-7U-ugO"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="EYf-bf-BSm" secondAttribute="trailing" constant="20" id="sQj-Eo-wtt"/>
             </constraints>
             <connections>
                 <outlet property="detailLabel" destination="qkw-nF-R90" id="mo7-DF-qWM"/>
                 <outlet property="requestAdressBookAccessButton" destination="EYf-bf-BSm" id="ZSw-M3-OYb"/>
             </connections>
+            <point key="canvasLocation" x="369" y="319"/>
         </view>
     </objects>
 </document>
