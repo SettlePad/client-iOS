@@ -9,7 +9,6 @@
 import UIKit
 
 class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate  {
-    //TODO: on keyboard show, tableview should resize!s
     
     let footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
     var addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as NewUOmeAddressBook
@@ -61,7 +60,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     @IBOutlet var tableSaveContraint: NSLayoutConstraint! //table to Save button
     
     @IBAction func formToEditingChanged(sender: AnyObject) {
-        validateForm(true)
+        validateForm(true, finalCheck: false)
         
         //If not-empty, show suggestions
         if formTo.text != "" {
@@ -73,7 +72,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     }
 
     @IBAction func formToEditingDidEnd(sender: AnyObject) {
-        validateForm(true)
+        validateForm(false, finalCheck: false)
 
         //Hide suggestions
         if formTo.text != "" {
@@ -135,11 +134,11 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     }
     
     @IBAction func formDescriptionEditingChanged(sender: AnyObject) {
-        validateForm(true)
+        validateForm(true,finalCheck: false)
     }
     
     @IBAction func formAmountEditingChanged(sender: AnyObject) {
-        validateForm(true)
+        validateForm(true, finalCheck: false)
     }
 
     override func viewDidLoad() {
@@ -170,7 +169,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         // Dispose of any resources that can be recreated.
     }
     
-    func validateForm (whileEditing: Bool) -> Bool {
+    func validateForm (whileEditing: Bool, finalCheck: Bool) -> Bool {
         var isValid = true
         var hasGivenFirstResponder = false
         
@@ -184,10 +183,10 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             formTo.textColor = nil
         } else {
             isValid = false
-            if (!whileEditing) {
+            if finalCheck || (formTo.text != "" && !whileEditing) {
                 formTo.backgroundColor = Colors.danger.backgroundToUIColor()
                 formTo.textColor = Colors.danger.textToUIColor()
-                if (!hasGivenFirstResponder) {
+                if (!hasGivenFirstResponder && finalCheck) {
                     formTo.becomeFirstResponder()
                     hasGivenFirstResponder = true
                 }
@@ -199,10 +198,10 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             formDescription.textColor = nil
         } else {
             isValid = false
-            if (!whileEditing) {
+            if finalCheck {
                 formDescription.backgroundColor = Colors.danger.backgroundToUIColor()
                 formDescription.textColor = Colors.danger.textToUIColor()
-                if (!hasGivenFirstResponder) {
+                if (!hasGivenFirstResponder && finalCheck) {
                     formDescription.becomeFirstResponder()
                     hasGivenFirstResponder = true
                 }
@@ -215,11 +214,11 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             formAmount.textColor = nil
         } else {
             isValid = false
-            if (!whileEditing) {
+            if finalCheck || (formDescription.text != "" && !whileEditing) {
                 formAmount.backgroundColor = Colors.danger.backgroundToUIColor()
                 formAmount.textColor = Colors.danger.textToUIColor()
-                if (!hasGivenFirstResponder) {
-                    formDescription.becomeFirstResponder()
+                if (!hasGivenFirstResponder && finalCheck) {
+                    formAmount.becomeFirstResponder()
                     hasGivenFirstResponder = true
                 }
             }
@@ -369,7 +368,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     }
     
     func saveUOme() {
-        if validateForm(false) {
+        if validateForm(false, finalCheck: true) {
             var amount: Double
             if (formType.selectedSegmentIndex == 0) {
                 amount = formAmount.text.toDouble()!
@@ -412,5 +411,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             }
         }
         contactIdentifiers.sort({$0["name"] < $1["name"] }) //Sort by name ASC
+        
+        //TODO: already create array in Contacts and sort it there as well
     }
 }

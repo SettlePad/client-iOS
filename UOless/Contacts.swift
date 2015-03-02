@@ -100,6 +100,7 @@ class Contacts {
     
     private func addContact(contact: Contact) {
         contacts.append(contact)
+        //If identifier already exists: add friendlyname from local address book, add id, favorite and name from UOless server
     }
     
 
