@@ -27,6 +27,10 @@ class Transactions {
         transactions = []
     }
     
+    func post(transactions: [Transaction], requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+        //TODO: fix post
+    }
+    
     func get(search: String, requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
         
         

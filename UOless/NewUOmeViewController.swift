@@ -17,9 +17,30 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     @IBOutlet var newUOmeTableView: UITableView!
     
     @IBAction func closeView(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        if state == .Overview {
+            self.dismissViewControllerAnimated(true, completion: nil)
+        } else {
+            formTo.text = ""
+            switchState(.Overview)
+        }
+
     }
     
+    @IBOutlet var sendButton: UIBarButtonItem!
+    @IBAction func sendUOmes(sender: AnyObject) {
+        //TODO: methods can now not handle the third option in the state variable
+        //TODO: if to != "", validate form first
+        
+        if newTransactions.count > 0 {
+            //Post
+            
+            //Goto transactions view, add transactions (animation) and show spinner on each
+            
+            transactions.post(newTransactions) { (succeeded: Bool, error_msg: String?) -> () in
+                //Hide spinner on pending transactions
+            }
+        }
+    }
     
     @IBOutlet var formTo: UITextField!
     @IBOutlet var formDescription: UITextField!
@@ -30,16 +51,19 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     
     @IBOutlet var tableBottomConstraint: NSLayoutConstraint!
     
-    var transactions = [Transaction]()
+    var newTransactions = [Transaction]()
 
     enum State {
-        case Overview
-        case NewUOme
+        case Overview //show all new transactions
+        case NewUOme //show suggestions for email address
     }
     
     var contactIdentifiers = [Dictionary<String,String>]() //Name, Identifier
     
     var state: State = .Overview
+    var actInd: UIActivityIndicatorView = UIActivityIndicatorView()
+
+    
     
     @IBAction func saveUOme(sender: AnyObject) {
         saveUOme()
@@ -92,6 +116,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         }
         
         if (self.state == .Overview) {
+            actInd.removeFromSuperview()
+
             formDescription.hidden = false
             formType.hidden = false
             formCurrency.hidden = false
@@ -100,11 +126,19 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             tableSaveContraint.active = true
             
+            sendButton.enabled = true
+            
             footer.setNeedsDisplay()
             newUOmeTableView.tableFooterView = footer
             
             newUOmeTableView.allowsSelection = false
-        } else {
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                self.newUOmeTableView.reloadData()
+            })
+        } else if (self.state == .NewUOme){
+            actInd.removeFromSuperview()
+
             formDescription.hidden = true
             formType.hidden = true
             formCurrency.hidden = true
@@ -112,16 +146,21 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             formSaveButton.hidden = true
             
             tableSaveContraint.active = false
+            
+            sendButton.enabled = false
+            
             layoutAddressBookFooter()
             addressBookFooter.setNeedsDisplay()
             newUOmeTableView.tableFooterView = addressBookFooter
             
             newUOmeTableView.allowsSelection = true
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                self.newUOmeTableView.reloadData()
+            })
+
         }
-        
-        dispatch_async(dispatch_get_main_queue(), {
-            self.newUOmeTableView.reloadData()
-        })
+  
     }
     
 
@@ -245,7 +284,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (self.state == .Overview) {
-            return transactions.count
+            return newTransactions.count
         } else {
             return contactIdentifiers.count
         }
@@ -257,7 +296,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             let cell = tableView.dequeueReusableCellWithIdentifier("TransactionCell", forIndexPath: indexPath) as TransactionsCell
             
             // Configure the cell...
-            cell.markup(transactions[indexPath.row])
+            cell.markup(newTransactions[indexPath.row])
             return cell
         } else {
             //show contacts
@@ -382,7 +421,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
                 currency: formCurrency.titleLabel!.text!,
                 amount: amount
             )
-            transactions.append(transaction)
+            newTransactions.append(transaction)
             
             //Clean out the form, set focus on recipient
             newUOmeTableView.reloadData()
@@ -394,7 +433,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     }
     
     func deleteTransaction(index:Int){
-        transactions.removeAtIndex(index)
+        newTransactions.removeAtIndex(index)
         newUOmeTableView.reloadData()
         footer.setNeedsDisplay()
         newUOmeTableView.tableFooterView = footer
@@ -406,7 +445,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         for contact in contacts.contacts {
             for identifier in contact.identifiers {
                 if (identifier.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contact.name.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
-                    contactIdentifiers.append(["name":contact.name,"identifier":identifier])
+                    contactIdentifiers.append(["name":contact.friendlyName,"identifier":identifier])
                 }
             }
         }

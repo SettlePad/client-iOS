@@ -42,7 +42,7 @@ class Contacts {
                 if let contacts = data["data"] as? NSMutableArray {
                     for contactObj in contacts {
                         if let contactDict = contactObj as? NSDictionary {
-                            self.addContact(Contact(fromDict: contactDict))
+                            self.addContact(Contact(fromDict: contactDict), merge: false)
                         } else {
                             println("Cannot parse contact as dictionary")
                         }
@@ -71,7 +71,7 @@ class Contacts {
                     }
                 }
                 
-                addContact(Contact(id: nil, name: ABRecordCopyCompositeName(person).takeRetainedValue(), friendlyName: ABRecordCopyCompositeName(person).takeRetainedValue(), favorite: false, identifiers: emails))
+                addContact(Contact(id: nil, name: ABRecordCopyCompositeName(person).takeRetainedValue(), friendlyName: ABRecordCopyCompositeName(person).takeRetainedValue(), favorite: false, identifiers: emails), merge: true)
             }
         }
     }
@@ -98,9 +98,32 @@ class Contacts {
         }
     }
     
-    private func addContact(contact: Contact) {
-        contacts.append(contact)
-        //If identifier already exists: add friendlyname from local address book, add id, favorite and name from UOless server
+    private func addContact(contact: Contact, merge: Bool) {
+        if merge {
+            //If merge, then check whether identifier already exists. If so: replace only friendlyname
+            for index in stride(from: contact.identifiers.count - 1, through: 0, by: -1) {
+                //Check whether identifier is present already
+                var found = false
+                for c in contacts {
+                    if let i = find(c.identifiers, contact.identifiers[index]) {
+                        //replace friendly name
+                        c.friendlyName = contact.friendlyName
+                        found = true
+                    }
+                }
+                if found {
+                    //remove identifier from contact
+                    println(index)
+                    contact.identifiers.removeAtIndex(index)
+                }
+            }
+            if contact.identifiers.count > 0 {
+                //If there's anything left..
+                contacts.append(contact)
+            }
+        } else {
+            contacts.append(contact)
+        }
     }
     
 

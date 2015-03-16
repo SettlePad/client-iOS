@@ -40,7 +40,7 @@ class Contact {
         if let parsed = fromDict["friendly_name"] as? String {
             self.friendlyName = parsed
         } else {
-            self.friendlyName = "Unknown"
+            self.friendlyName = self.name
         }
         
         if let parsed = fromDict["favorite"] as? Int {
