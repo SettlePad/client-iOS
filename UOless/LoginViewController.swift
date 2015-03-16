@@ -31,11 +31,6 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
-        if user != nil {
-            contacts.updateContacts()
-            enter_app()
-        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -76,6 +71,14 @@ class LoginViewController: UIViewController {
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillChangeFrameNotification, object: nil)
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        if user != nil {
+            contacts.updateContacts()
+            enter_app()
+        }
     }
     
     
@@ -130,7 +133,7 @@ class LoginViewController: UIViewController {
     }
     
     func enter_app() {
-        //TODO: sometimes gives notice: Unbalanced calls to begin/end appearance transitions for <UOless.LoginViewController: 0x7ffd9971c8d0>.
+
         dispatch_async(dispatch_get_main_queue()) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController") as UIViewController

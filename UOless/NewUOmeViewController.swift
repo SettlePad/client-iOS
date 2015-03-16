@@ -8,10 +8,17 @@
 
 import UIKit
 
+protocol NewUOmeModalDelegate {
+    func transactionsPosted(controller:NewUOmeViewController)
+    func transactionsPostCompleted(controller:NewUOmeViewController)
+}
+
 class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate  {
     
     let footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
     var addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as NewUOmeAddressBook
+    
+    var delegate:NewUOmeModalDelegate! = nil
 
     
     @IBOutlet var newUOmeTableView: UITableView!
@@ -27,18 +34,18 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     }
     
     @IBOutlet var sendButton: UIBarButtonItem!
+    
     @IBAction func sendUOmes(sender: AnyObject) {
-        //TODO: methods can now not handle the third option in the state variable
         //TODO: if to != "", validate form first
         
         if newTransactions.count > 0 {
             //Post
-            
-            //Goto transactions view, add transactions (animation) and show spinner on each
-            
             transactions.post(newTransactions) { (succeeded: Bool, error_msg: String?) -> () in
-                //Hide spinner on pending transactions
+                self.delegate.transactionsPostCompleted(self)
             }
+            
+            //Go to transactions
+            delegate.transactionsPosted(self)
         }
     }
     

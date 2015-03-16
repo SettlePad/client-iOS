@@ -17,6 +17,7 @@ class TransactionsCell: UITableViewCell {
     @IBOutlet var timeLabel: UILabel!
     @IBOutlet var statusImageView: UIImageView!
 
+    @IBOutlet var spinner: UIActivityIndicatorView!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -77,7 +78,7 @@ class TransactionsCell: UITableViewCell {
         
         //Status (text and image)
         var statusString = "Unknown"
-        if (transaction.status == .Processed) {
+        if transaction.status == .Processed {
             //processed
             if (transaction.reduced == false) {
                 //not reduced (yet)
@@ -89,7 +90,7 @@ class TransactionsCell: UITableViewCell {
             //cell.statusImageView.image = UIImage(named: "ios_new")
             statusImageView.image = nil
             statusLabel.text = statusString
-        } else if (transaction.status == .AwaitingValidation) { // recipient should accept first
+        } else if transaction.status == .AwaitingValidation { // recipient should accept first
             if (transaction.is_sender == true) { // 0 = recipient
                 statusString = "Pending approval"
             } else {
@@ -100,10 +101,16 @@ class TransactionsCell: UITableViewCell {
             
             statusLabel.text = statusString
             
-        } else if (transaction.status == .Draft) {
+        } else if transaction.status == .Draft {
             statusLabel.textColor = Colors.primary.textToUIColor()
             statusImageView.image = nil
             statusLabel.text = "Swipe to delete"
+        } else if transaction.status == .Posted {
+            statusLabel.hidden = true
+            statusImageView.image = nil
+            spinner.hidden = false
+            spinner.startAnimating()
+            amountLabel.hidden = true
         } else { // cancelled/ rejected
             //transaction canceled
             statusImageView.image = nil

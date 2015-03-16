@@ -15,9 +15,30 @@
 
 import UIKit
 
-class TransactionsViewController: UITableViewController {
+class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
+
+    
     @IBAction func unwindToTransactions(segue: UIStoryboardSegue) {
     
+    }
+    
+    @IBAction func newUOmeAction(sender: AnyObject) {
+        dispatch_async(dispatch_get_main_queue()) {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let newUOmeVC = storyboard.instantiateViewControllerWithIdentifier("NewUOmeViewController") as NewUOmeViewController
+            newUOmeVC.delegate = self
+            self.presentViewController(newUOmeVC, animated: true, completion: nil)
+        }
+    }
+    
+    func transactionsPosted(controller:NewUOmeViewController) {
+        controller.dismissViewControllerAnimated(true, completion: nil)
+        self.reload_transactions()
+    }
+    
+    func transactionsPostCompleted(controller:NewUOmeViewController) {
+        self.refreshTransactions()
+        //TODO: instead of reloading, we could interpret the results of the server as well?
     }
     
     @IBOutlet var transactionsTableView: UITableView!

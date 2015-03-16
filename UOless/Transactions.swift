@@ -27,7 +27,14 @@ class Transactions {
         transactions = []
     }
     
-    func post(transactions: [Transaction], requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+    func post(newTransactions: [Transaction], requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+        //Add to list with Posted status
+        for newTransaction in newTransactions {
+            newTransaction.status = .Posted
+        }
+        transactions.splice(newTransactions, atIndex: 0)
+        
+        //Do post. When returned succesfully, replace status with what comes back
         //TODO: fix post
     }
     

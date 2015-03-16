@@ -49,6 +49,7 @@ class Transaction {
     
     enum transactionStatus {
         case Draft
+        case Posted
         case Processed
         case AwaitingValidation
         case CanceledOrRejected
