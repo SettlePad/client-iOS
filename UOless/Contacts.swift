@@ -113,7 +113,6 @@ class Contacts {
                 }
                 if found {
                     //remove identifier from contact
-                    println(index)
                     contact.identifiers.removeAtIndex(index)
                 }
             }

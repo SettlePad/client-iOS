@@ -79,6 +79,10 @@ class TransactionsCell: UITableViewCell {
         //Status (text and image)
         var statusString = "Unknown"
         if transaction.status == .Processed {
+            statusLabel.hidden = false
+            spinner.hidden = true
+            amountLabel.hidden = false
+            
             //processed
             if (transaction.reduced == false) {
                 //not reduced (yet)
@@ -91,6 +95,10 @@ class TransactionsCell: UITableViewCell {
             statusImageView.image = nil
             statusLabel.text = statusString
         } else if transaction.status == .AwaitingValidation { // recipient should accept first
+            statusLabel.hidden = false
+            spinner.hidden = true
+            amountLabel.hidden = false
+            
             if (transaction.is_sender == true) { // 0 = recipient
                 statusString = "Pending approval"
             } else {
@@ -102,16 +110,25 @@ class TransactionsCell: UITableViewCell {
             statusLabel.text = statusString
             
         } else if transaction.status == .Draft {
+            statusLabel.hidden = false
+            spinner.hidden = true
+            amountLabel.hidden = false
+            
             statusLabel.textColor = Colors.primary.textToUIColor()
             statusImageView.image = nil
             statusLabel.text = "Swipe to delete"
         } else if transaction.status == .Posted {
             statusLabel.hidden = true
-            statusImageView.image = nil
             spinner.hidden = false
-            spinner.startAnimating()
             amountLabel.hidden = true
+            
+            spinner.startAnimating()
+            statusImageView.image = nil
         } else { // cancelled/ rejected
+            statusLabel.hidden = false
+            spinner.hidden = true
+            amountLabel.hidden = false
+            
             //transaction canceled
             statusImageView.image = nil
             if (transaction.is_sender == false) {

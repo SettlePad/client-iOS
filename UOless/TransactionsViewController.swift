@@ -13,6 +13,8 @@
     http://www.raywenderlich.com/73602/dynamic-table-view-cell-height-auto-layout
 */
 
+//TODO: search button makes transaction list incl. posted transactions gibberish
+
 import UIKit
 
 class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
@@ -350,6 +352,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     }
     
     private func api_error(msg: String) {
+        //TODO: make this a delegate function
         println("Error: "+msg)
         
         //Goto login screen
