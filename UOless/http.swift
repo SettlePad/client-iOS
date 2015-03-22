@@ -60,7 +60,7 @@ class APIController {
 		//TODO: clear out transacitons, contacts etc.
 	}
 	
-	func request(url : String, method: String, formdata : NSDictionary?, secure: Bool, requestCompleted : (succeeded: Bool, data: NSDictionary) -> ()) -> NSURLSessionDataTask? {
+	func request(url : String, method: String, formdata : AnyObject?, secure: Bool, requestCompleted : (succeeded: Bool, data: NSDictionary) -> ()) -> NSURLSessionDataTask? {
 		
 		var proceedRequest = true
 		var server = settingsDictionary!["server"]! as String
@@ -78,7 +78,7 @@ class APIController {
 		//For method = "GET", formdata = nil
 		request.HTTPMethod = method
 		var dataString = ""
-		if let formdataDict = formdata {
+		if let formdataDict: AnyObject = formdata {
 			dataString = JSONStringify(formdataDict)
 			let requestBodyData = (dataString as NSString).dataUsingEncoding(NSUTF8StringEncoding)
 			request.HTTPBody = requestBodyData

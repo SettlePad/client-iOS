@@ -13,23 +13,25 @@
     http://www.raywenderlich.com/73602/dynamic-table-view-cell-height-auto-layout
 */
 
-//TODO: search button makes transaction list incl. posted transactions gibberish
-
 import UIKit
 
 class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 
-    
-    @IBAction func unwindToTransactions(segue: UIStoryboardSegue) {
-    
-    }
-    
+
     @IBAction func newUOmeAction(sender: AnyObject) {
         dispatch_async(dispatch_get_main_queue()) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let newUOmeVC = storyboard.instantiateViewControllerWithIdentifier("NewUOmeViewController") as NewUOmeViewController
             newUOmeVC.delegate = self
             self.presentViewController(newUOmeVC, animated: true, completion: nil)
+        }
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "showUOmeSegue" {
+            let navigationController = segue.destinationViewController as UINavigationController
+            let vc = navigationController.viewControllers[0] as NewUOmeViewController
+            vc.delegate = self
         }
     }
     
@@ -40,7 +42,6 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     
     func transactionsPostCompleted(controller:NewUOmeViewController) {
         self.refreshTransactions()
-        //TODO: instead of reloading, we could interpret the results of the server as well?
     }
     
     @IBOutlet var transactionsTableView: UITableView!
@@ -48,7 +49,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     
     var transactionsRefreshControl:UIRefreshControl!
     var footer = TransactionsFooterView(frame: CGRectMake(0, 0, 320, 44))
-    
+ 
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -335,7 +336,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     
     private func reload_transactions(loading: Bool = false, searching: Bool = false) {
         self.transactionsTableView!.reloadData()
-        
+
         /*for transaction in transactions! { // loop through data items
         println(transaction.description!)
         }*/
@@ -365,9 +366,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         } else {
             //TODO: in future, display error
             /* 
-            var alert = UIAlertView(title: "Success!", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
-            alert.title = "Error"
-            alert.message = msg
+            var alert = UIAlertView(title: "Error", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
             
             // Move to the UI thread
             dispatch_async(dispatch_get_main_queue(), { () -> Void in

@@ -36,7 +36,9 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     @IBOutlet var sendButton: UIBarButtonItem!
     
     @IBAction func sendUOmes(sender: AnyObject) {
-        //TODO: if to != "", validate form first
+        if formTo.text != "" {
+            saveUOme()
+        }
         
         if newTransactions.count > 0 {
             //Post
@@ -45,7 +47,10 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             }
             
             //Go to transactions
+            
             delegate.transactionsPosted(self)
+            self.dismissViewControllerAnimated(true, completion: nil)
+
         }
     }
     

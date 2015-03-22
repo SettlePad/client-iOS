@@ -29,13 +29,35 @@ class Transactions {
     
     func post(newTransactions: [Transaction], requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
         //Add to list with Posted status
+        var formdataArray : [[String:AnyObject]] = []
         for newTransaction in newTransactions {
             newTransaction.status = .Posted
+            formdataArray.append([
+                "recipient":newTransaction.counterpart_name,
+                "description":newTransaction.description,
+                "amount":newTransaction.amount,
+                "currency":newTransaction.currency
+            ])
+            
         }
         transactions.splice(newTransactions, atIndex: 0)
         
         //Do post. When returned succesfully, replace status with what comes back
-        //TODO: fix post
+        var url = "uome/send/"
+        api.request(url, method: "POST", formdata: formdataArray, secure: true){ (succeeded: Bool, data: NSDictionary) -> () in
+            if(succeeded) {
+                requestCompleted(succeeded: true,error_msg: nil)
+                self.transactions = self.transactions.filter({$0.status != .Posted}) //Delete all 
+            } else {
+                if let msg = data["text"] as? String {
+                    requestCompleted(succeeded: false,error_msg: msg)
+                } else {
+                    requestCompleted(succeeded: false,error_msg: "Unknown")
+                }
+            }
+        }
+        
+        //At this point, the transactions array does not contain the new UOme's yet and should be refreshed. We leave this to the view controller (which is triggered by the requestCompleted above)
     }
     
     func get(search: String, requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
@@ -205,8 +227,7 @@ class Transactions {
     }
     
     func changeTransaction(action: String, transaction: Transaction, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-        var url = "transactions/"+action+"/\(transaction.transaction_id)/"
-        
+        var url = "transactions/"+action+"/\(transaction.transaction_id!)/"
         api.request(url, method: "POST", formdata: [:], secure: true){ (succeeded: Bool, data: NSDictionary) -> () in
             if(succeeded) {
                 requestCompleted(succeeded: true,error_msg: nil)

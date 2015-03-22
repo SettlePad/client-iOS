@@ -47,6 +47,7 @@ enum Colors {
     case warning
     case danger
     case info
+    case black
     
     func textToUIColor() -> UIColor{
         switch (self) {
@@ -62,6 +63,8 @@ enum Colors {
             return UIColor(red: 0xbb/255, green: 0x00/255, blue: 0x05/255, alpha: 1.0)
         case .info:
             return UIColor(red: 0x02/255, green: 0x57/255, blue: 0x77/255, alpha: 1.0)
+        case .black:
+            return UIColor(red: 0x00/255, green: 0x00/255, blue: 0x00/255, alpha: 1.0)
         }
     }
     

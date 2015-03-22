@@ -32,6 +32,7 @@ class TransactionsCell: UITableViewCell {
     func markup(transaction: Transaction){
         //Description
         descriptionLabel.text = transaction.description
+        descriptionLabel.textColor = Colors.black.textToUIColor()
         
         //Amount
         let floatFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
@@ -43,11 +44,12 @@ class TransactionsCell: UITableViewCell {
         } else {
             amountLabel.textColor = Colors.success.textToUIColor()
             amountLabel.text = "+ " + transaction.currency+" \(transaction.amount.format(floatFormat))"
-            
         }
         
         //Counterpart
         counterpartLabel.text = transaction.counterpart_name
+        counterpartLabel.textColor = Colors.black.textToUIColor()
+
         
         //Time
         //See http://stackoverflow.com/questions/24577087/comparing-nsdates-without-time-component
@@ -74,7 +76,8 @@ class TransactionsCell: UITableViewCell {
         } else {
             timeLabel.text = "Sent: "+dateString
         }
-        
+        timeLabel.textColor = Colors.gray.textToUIColor()
+
         
         //Status (text and image)
         var statusString = "Unknown"
@@ -94,6 +97,8 @@ class TransactionsCell: UITableViewCell {
             //cell.statusImageView.image = UIImage(named: "ios_new")
             statusImageView.image = nil
             statusLabel.text = statusString
+            statusLabel.textColor = Colors.primary.textToUIColor()
+
         } else if transaction.status == .AwaitingValidation { // recipient should accept first
             statusLabel.hidden = false
             spinner.hidden = true
@@ -101,11 +106,13 @@ class TransactionsCell: UITableViewCell {
             
             if (transaction.is_sender == true) { // 0 = recipient
                 statusString = "Pending approval"
+                statusLabel.textColor = Colors.gray.textToUIColor()
             } else {
                 statusString = "Swipe to approve"
                 statusLabel.textColor = Colors.primary.textToUIColor()
             }
             statusImageView.image = UIImage(named: "ios_attention")
+            //statusImageView.image = nil
             
             statusLabel.text = statusString
             
@@ -124,6 +131,7 @@ class TransactionsCell: UITableViewCell {
             
             spinner.startAnimating()
             statusImageView.image = nil
+            statusLabel.textColor = Colors.gray.textToUIColor()
         } else { // cancelled/ rejected
             statusLabel.hidden = false
             spinner.hidden = true
@@ -131,13 +139,7 @@ class TransactionsCell: UITableViewCell {
             
             //transaction canceled
             statusImageView.image = nil
-            if (transaction.is_sender == false) {
-                //recipient
-                statusString = "Rejected by "+transaction.counterpart_name
-            } else {
-                //sender
-                statusString = "Rejected by you"
-            }
+            statusString = "Rejected/ canceled"
             statusLabel.text = statusString
             
             //all labels in grey (Hex 777777)
