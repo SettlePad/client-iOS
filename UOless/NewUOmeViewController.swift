@@ -43,6 +43,24 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         if newTransactions.count > 0 {
             //Post
             transactions.post(newTransactions) { (succeeded: Bool, error_msg: String?) -> () in
+                if succeeded == false {
+                    var alert = UIAlertView(title: "Error", message: error_msg!, delegate: nil, cancelButtonTitle: "Okay.")
+                    
+                    // Move to the UI thread
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        // Show the alert
+                        alert.show()
+                    })
+                    
+                    //Goto login screen
+                    if (user == nil) {
+                        dispatch_async(dispatch_get_main_queue()) {
+                            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                            let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as UIViewController
+                            self.presentViewController(vc, animated: false, completion: nil)
+                        }
+                    }
+                }
                 self.delegate.transactionsPostCompleted(self)
             }
             
@@ -70,7 +88,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         case NewUOme //show suggestions for email address
     }
     
-    var contactIdentifiers = [Dictionary<String,String>]() //Name, Identifier
+    var matchedContactIdentifiers = [Dictionary<String,String>]() //Name, Identifier
     
     var state: State = .Overview
     var actInd: UIActivityIndicatorView = UIActivityIndicatorView()
@@ -298,7 +316,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         if (self.state == .Overview) {
             return newTransactions.count
         } else {
-            return contactIdentifiers.count
+            return matchedContactIdentifiers.count
         }
     }
     
@@ -315,7 +333,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             let cell = tableView.dequeueReusableCellWithIdentifier("ContactCell", forIndexPath: indexPath) as UITableViewCell
             
             // Configure the cell...
-            let contactIdentifier = contactIdentifiers[indexPath.row]
+            let contactIdentifier = matchedContactIdentifiers[indexPath.row]
             cell.textLabel?.text = contactIdentifier["name"]
             cell.detailTextLabel?.text =  contactIdentifier["identifier"]
             return cell
@@ -349,7 +367,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         
         if (self.state == .NewUOme) {
             //Set value as "to"
-            let contactIdentifier = contactIdentifiers[indexPath.row]
+            let contactIdentifier = matchedContactIdentifiers[indexPath.row]
             formTo.text = contactIdentifier["identifier"]
             switchState(.Overview)
             //goto amount
@@ -453,16 +471,11 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     }
     
     func getMatchedContactIdentifiers(needle: String){
-        contactIdentifiers.removeAll()
-        for contact in contacts.contacts {
-            for identifier in contact.identifiers {
-                if (identifier.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contact.name.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
-                    contactIdentifiers.append(["name":contact.friendlyName,"identifier":identifier])
-                }
+        matchedContactIdentifiers.removeAll()
+        for contactIdentifier in contacts.contactIdentifiers {
+            if (contactIdentifier["identifier"]!.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier["name"]!.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
+                matchedContactIdentifiers.append(contactIdentifier)
             }
         }
-        contactIdentifiers.sort({$0["name"] < $1["name"] }) //Sort by name ASC
-        
-        //TODO: already create array in Contacts and sort it there as well
     }
 }

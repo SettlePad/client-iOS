@@ -25,6 +25,12 @@ class Transactions {
     
     func clear() {
         transactions = []
+        var nr_of_results = 20
+        var search = ""
+        var newestID = 0
+        var oldestID = 0
+        var lastUpdate = 0
+        var end_reached = false
     }
     
     func post(newTransactions: [Transaction], requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
@@ -96,7 +102,7 @@ class Transactions {
         if self.end_reached {
             requestCompleted(succeeded: false,transactions: self.transactions,error_msg: "End reached")
         } else if  transactions.count  == 0 {
-            requestCompleted(succeeded: false,transactions: self.transactions,error_msg: "No transactions yet")
+            //No transactions yet, so ignore request
         } else {
             getInternal(url){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
                 if (succeeded) {

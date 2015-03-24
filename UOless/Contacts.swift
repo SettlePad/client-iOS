@@ -11,6 +11,7 @@ import AddressBook
 
 class Contacts {
     var contacts = [Contact]()
+    var contactIdentifiers = [Dictionary<String,String>]() //Name, Identifier
     var localStatus: ABAuthorizationStatus {
         get {
             return ABAddressBookGetAuthorizationStatus()
@@ -27,6 +28,15 @@ class Contacts {
                 updateLocalContacts(adressBook)
             }
         }
+        
+        //update sorted list of identifiers
+        contactIdentifiers.removeAll()
+        for contact in contacts {
+            for identifier in contact.identifiers {
+                contactIdentifiers.append(["name":contact.friendlyName,"identifier":identifier])
+            }
+        }
+        contactIdentifiers.sort({$0["name"] < $1["name"] }) //Sort by name ASC
     }
     
     private func updateServerContacts() {
@@ -125,5 +135,7 @@ class Contacts {
         }
     }
     
-
+    func clear() {
+        contacts = []
+    }
 }

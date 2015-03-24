@@ -101,13 +101,11 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     // MARK: - Table view data source
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Potentially incomplete method implementation.
         // Return the number of sections.
         return 1
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete method implementation.
         // Return the number of rows in the section.
         return transactions.getTransactions().count
     }
@@ -353,8 +351,13 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     }
     
     private func api_error(msg: String) {
-        //TODO: make this a delegate function
-        println("Error: "+msg)
+        var alert = UIAlertView(title: "Error", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
+        
+        // Move to the UI thread
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            // Show the alert
+            alert.show()
+        })
         
         //Goto login screen
         if (user == nil) {
@@ -363,18 +366,6 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
                 let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as UIViewController
                 self.presentViewController(vc, animated: false, completion: nil)
             }
-        } else {
-            //TODO: in future, display error
-            /* 
-            var alert = UIAlertView(title: "Error", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
-            
-            // Move to the UI thread
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                // Show the alert
-                alert.show()
-            }) 
-            */
-            
         }
     }
 }

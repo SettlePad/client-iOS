@@ -17,11 +17,14 @@ import Foundation
 class APIController {
 
     func login(username: String, password: String, loginCompleted : (succeeded: Bool, msg: String) -> ()) {
-		//TODO: if logged in already, first log out
-
+		//if logged in already, first log out
+		if user != nil {
+			logout()
+		}
+		
 		request("login", method:"POST", formdata: ["provider":"password", "user":username, "password":password], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
 			if(succeeded) {
-				user = User(credentials: data as Dictionary, api: self)
+				user = User(credentials: data as Dictionary)
 				if user != nil {
 					loginCompleted(succeeded: true, msg: user!.name)
 					contacts.updateContacts()
@@ -57,7 +60,8 @@ class APIController {
 		user!.wipe()
 		user = nil
 		
-		//TODO: clear out transacitons, contacts etc.
+		transactions.clear()
+		contacts.clear()
 	}
 	
 	func request(url : String, method: String, formdata : AnyObject?, secure: Bool, requestCompleted : (succeeded: Bool, data: NSDictionary) -> ()) -> NSURLSessionDataTask? {
@@ -99,7 +103,6 @@ class APIController {
 			} else {
 				proceedRequest = false
 				requestCompleted(succeeded: false, data: ["code":"local_login_error", "text":"Cannot perform request, not logged in", "function":"local"])
-				//TODO: in future, one might choose to automatically log in at this point and then continuing the request
 			}
 		}
 		
@@ -118,7 +121,6 @@ class APIController {
 				// We try to parse the JSON first.
 				if(err != nil) {
 					//Parsing resulted in an error. Next to that, we'll go for the error from the URL request itself, in the NSURLErrorDomain
-					//println("Cannot parse JSON: "+err!.debugDescription)
 					if(error != nil) {
 						//println(error.localizedFailureReason)
 						//println(error.localizedRecoverySuggestion)
@@ -129,10 +131,11 @@ class APIController {
 						if (error!.code == -1004) {
 							requestCompleted(succeeded: false, data: ["code":"cannot_connect_to_server", "text":"Cannot connect to server", "function":"local"])
 						} else {
-							requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":error!.localizedDescription, "function":"local"])
+							requestCompleted(succeeded: false, data: ["code":"unknown", "text":error!.localizedDescription, "function":"local"])
 						}
 					} else {
 						requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":err!.localizedDescription, "function":"local"])
+						println("JSON failed to parse: \(strData)")
 					}
 				} else {
 					// The JSONObjectWithData constructor didn't return an error. But, we should still

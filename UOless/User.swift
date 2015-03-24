@@ -8,19 +8,20 @@
 
 import Foundation
 
+
 class User {
     // The exclamation marks in the class variable declarations make sure we can use a failable class initializer, see https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Initialization.html#//apple_ref/doc/uid/TP40014097-CH18-XID_339
     var id: Int!
     var series: String!
     var token: String!
+    var userIdentifiers: [UserIdentifier] = [] //array of identifiers (for now, only email addresses)
     
     var name: String! {
-        didSet {
+        didSet (oldValue) {
             api.request("settings", method:"POST", formdata: ["name":name], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
                 if(!succeeded) {
                     if let error_msg = data["text"] as? String {
                         println(error_msg)
-                        //TODO: might reverse name or show error in view (also below)
                     } else {
                         println("Unknown error while setting name")
                     }
@@ -43,21 +44,18 @@ class User {
         }
     }
     
-    var api: APIController
-    
-    init (id: Int, name: String, series:String, token: String, defaultCurrency: String, api: APIController){
+    init (id: Int, name: String, series:String, token: String, defaultCurrency: String, userIdentifiers: [UserIdentifier]){
         self.id = id
         self.name = name
         self.series = series
         self.token = token
         self.defaultCurrency = defaultCurrency
-        self.api = api
-        
+        self.userIdentifiers = userIdentifiers
         save()
     }
     
-    init?(api:APIController){
-        self.api = api
+    init?(){
+        //Try to load from keychain and NSUserDefaults
         
         if let keychainObj = Keychain.load("user_id") {
             if keychainObj.stringValue.toInt() == nil {
@@ -94,46 +92,78 @@ class User {
             return nil
         }
         
-        
-        //TODO: verify whether info (e.g. user_name, default_currency and contacts) are still up to date
-        //TODO: could also save the whole user class as NSData to NSUserDefaults. Would that also work with the reference to this apicontroller? Doubt that
-    }
-    
-    init?(credentials: [String: String], api:APIController){
-        self.api = api
-        
-        if let strVal = credentials["user_id"] {
-            if strVal.toInt() == nil {
-                return nil
+        if let data = defaults.objectForKey("userIdentifiers") as? NSData {
+            if let subdata = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? [UserIdentifier] {
+                self.userIdentifiers = subdata
             } else {
-                self.id = strVal.toInt()!
+                return nil
             }
         } else {
             return nil
         }
+
+        //TODO: also set something for identifiers
+        //TODO: verify whether info (e.g. user_name, default_currency and contacts) are still up to date
+    }
+    
+    init?(credentials: [String: AnyObject]){
         
-        if credentials["user_name"] == nil {
-            return nil
+        if let intVal = credentials["user_id"] as? Int {
+            self.id = intVal
         } else {
-            self.name = credentials["user_name"]!
+            return nil
         }
         
-        if credentials["series"] == nil {
-            return nil
+        if let strVal = credentials["user_name"] as? String {
+            self.name = strVal
         } else {
-            self.series = credentials["series"]!
+            return nil
         }
         
-        if credentials["token"] == nil {
-            return nil
+        if let strVal = credentials["series"] as? String {
+            self.series = strVal
         } else {
-            self.token = credentials["token"]!
+            return nil
         }
         
-        if credentials["default_currency"] == nil {
-            return nil
+        if let strVal = credentials["token"] as? String {
+            self.token = strVal
         } else {
-            self.defaultCurrency = credentials["default_currency"]!
+            return nil
+        }
+        
+        if let strVal = credentials["default_currency"] as? String {
+            self.defaultCurrency = strVal
+        } else {
+            return nil
+        }
+        
+        if let arrayVal = credentials["identifiers"] as? [[String:AnyObject]] {
+            if arrayVal.count == 0 {
+                println("Empty identifier array")
+                return nil
+            }
+            
+            
+            for parsableIdentifier in arrayVal {
+                /*if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool {
+                    self.identifiers.append(Identifier(identifier: identifier, source: source, verified: verified))
+                } else {
+                    println("Cannot load identifier")
+                    return nil
+                }*/
+                //TODO: use more elegant code above when Xcode 6.3 is released
+
+                switch (parsableIdentifier["identifier"], parsableIdentifier["source"], parsableIdentifier["verified"]) {
+                case let (identifier as String, source as String, verified as Bool):
+                    self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified))
+                default:
+                    println("Cannot load identifier")
+                    return nil
+                }
+            }
+        } else {
+            return nil
         }
         
         save()
@@ -149,6 +179,8 @@ class User {
         //Set NSUserdefaults
         let defaults = NSUserDefaults.standardUserDefaults()
         defaults.setObject(defaultCurrency, forKey: "default_currency")
+        let data = NSKeyedArchiver.archivedDataWithRootObject(userIdentifiers)
+        defaults.setObject(data, forKey: "userIdentifiers")
     }
     
     func wipe() {
@@ -161,6 +193,7 @@ class User {
         //Wipe NSUserdefaults
         let defaults = NSUserDefaults.standardUserDefaults()
         defaults.setObject(nil, forKey: "default_currency")
+        defaults.setObject(nil, forKey: "userIdentifiers")
+
     }
-    
 }

@@ -12,7 +12,7 @@ var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"pli
 var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
 
 var api = APIController()
-var user = User(api: api)? //If nil, not logged in
+var user = User()? //If nil, not logged in
 var transactions=Transactions()
 var contacts = Contacts()
 
@@ -45,19 +45,26 @@ class LoginViewController: UIViewController {
     func doLogin() {
         spinner.hidden = false
         loginButton.hidden = true
+        loginButton.enabled = false
         api.login(txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String) -> () in
-            self.spinner.hidden = true
-            self.loginButton.hidden = false
+
             if(succeeded) {
                 //Go to next screen (in main view)
+                self.spinner.hidden = true
+                self.loginButton.hidden = false
+                self.loginButton.enabled = true
                 self.enter_app()
             } else {
+                //TODO: replace all UIAlertView with UIAlertController, see
                 var alert = UIAlertView(title: "Fail!", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
                 
                 // Move to the UI thread
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     // Show the alert
                     alert.show()
+                    self.spinner.hidden = true
+                    self.loginButton.hidden = false
+                    self.loginButton.enabled = true
                 })
             }
         }

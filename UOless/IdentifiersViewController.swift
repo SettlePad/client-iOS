@@ -1,46 +1,17 @@
 //
-//  SettingsViewController.swift
+//  IdentifiersViewController.swift
 //  UOless
 //
-//  Created by Rob Everhardt on 07/01/15.
+//  Created by Rob Everhardt on 24/03/15.
 //  Copyright (c) 2015 UOless. All rights reserved.
 //
 
 import UIKit
 
-class SettingsViewController: UITableViewController {
-    
+class IdentifiersViewController: UITableViewController {
 
-    @IBOutlet var nameText: UITextField!
-    @IBOutlet var credentialsLabel: UILabel!
-    @IBOutlet var currencyLabel: UILabel!
-   
-    @IBAction func viewTapped(sender: AnyObject) {
-        //To hide the keyboard, when needed
-        self.view.endEditing(true)
-    }
-    
-    @IBAction func nameEdited(sender: UITextField) {
-        user?.name = sender.text
-    }
-    
-    @IBAction func logout(sender: AnyObject) {
-        api.logout()
-        dispatch_async(dispatch_get_main_queue()) {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as UIViewController
-            self.presentViewController(vc, animated: false, completion: nil)
-        }
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        updateLabels()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -56,28 +27,39 @@ class SettingsViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    /*override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Potentially incomplete method implementation.
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Return the number of sections.
-        return 0
+        return 1
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return 0
-    }*/
+        return user!.userIdentifiers.count
+    }
 
-    /*
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("emailAddressRow", forIndexPath: indexPath) as UITableViewCell
 
         // Configure the cell...
-
+        let identifier = user!.userIdentifiers[indexPath.row]
+        cell.textLabel?.text  = identifier.identifier
+        
+        if identifier.verified {
+            cell.detailTextLabel?.text = "verified"
+            cell.detailTextLabel?.textColor = Colors.success.textToUIColor()
+        } else {
+            cell.detailTextLabel?.text = "not verified"
+            cell.detailTextLabel?.textColor = Colors.danger.textToUIColor()
+        }
+        
         return cell
     }
-    */
-
+    
+    //TODO: implement deletion edit
+    //TODO: implement UIAlertController, see http://nshipster.com/uialertcontroller/
+    
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -113,42 +95,14 @@ class SettingsViewController: UITableViewController {
     }
     */
 
-    
-    
-    // MARK: - Navigation
     /*
+    // MARK: - Navigation
+
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using [segue destinationViewController].
         // Pass the selected object to the new view controller.
-    
     }
     */
-    
-    func updateLabels () {
-        currencyLabel.text = user?.defaultCurrency
-        nameText.text = user?.name
-        credentialsLabel.text = "1" //TODO: set number of logins
-    }
-    
-    private func api_error(msg: String) {
-        var alert = UIAlertView(title: "Error", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
-        
-        // Move to the UI thread
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            // Show the alert
-            alert.show()
-        })
-        
-        //Goto login screen
-        if (user == nil) {
-            dispatch_async(dispatch_get_main_queue()) {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as UIViewController
-                self.presentViewController(vc, animated: false, completion: nil)
-            }
-        }
-    }
-    
 
 }
