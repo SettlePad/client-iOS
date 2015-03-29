@@ -102,8 +102,7 @@ class User {
             return nil
         }
 
-        //TODO: also set something for identifiers
-        //TODO: verify whether info (e.g. user_name, default_currency and contacts) are still up to date
+        //TODO: verify whether info (e.g. user_name, default_currency, contacts and identifiers) are still up to date
     }
     
     init?(credentials: [String: AnyObject]){
@@ -194,6 +193,92 @@ class User {
         let defaults = NSUserDefaults.standardUserDefaults()
         defaults.setObject(nil, forKey: "default_currency")
         defaults.setObject(nil, forKey: "userIdentifiers")
-
     }
+    
+    func addIdentifier(email:String, password:String,requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+        api.request("identifiers/new", method:"POST", formdata: ["identifier":email,"password":password,"type":"email"], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+            if(succeeded) {
+                self.userIdentifiers.append(UserIdentifier(identifier: email, source: "email", verified: false))
+                self.save()
+                requestCompleted(succeeded: true,error_msg: nil)
+            } else {
+                if let msg = data["text"] as? String {
+                    requestCompleted(succeeded: false,error_msg: msg)
+                } else {
+                    requestCompleted(succeeded: false,error_msg: "Unknown")
+                }
+            }
+        }
+    }
+    
+    func deleteIdentifier(identifier:UserIdentifier, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+        api.request("identifiers/delete", method:"POST", formdata: ["identifier":identifier.identifier], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+            if(succeeded) {
+                for index in stride(from: self.userIdentifiers.count - 1, through: 0, by: -1) {
+                    if self.userIdentifiers[index].identifier == identifier.identifier {
+                        self.userIdentifiers.removeAtIndex(index)
+                    }
+                }
+                self.save()
+                requestCompleted(succeeded: true,error_msg: nil)
+            } else {
+                if let msg = data["text"] as? String {
+                    requestCompleted(succeeded: false,error_msg: msg)
+                } else {
+                    requestCompleted(succeeded: false,error_msg: "Unknown")
+                }
+            }
+        }
+    }
+
+    func verifyIdentifier(identifier:UserIdentifier, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+        api.request("identifiers/verify", method:"POST", formdata: ["identifier":identifier.identifier,"token":token], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+            if(succeeded) {
+                for userIdentifier in self.userIdentifiers {
+                    if userIdentifier.identifier == identifier.identifier {
+                        userIdentifier.verified = true //class is reference type
+                    }
+                }
+                self.save()
+                requestCompleted(succeeded: true,error_msg: nil)
+            } else {
+                if let msg = data["text"] as? String {
+                    requestCompleted(succeeded: false,error_msg: msg)
+                } else {
+                    requestCompleted(succeeded: false,error_msg: "Unknown")
+                }
+            }
+        }
+    }
+    
+    func resendToken(identifier:UserIdentifier,requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+        api.request("identifiers/resend_token", method:"POST", formdata: ["identifier":identifier.identifier], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+            if(succeeded) {
+                requestCompleted(succeeded: true,error_msg: nil)
+            } else {
+                if let msg = data["text"] as? String {
+                    requestCompleted(succeeded: false,error_msg: msg)
+                } else {
+                    requestCompleted(succeeded: false,error_msg: "Unknown")
+                }
+            }
+        }
+    }
+
+    func changePassword(identifier:UserIdentifier, password:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+
+        api.request("identifiers/change_pwd", method:"POST", formdata: ["identifier":identifier.identifier,"password":password], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+            if(succeeded) {
+                requestCompleted(succeeded: true,error_msg: nil)
+            } else {
+                if let msg = data["text"] as? String {
+                    requestCompleted(succeeded: false,error_msg: msg)
+                } else {
+                    requestCompleted(succeeded: false,error_msg: "Unknown")
+                }
+            }
+        }
+    }
+
+    
 }

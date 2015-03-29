@@ -11,7 +11,8 @@
 import UIKit
 
 class IdentifiersViewController: UITableViewController {
-
+    //TODO: now all errors returning from POSTs are suppressed. Some are useful to show (e.g. email address already taken)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -63,7 +64,7 @@ class IdentifiersViewController: UITableViewController {
     // Override to support conditional editing of the table view.
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the specified item to be editable.
-        if user!.userIdentifiers.count > 1 { //TODO: change to 1
+        if user!.userIdentifiers.count > 1 {
             return true
         } else {
             return false
@@ -102,8 +103,15 @@ class IdentifiersViewController: UITableViewController {
         alertController.addAction(cancelAction)
         
         let destroyAction = UIAlertAction(title: "Delete", style: .Destructive) { (action) in
-            //TODO: implement delete POST in User
             tableView.setEditing(false, animated: true)
+            user!.deleteIdentifier(identifier) { (succeeded: Bool, error_msg: String?) -> () in
+                if !succeeded {
+                    println(error_msg)
+                }
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.tableView.reloadData()
+                })
+            }
         }
         alertController.addAction(destroyAction)
         
@@ -142,9 +150,9 @@ class IdentifiersViewController: UITableViewController {
         let identifier = user!.userIdentifiers[indexPath.row]
         let cell = tableView.cellForRowAtIndexPath(indexPath)
         
-        if (identifier.verified && user!.userIdentifiers.count == 0) {
+        if (identifier.verified && user!.userIdentifiers.count == 1) {
             //only one option: change password
-            changePasswordForm()
+            changePasswordForm(identifier)
         } else {
             //show Action sheet
 
@@ -156,18 +164,27 @@ class IdentifiersViewController: UITableViewController {
             actionSheetController.addAction(cancelAction)
             
             let changePasswordAction: UIAlertAction = UIAlertAction(title: "Change password", style: .Default) { action -> Void in
-                self.changePasswordForm()
+                self.changePasswordForm(identifier)
             }
             actionSheetController.addAction(changePasswordAction)
             
             if (identifier.verified == false) {
-                let verifyAction: UIAlertAction = UIAlertAction(title: "Resend verification email", style: .Default) { action -> Void in
-                    //TODO: outlet POST
+                let verifyAction: UIAlertAction = UIAlertAction(title: "Enter verification code", style: .Default) { action -> Void in
+                    //TODO: verify POST request
                 }
                 actionSheetController.addAction(verifyAction)
+                
+                let resendCodeAction: UIAlertAction = UIAlertAction(title: "Resend verification code", style: .Default) { action -> Void in
+                    user!.resendToken(identifier) { (succeeded: Bool, error_msg: String?) -> () in
+                        if !succeeded {
+                            println(error_msg)
+                        }
+                    }
+                }
+                actionSheetController.addAction(resendCodeAction)
             }
             
-            if (user!.userIdentifiers.count > 0) {
+            if (user!.userIdentifiers.count > 1) {
                 let verifyAction: UIAlertAction = UIAlertAction(title: "Delete", style: .Destructive) { action -> Void in
                     let identifier = user!.userIdentifiers[indexPath.row]
                     self.deleteIdentifier (identifier, tableView: tableView, indexPath: indexPath)
@@ -185,14 +202,19 @@ class IdentifiersViewController: UITableViewController {
         }
     }
     
-    func changePasswordForm() {
+    func changePasswordForm(identifier: UserIdentifier) {
         //show change password form
         let alertController = UIAlertController(title: "Change password", message: "Enter your new password twice to change it", preferredStyle: .Alert)
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in }
         
-        let changeAction = UIAlertAction(title: "Change", style: .Destructive) { (action) in
-            //TODO: make change pwd endpoint
+        let changeAction = UIAlertAction(title: "Change", style: .Default) { (action) in
+            let firstPasswordTextField = alertController.textFields![0] as UITextField
+            user!.changePassword(identifier, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+                if !succeeded {
+                    println(error_msg)
+                }
+            }
         }
         changeAction.enabled = false
         
@@ -241,7 +263,17 @@ class IdentifiersViewController: UITableViewController {
         }
         
         let addAction = UIAlertAction(title: "Add", style: .Default) { (action) in
-            //TODO: make add new identifier endpoint
+            let emailTextField = alertController.textFields![0] as UITextField
+            let firstPasswordTextField = alertController.textFields![1] as UITextField
+            
+            user!.addIdentifier(emailTextField.text, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+                if !succeeded {
+                    println(error_msg)
+                }
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.tableView.reloadData()
+                })
+            }
         }
         addAction.enabled = false
 

@@ -128,7 +128,7 @@ class SettingsViewController: UITableViewController {
     func updateLabels () {
         currencyLabel.text = user?.defaultCurrency
         nameText.text = user?.name
-        credentialsLabel.text = "1" //TODO: set number of logins
+        credentialsLabel.text = user?.userIdentifiers.count.description
     }
     
     private func api_error(msg: String) {
