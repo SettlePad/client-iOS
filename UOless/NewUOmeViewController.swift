@@ -44,13 +44,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             //Post
             transactions.post(newTransactions) { (succeeded: Bool, error_msg: String?) -> () in
                 if succeeded == false {
-                    var alert = UIAlertView(title: "Error", message: error_msg!, delegate: nil, cancelButtonTitle: "Okay.")
-                    
-                    // Move to the UI thread
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        // Show the alert
-                        alert.show()
-                    })
+                    displayError(error_msg!, self)
+
                     
                     //Goto login screen
                     if (user == nil) {

@@ -170,7 +170,7 @@ class IdentifiersViewController: UITableViewController {
             
             if (identifier.verified == false) {
                 let verifyAction: UIAlertAction = UIAlertAction(title: "Enter verification code", style: .Default) { action -> Void in
-                    //TODO: verify POST request
+                    //TODO: show input form for verification code
                 }
                 actionSheetController.addAction(verifyAction)
                 

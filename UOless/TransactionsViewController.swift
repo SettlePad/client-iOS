@@ -69,7 +69,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
                     self.reload_transactions()
                 })
             } else {
-                self.api_error(error_msg!)
+                displayError(error_msg!, self)
             }
         }
 
@@ -192,7 +192,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
                     self.refreshTransactions()
                 })
             } else {
-                self.api_error(error_msg!)
+                displayError(error_msg!, self)
             }
             self.transactionsRefreshControl.endRefreshing()
         }
@@ -259,7 +259,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
                     self.reload_transactions()
                 })
             } else {
-                self.api_error(error_msg!)
+                displayError(error_msg!, self)
             }
         }
         
@@ -283,7 +283,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
                     self.reload_transactions()
                 })
             } else {
-                self.api_error(error_msg!)
+                displayError(error_msg!, self)
             }
         }
         
@@ -298,7 +298,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
                     self.reload_transactions()
                 })
             } else {
-                self.api_error(error_msg!)
+                displayError(error_msg!, self)
             }
             self.transactionsRefreshControl.endRefreshing()
         }
@@ -325,7 +325,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
                             self.reload_transactions()
                         })
                     } else {
-                        self.api_error(error_msg!)
+                        displayError(error_msg!, self)
                     }
                 }
             }
@@ -348,24 +348,5 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         self.footer.no_results = (transactions.getTransactions().count == 0)
         self.footer.setNeedsDisplay()
         self.transactionsTableView.tableFooterView = self.footer
-    }
-    
-    private func api_error(msg: String) {
-        var alert = UIAlertView(title: "Error", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
-        
-        // Move to the UI thread
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            // Show the alert
-            alert.show()
-        })
-        
-        //Goto login screen
-        if (user == nil) {
-            dispatch_async(dispatch_get_main_queue()) {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as UIViewController
-                self.presentViewController(vc, animated: false, completion: nil)
-            }
-        }
     }
 }

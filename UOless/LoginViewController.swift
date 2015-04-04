@@ -55,13 +55,10 @@ class LoginViewController: UIViewController {
                 self.loginButton.enabled = true
                 self.enter_app()
             } else {
-                //TODO: replace all UIAlertView with UIAlertController, see
-                var alert = UIAlertView(title: "Fail!", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
+                displayError(msg, self)
                 
                 // Move to the UI thread
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    // Show the alert
-                    alert.show()
                     self.spinner.hidden = true
                     self.loginButton.hidden = false
                     self.loginButton.enabled = true
