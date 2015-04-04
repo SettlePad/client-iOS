@@ -115,6 +115,7 @@ class APIController {
 				//println("Response: \(response)")
 				let strData = NSString(data: data, encoding: NSUTF8StringEncoding)
 				//println("Body: \(strData)")
+				
 				var err: NSError?
 				var json = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &err) as? NSDictionary
 
@@ -134,8 +135,11 @@ class APIController {
 							requestCompleted(succeeded: false, data: ["code":"unknown", "text":error!.localizedDescription, "function":"local"])
 						}
 					} else {
-						requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":err!.localizedDescription, "function":"local"])
-						println("JSON failed to parse: \(strData)")
+						if strData != nil {
+							requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":"JSON failed to parse: " + strData!, "function":"local"])
+						} else {
+							requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":"JSON failed to parse", "function":"local"])
+						}
 					}
 				} else {
 					// The JSONObjectWithData constructor didn't return an error. But, we should still

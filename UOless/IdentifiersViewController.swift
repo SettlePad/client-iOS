@@ -11,8 +11,6 @@
 import UIKit
 
 class IdentifiersViewController: UITableViewController {
-    //TODO: now all errors returning from POSTs are suppressed. Some are useful to show (e.g. email address already taken)
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -106,7 +104,7 @@ class IdentifiersViewController: UITableViewController {
             tableView.setEditing(false, animated: true)
             user!.deleteIdentifier(identifier) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
-                    println(error_msg)
+                    displayError(error_msg!,self)
                 }
                 dispatch_async(dispatch_get_main_queue(), {
                     self.tableView.reloadData()
@@ -170,14 +168,15 @@ class IdentifiersViewController: UITableViewController {
             
             if (identifier.verified == false) {
                 let verifyAction: UIAlertAction = UIAlertAction(title: "Enter verification code", style: .Default) { action -> Void in
-                    //TODO: show input form for verification code
+                    let identifier = user!.userIdentifiers[indexPath.row]
+                    self.validationCodeForm(identifier)
                 }
                 actionSheetController.addAction(verifyAction)
                 
                 let resendCodeAction: UIAlertAction = UIAlertAction(title: "Resend verification code", style: .Default) { action -> Void in
                     user!.resendToken(identifier) { (succeeded: Bool, error_msg: String?) -> () in
                         if !succeeded {
-                            println(error_msg)
+                            displayError(error_msg!,self)
                         }
                     }
                 }
@@ -212,7 +211,7 @@ class IdentifiersViewController: UITableViewController {
             let firstPasswordTextField = alertController.textFields![0] as UITextField
             user!.changePassword(identifier, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
-                    println(error_msg)
+                    displayError(error_msg!,self)
                 }
             }
         }
@@ -268,7 +267,7 @@ class IdentifiersViewController: UITableViewController {
             
             user!.addIdentifier(emailTextField.text, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
-                    println(error_msg)
+                    displayError(error_msg!,self)
                 }
                 dispatch_async(dispatch_get_main_queue(), {
                     self.tableView.reloadData()
@@ -319,4 +318,35 @@ class IdentifiersViewController: UITableViewController {
             firstPasswordTextField.text == secondPasswordTextField.text
         )
     }
+    
+    func validationCodeForm(identifier: UserIdentifier) {
+        //show change password form
+        let alertController = UIAlertController(title: "Validate " + identifier.identifier, message: "Enter the validationcode you received", preferredStyle: .Alert)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in }
+        
+        let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
+            let validationTextField = alertController.textFields![0] as UITextField
+            user!.verifyIdentifier(identifier, token: validationTextField.text) { (succeeded, error_msg) -> () in
+                if !succeeded {
+                    displayError(error_msg!,self)
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.tableView.reloadData()
+                    })
+                }
+            }
+        }
+        
+        alertController.addTextFieldWithConfigurationHandler { (textField) in
+            textField.placeholder = "Validation code"
+        }
+        
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(enterAction)
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+
 }
