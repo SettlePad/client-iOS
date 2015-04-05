@@ -19,6 +19,10 @@ class IdentifiersViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        
+        //Hide additional gridlines, and set gray background for footer
+        self.tableView.tableFooterView = UIView(frame:CGRectZero)
+        self.tableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
     }
 
     override func didReceiveMemoryWarning() {

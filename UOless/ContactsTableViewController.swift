@@ -1,53 +1,39 @@
 //
-//  SettingsViewController.swift
+//  ContactsTableViewController.swift
 //  UOless
 //
-//  Created by Rob Everhardt on 07/01/15.
+//  Created by Rob Everhardt on 05/04/15.
 //  Copyright (c) 2015 UOless. All rights reserved.
 //
 
 import UIKit
 
-class SettingsViewController: UITableViewController {
-    
+class ContactsTableViewController: UITableViewController {
 
-    @IBOutlet var nameText: UITextField!
-    @IBOutlet var credentialsLabel: UILabel!
-    @IBOutlet var currencyLabel: UILabel!
-    @IBOutlet var favoritesLabel: UILabel!
-   
-    @IBAction func viewTapped(sender: AnyObject) {
-        //To hide the keyboard, when needed
-        self.view.endEditing(true)
-    }
-    
-    @IBAction func nameEdited(sender: UITextField) {
-        user?.name = sender.text
-    }
-    
-    @IBAction func logout(sender: AnyObject) {
-        api.logout()
-        dispatch_async(dispatch_get_main_queue()) {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as UIViewController
-            self.presentViewController(vc, animated: false, completion: nil)
-        }
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        updateLabels()
+    @IBOutlet var searchBar: UISearchBar!
+
+    @IBAction func starTapGestureRecognizer(sender: AnyObject) {
+        //Determine the rowindex via the touch point 
+        let tapPoint: CGPoint = sender.locationInView(self.tableView)
+        let selectedIndex = self.tableView.indexPathForRowAtPoint(tapPoint)
+        let contact = contacts.registeredContacts[selectedIndex!.row]
+        contact.favorite = !contact.favorite
+        self.tableView.reloadData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        self.tableView.setContentOffset(CGPointMake(0, searchBar.frame.size.height), animated: false)
+        
+        //Hide additional gridlines, and set gray background for footer
+        self.tableView.tableFooterView = UIView(frame:CGRectZero)
+        self.tableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
     }
 
     override func didReceiveMemoryWarning() {
@@ -57,27 +43,32 @@ class SettingsViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    /*override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return 0
+        return 1
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return 0
-    }*/
+        return contacts.registeredContacts.count
+    }
 
-    /*
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("favoriteRow", forIndexPath: indexPath) as ContactCell
+        
+        //this class is not key value coding-compliant for the key favoritesTableView.'
 
         // Configure the cell...
-
+        let contact = contacts.registeredContacts[indexPath.row]
+        cell.markup(contact)
+        
         return cell
     }
-    */
+    
+    
 
     /*
     // Override to support conditional editing of the table view.
@@ -114,23 +105,14 @@ class SettingsViewController: UITableViewController {
     }
     */
 
-    
-    
-    // MARK: - Navigation
     /*
+    // MARK: - Navigation
+
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using [segue destinationViewController].
         // Pass the selected object to the new view controller.
-    
     }
     */
-    
-    func updateLabels () {
-        currencyLabel.text = user?.defaultCurrency
-        nameText.text = user?.name
-        credentialsLabel.text = user?.userIdentifiers.count.description
-        favoritesLabel.text = contacts.favoriteContacts.count.description
-    }
 
 }

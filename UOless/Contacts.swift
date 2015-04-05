@@ -11,6 +11,17 @@ import AddressBook
 
 class Contacts {
     var contacts = [Contact]()
+    var registeredContacts : [Contact] {
+        get {
+            return contacts.filter { $0.registered}
+        }
+    }
+    var favoriteContacts : [Contact] {
+        get {
+            return contacts.filter { $0.favorite}
+        }
+    }
+
     var contactIdentifiers = [Dictionary<String,String>]() //Name, Identifier
     var localStatus: ABAuthorizationStatus {
         get {
@@ -37,6 +48,7 @@ class Contacts {
             }
         }
         contactIdentifiers.sort({$0["name"] < $1["name"] }) //Sort by name ASC
+
     }
     
     private func updateServerContacts() {
@@ -52,7 +64,7 @@ class Contacts {
                 if let contacts = data["data"] as? NSMutableArray {
                     for contactObj in contacts {
                         if let contactDict = contactObj as? NSDictionary {
-                            self.addContact(Contact(fromDict: contactDict), merge: false)
+                            self.addContact(Contact(fromDict: contactDict, registered: true), merge: false)
                         } else {
                             println("Cannot parse contact as dictionary")
                         }
@@ -81,7 +93,7 @@ class Contacts {
                     }
                 }
                 
-                addContact(Contact(id: nil, name: ABRecordCopyCompositeName(person).takeRetainedValue(), friendlyName: ABRecordCopyCompositeName(person).takeRetainedValue(), favorite: false, identifiers: emails), merge: true)
+                addContact(Contact(id: nil, name: ABRecordCopyCompositeName(person).takeRetainedValue(), friendlyName: ABRecordCopyCompositeName(person).takeRetainedValue(), favorite: false, identifiers: emails, registered: false), merge: true)
             }
         }
     }
@@ -137,5 +149,7 @@ class Contacts {
     
     func clear() {
         contacts = []
+        contactIdentifiers = []
     }
+
 }

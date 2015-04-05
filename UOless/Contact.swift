@@ -12,19 +12,39 @@ class Contact {
     var id: Int?
     var name: String
     var friendlyName: String
-    var favorite: Bool
-    var identifiers = [String]()
-    //TODO: autolimit to implement
+    var favorite: Bool {
+        didSet (oldValue) {
+            //TODO: create endpoint on server
+            
+            /*api.request("settings", method:"POST", formdata: ["name":favorite], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+                if(!succeeded) {
+                    if let error_msg = data["text"] as? String {
+                        println(error_msg)
+                    } else {
+                        println("Unknown error while setting name")
+                    }
+                }
+            }*/
+        }
+    }
     
-    init(id: Int? = nil, name: String, friendlyName: String, favorite: Bool, identifiers: [String]) {
+    
+    
+    var identifiers = [String]()
+    var limits = [String:Float]()
+    var registered: Bool //Contacts that do not come from the UOless server but fmor the local address book get false. Of those, a subset will have a UOless account as well, but we cannot know without sharing the whole address book with the UOless server. And that we don't do
+    
+    //TODO: autolimit to implement
+    init(id: Int? = nil, name: String, friendlyName: String, favorite: Bool, identifiers: [String], registered: Bool) {
         self.id = id
         self.name = name
         self.friendlyName = friendlyName
         self.favorite = favorite
         self.identifiers = identifiers
+        self.registered = registered
     }
     
-    init(fromDict: NSDictionary = [:]) {
+    init(fromDict: NSDictionary = [:], registered: Bool) {
         if let parsed = fromDict["id"] as? Int {
             self.id = parsed
         } else {
@@ -65,6 +85,6 @@ class Contact {
             }
         }
         
-        //println(self.name+" added")
+        self.registered = registered
     }
 }
