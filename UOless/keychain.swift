@@ -12,10 +12,10 @@ import Security
 class Keychain {
     
     class func save(key: String, data: NSData) -> Bool {
-        let query: [String: AnyObject] = [
-            kSecClass       : kSecClassGenericPassword,
-            kSecAttrAccount : key,
-            kSecValueData   : data ]
+        let query = [
+            kSecClass as String       : kSecClassGenericPassword as String,
+            kSecAttrAccount as String : key,
+            kSecValueData as String   : data ]
         
         SecItemDelete(query as CFDictionaryRef)
         
@@ -25,11 +25,11 @@ class Keychain {
     }
     
     class func load(key: String) -> NSData? {
-        let query: [String: AnyObject] = [
-            kSecClass       : kSecClassGenericPassword,
-            kSecAttrAccount : key,
-            kSecReturnData  : kCFBooleanTrue,
-            kSecMatchLimit  : kSecMatchLimitOne ]
+        let query = [
+            kSecClass as String       : kSecClassGenericPassword,
+            kSecAttrAccount as String : key,
+            kSecReturnData as String  : kCFBooleanTrue,
+            kSecMatchLimit as String  : kSecMatchLimitOne ]
         
         var dataTypeRef :Unmanaged<AnyObject>?
         
@@ -43,9 +43,9 @@ class Keychain {
     }
     
     class func delete(key: String) -> Bool {
-        let query: [String: AnyObject] = [
-            kSecClass       : kSecClassGenericPassword,
-            kSecAttrAccount : key ]
+        let query = [
+            kSecClass as String       : kSecClassGenericPassword,
+            kSecAttrAccount as String : key ]
         
         let status: OSStatus = SecItemDelete(query as CFDictionaryRef)
         
@@ -54,7 +54,7 @@ class Keychain {
     
     
     class func clear() -> Bool {
-        let query: [String: AnyObject] = [ kSecClass : kSecClassGenericPassword ]
+        let query = [ kSecClass as String : kSecClassGenericPassword ]
         
         let status: OSStatus = SecItemDelete(query as CFDictionaryRef)
         

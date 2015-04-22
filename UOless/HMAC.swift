@@ -58,12 +58,12 @@ extension String {
     
     func hmac(algorithm: HMACAlgorithm, key: String) -> String {
         let str = self.cStringUsingEncoding(NSUTF8StringEncoding)
-        let strLen = UInt(self.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
+        let strLen = Int(self.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
         let digestLen = algorithm.digestLength()
         let result = UnsafeMutablePointer<CUnsignedChar>.alloc(digestLen)
         let objcKey = key as NSString
         let keyStr = objcKey.cStringUsingEncoding(NSUTF8StringEncoding)
-        let keyLen = UInt(objcKey.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
+        let keyLen = Int(objcKey.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
         
         CCHmac(algorithm.toCCHmacAlgorithm(), keyStr, keyLen, str!, strLen, result)
         

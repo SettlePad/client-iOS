@@ -14,9 +14,9 @@ class NewUOmeFooterView: UIView {
         self.opaque = false //Required for transparent background
     }
     
-    convenience override init () {
+    /*convenience override init () {
         self.init(frame:CGRectMake(0, 0, 320, 44)) //By default, make a rect of 320x44
-    }
+    }*/
     
     required init(coder aDecoder: NSCoder) {
         fatalError("This class does not support NSCoding")
