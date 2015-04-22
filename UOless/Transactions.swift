@@ -151,7 +151,7 @@ class Transactions {
                         }
                     }
                     
-                    self.updateParams(dataDict!["updates"]! as NSDictionary) //Update request parameters
+                    self.updateParams(dataDict!["updates"]! as! NSDictionary) //Update request parameters
                 }
                 
                 if let newerTransactionsArray = dataDict!["newer"]!["transactions"] as? NSMutableArray {
@@ -167,7 +167,7 @@ class Transactions {
                         }
                     }
                     
-                    self.updateParams(dataDict!["newer"]! as NSDictionary) //Update request parameters
+                    self.updateParams(dataDict!["newer"]! as! NSDictionary) //Update request parameters
                 }
                 
             }

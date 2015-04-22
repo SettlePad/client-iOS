@@ -12,7 +12,7 @@ var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"pli
 var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
 
 var api = APIController()
-var user = User()? //If nil, not logged in
+var user = User() //If nil, not logged in
 var transactions=Transactions()
 var contacts = Contacts()
 
@@ -89,10 +89,10 @@ class LoginViewController: UIViewController {
     func keyboardWillChangeFrameNotification(notification: NSNotification) {
         let userInfo = notification.userInfo!
         
-        let animationDuration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as NSNumber).doubleValue
-        let keyboardEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as NSValue).CGRectValue()
+        let animationDuration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as! NSNumber).doubleValue
+        let keyboardEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
         let convertedKeyboardEndFrame = view.convertRect(keyboardEndFrame, fromView: view.window)
-        let rawAnimationCurve = (notification.userInfo![UIKeyboardAnimationCurveUserInfoKey] as NSNumber).unsignedIntValue << 16
+        let rawAnimationCurve = (notification.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber).unsignedIntValue << 16
         let animationCurve = UIViewAnimationOptions(rawValue: UInt(rawAnimationCurve << 16))
         
         if (CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame) > 0) {
@@ -140,7 +140,7 @@ class LoginViewController: UIViewController {
 
         dispatch_async(dispatch_get_main_queue()) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController") as UIViewController
+            let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController") as! UIViewController
             self.presentViewController(vc, animated: false, completion: nil)
         }
     }

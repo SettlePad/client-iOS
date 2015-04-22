@@ -22,9 +22,9 @@ class UserIdentifier : NSObject, NSCoding {
     
     //All below required for saving to and loading from NSUserDefaults
     required init(coder decoder: NSCoder) {
-        identifier = decoder.decodeObjectForKey("identifier") as String
-        source = decoder.decodeObjectForKey("source") as String
-        verified = decoder.decodeObjectForKey("verified") as Bool
+        identifier = decoder.decodeObjectForKey("identifier") as! String
+        source = decoder.decodeObjectForKey("source") as! String
+        verified = decoder.decodeObjectForKey("verified") as! Bool
     }
     
     func encodeWithCoder(coder: NSCoder) {

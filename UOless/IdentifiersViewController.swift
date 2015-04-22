@@ -44,7 +44,7 @@ class IdentifiersViewController: UITableViewController {
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("emailAddressRow", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("emailAddressRow", forIndexPath: indexPath) as! UITableViewCell
 
         // Configure the cell...
         let identifier = user!.userIdentifiers[indexPath.row]
@@ -212,7 +212,7 @@ class IdentifiersViewController: UITableViewController {
         let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in }
         
         let changeAction = UIAlertAction(title: "Change", style: .Default) { (action) in
-            let firstPasswordTextField = alertController.textFields![0] as UITextField
+            let firstPasswordTextField = alertController.textFields![0] as! UITextField
             user!.changePassword(identifier, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
                     displayError(error_msg!,self)
@@ -242,15 +242,15 @@ class IdentifiersViewController: UITableViewController {
     
     func changePasswordFormTextChanged(sender:AnyObject) {
         //get a handler to the UIAlertController
-        let tf = sender as UITextField
+        let tf = sender as! UITextField
         var resp : UIResponder = tf
         while !(resp is UIAlertController) { resp = resp.nextResponder()! }
-        let alertController = resp as UIAlertController
+        let alertController = resp as! UIAlertController
         
-        let firstPasswordTextField = alertController.textFields![0] as UITextField
-        let secondPasswordTextField = alertController.textFields![1] as UITextField
+        let firstPasswordTextField = alertController.textFields![0] as! UITextField
+        let secondPasswordTextField = alertController.textFields![1] as! UITextField
         
-        (alertController.actions[1] as UIAlertAction).enabled = (
+        (alertController.actions[1] as! UIAlertAction).enabled = (
                 firstPasswordTextField.text != "" &&
                 firstPasswordTextField.text == secondPasswordTextField.text
         )
@@ -266,8 +266,8 @@ class IdentifiersViewController: UITableViewController {
         }
         
         let addAction = UIAlertAction(title: "Add", style: .Default) { (action) in
-            let emailTextField = alertController.textFields![0] as UITextField
-            let firstPasswordTextField = alertController.textFields![1] as UITextField
+            let emailTextField = alertController.textFields![0] as! UITextField
+            let firstPasswordTextField = alertController.textFields![1] as! UITextField
             
             user!.addIdentifier(emailTextField.text, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
@@ -307,16 +307,16 @@ class IdentifiersViewController: UITableViewController {
     
     func newIdentifierFormTextChanged(sender:AnyObject) {
         //get a handler to the UIAlertController
-        let tf = sender as UITextField
+        let tf = sender as! UITextField
         var resp : UIResponder = tf
         while !(resp is UIAlertController) { resp = resp.nextResponder()! }
-        let alertController = resp as UIAlertController
+        let alertController = resp as! UIAlertController
         
-        let emailTextField = alertController.textFields![0] as UITextField
-        let firstPasswordTextField = alertController.textFields![1] as UITextField
-        let secondPasswordTextField = alertController.textFields![2] as UITextField
+        let emailTextField = alertController.textFields![0] as! UITextField
+        let firstPasswordTextField = alertController.textFields![1] as! UITextField
+        let secondPasswordTextField = alertController.textFields![2] as! UITextField
         
-        (alertController.actions[1] as UIAlertAction).enabled = (
+        (alertController.actions[1] as! UIAlertAction).enabled = (
             emailTextField.text.isEmail() &&
             firstPasswordTextField.text != "" &&
             firstPasswordTextField.text == secondPasswordTextField.text
@@ -330,7 +330,7 @@ class IdentifiersViewController: UITableViewController {
         let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in }
         
         let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
-            let validationTextField = alertController.textFields![0] as UITextField
+            let validationTextField = alertController.textFields![0] as! UITextField
             user!.verifyIdentifier(identifier, token: validationTextField.text) { (succeeded, error_msg) -> () in
                 if !succeeded {
                     displayError(error_msg!,self)

@@ -83,7 +83,7 @@ class Contacts {
                 if let emailProperty: ABMultiValueRef = ABRecordCopyValue(person, kABPersonEmailProperty)?.takeRetainedValue() {
                     if let allEmailIDs: NSArray = ABMultiValueCopyArrayOfAllValues(emailProperty)?.takeUnretainedValue() {
                         for emailID in allEmailIDs {
-                            let email = emailID as String
+                            let email = emailID as! String
         
                             //Verify that email address is really an email address
                             if email.isEmail() {
@@ -93,7 +93,7 @@ class Contacts {
                     }
                 }
                 
-                addContact(Contact(id: nil, name: ABRecordCopyCompositeName(person).takeRetainedValue(), friendlyName: ABRecordCopyCompositeName(person).takeRetainedValue(), favorite: false, identifiers: emails, registered: false), merge: true)
+                addContact(Contact(id: nil, name: ABRecordCopyCompositeName(person).takeRetainedValue() as String, friendlyName: ABRecordCopyCompositeName(person).takeRetainedValue() as String, favorite: false, identifiers: emails, registered: false), merge: true)
             }
         }
     }

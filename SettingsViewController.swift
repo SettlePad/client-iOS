@@ -29,7 +29,7 @@ class SettingsViewController: UITableViewController {
         api.logout()
         dispatch_async(dispatch_get_main_queue()) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as UIViewController
+            let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
             self.presentViewController(vc, animated: false, completion: nil)
         }
     }

@@ -9,7 +9,7 @@
 import UIKit
 
 class LimitsTableViewController: UITableViewController {
-    var LimitsFooter = UINib(nibName: "LimitsFooter", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as UIView
+    var LimitsFooter = UINib(nibName: "LimitsFooter", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as! UIView
 
     override func viewDidLoad() {
         super.viewDidLoad()

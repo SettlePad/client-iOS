@@ -24,7 +24,7 @@ class APIController {
 		
 		request("login", method:"POST", formdata: ["provider":"password", "user":username, "password":password], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
 			if(succeeded) {
-				user = User(credentials: data as Dictionary)
+				user = User(credentials: data as! Dictionary)
 				if user != nil {
 					loginCompleted(succeeded: true, msg: user!.name)
 					contacts.updateContacts()
@@ -67,7 +67,7 @@ class APIController {
 	func request(url : String, method: String, formdata : AnyObject?, secure: Bool, requestCompleted : (succeeded: Bool, data: NSDictionary) -> ()) -> NSURLSessionDataTask? {
 		
 		var proceedRequest = true
-		var server = settingsDictionary!["server"]! as String
+		var server = settingsDictionary!["server"]! as! String
 
 		var request = NSMutableURLRequest(URL: NSURL(string: server+url)!)
         var session = NSURLSession.sharedSession()
@@ -136,7 +136,7 @@ class APIController {
 						}
 					} else {
 						if strData != nil {
-							requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":"JSON failed to parse: " + strData!, "function":"local"])
+							requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":"JSON failed to parse: " + (strData! as String), "function":"local"])
 						} else {
 							requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":"JSON failed to parse", "function":"local"])
 						}
@@ -158,7 +158,7 @@ class APIController {
 							
 							requestCompleted(succeeded: false, data: data)
 						} else {
-							let status = (response as NSHTTPURLResponse).statusCode
+							let status = (response as! NSHTTPURLResponse).statusCode
 							if (status == 200) {
 								requestCompleted(succeeded: true, data: parseJSON)
 							} else {

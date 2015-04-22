@@ -16,7 +16,7 @@ protocol NewUOmeModalDelegate {
 class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate  {
     
     let footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
-    var addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as NewUOmeAddressBook
+    var addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as! NewUOmeAddressBook
     
     var delegate:NewUOmeModalDelegate! = nil
 
@@ -51,7 +51,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
                     if (user == nil) {
                         dispatch_async(dispatch_get_main_queue()) {
                             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                            let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as UIViewController
+                            let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
                             self.presentViewController(vc, animated: false, completion: nil)
                         }
                     }
@@ -214,7 +214,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         switchState(.Overview)
         
         addressBookFooter.footerUpdated = {(sender) in
-            self.addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as NewUOmeAddressBook
+            self.addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as! NewUOmeAddressBook
             self.layoutAddressBookFooter()
             
             dispatch_async(dispatch_get_main_queue(), {
@@ -318,14 +318,14 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if (self.state == .Overview) {
             //Show draft UOme's
-            let cell = tableView.dequeueReusableCellWithIdentifier("TransactionCell", forIndexPath: indexPath) as TransactionsCell
+            let cell = tableView.dequeueReusableCellWithIdentifier("TransactionCell", forIndexPath: indexPath) as! TransactionsCell
             
             // Configure the cell...
             cell.markup(newTransactions[indexPath.row])
             return cell
         } else {
             //show contacts
-            let cell = tableView.dequeueReusableCellWithIdentifier("ContactCell", forIndexPath: indexPath) as UITableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier("ContactCell", forIndexPath: indexPath) as! UITableViewCell
             
             // Configure the cell...
             let contactIdentifier = matchedContactIdentifiers[indexPath.row]
@@ -393,10 +393,10 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     func keyboardWillChangeFrameNotification(notification: NSNotification) {
         let userInfo = notification.userInfo!
         
-        let animationDuration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as NSNumber).doubleValue
-        let keyboardEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as NSValue).CGRectValue()
+        let animationDuration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as! NSNumber).doubleValue
+        let keyboardEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
         let convertedKeyboardEndFrame = view.convertRect(keyboardEndFrame, fromView: view.window)
-        let rawAnimationCurve = (notification.userInfo![UIKeyboardAnimationCurveUserInfoKey] as NSNumber).unsignedIntValue << 16
+        let rawAnimationCurve = (notification.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber).unsignedIntValue << 16
         let animationCurve = UIViewAnimationOptions(rawValue: UInt(rawAnimationCurve << 16))
         
         /*

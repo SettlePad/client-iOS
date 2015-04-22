@@ -42,7 +42,7 @@ class CurrenciesViewController: UITableViewController {
     
     // `UIKit` convenience class for sectioning a table
     let collation = UILocalizedIndexedCollation.currentCollation()
-        as UILocalizedIndexedCollation
+        as! UILocalizedIndexedCollation
     
     // table sections
     var sections: [Section] {
@@ -72,7 +72,7 @@ class CurrenciesViewController: UITableViewController {
         
         // sort each section
         for section in sections {
-            section.currencies = self.collation.sortedArrayFromArray(section.currencies, collationStringSelector: "name") as [Currency]
+            section.currencies = self.collation.sortedArrayFromArray(section.currencies, collationStringSelector: "name") as! [Currency]
         }
                 
         self._sections = sections
@@ -129,7 +129,7 @@ class CurrenciesViewController: UITableViewController {
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("CurrencyCell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("CurrencyCell", forIndexPath: indexPath) as! UITableViewCell
         
         // Configure the cell...
         let currency = self.sections[indexPath.section].currencies[indexPath.row]
@@ -149,7 +149,7 @@ class CurrenciesViewController: UITableViewController {
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String {
             // do not display empty `Section`s
             if !self.sections[section].currencies.isEmpty {
-                return self.collation.sectionTitles[section] as String
+                return self.collation.sectionTitles[section] as! String
             }
             return "" //Only works correct if table style is plain, otherwise height of the next section header will be too big
     }

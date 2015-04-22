@@ -18,13 +18,13 @@ func JSONStringify(jsonObj: AnyObject) -> String {
     if (e != nil) {
         return ""
     } else {
-        return NSString(data: jsonData!, encoding: NSUTF8StringEncoding)!
+        return NSString(data: jsonData!, encoding: NSUTF8StringEncoding)! as String
     }
 }
 
 extension Double {
     func format(f: String) -> String {
-        return NSString(format: "%\(f)f", self)
+        return NSString(format: "%\(f)f", self) as String
     }
 }
 
@@ -35,7 +35,7 @@ extension String {
 
     func isEmail() -> Bool {
         let regex = NSRegularExpression(pattern: "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", options: .CaseInsensitive, error: nil)
-        return regex?.firstMatchInString(self, options: nil, range: NSMakeRange(0, countElements(self))) != nil
+        return regex?.firstMatchInString(self, options: nil, range: NSMakeRange(0, count(self))) != nil
     }
 }
 

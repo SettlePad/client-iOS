@@ -17,7 +17,7 @@ func displayError(errorMessage: String, viewController: UIViewController) {
         viewController.presentViewController(alertController, animated: true, completion: nil)
         if (user == nil) {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as UIViewController
+                let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
                 viewController.presentViewController(vc, animated: false, completion: nil)
         }
     })

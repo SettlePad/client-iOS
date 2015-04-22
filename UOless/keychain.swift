@@ -36,7 +36,7 @@ class Keychain {
         let status: OSStatus = SecItemCopyMatching(query, &dataTypeRef)
         
         if status == noErr {
-            return (dataTypeRef!.takeRetainedValue() as NSData)
+            return (dataTypeRef!.takeRetainedValue() as! NSData)
         } else {
             return nil
         }
@@ -72,6 +72,6 @@ extension String {
 
 extension NSData {
     public var stringValue: String {
-        return NSString(data: self, encoding: NSUTF8StringEncoding)!
+        return NSString(data: self, encoding: NSUTF8StringEncoding)! as String
     }
 }

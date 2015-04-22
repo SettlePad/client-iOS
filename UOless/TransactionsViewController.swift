@@ -21,7 +21,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     @IBAction func newUOmeAction(sender: AnyObject) {
         dispatch_async(dispatch_get_main_queue()) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let newUOmeVC = storyboard.instantiateViewControllerWithIdentifier("NewUOmeViewController") as NewUOmeViewController
+            let newUOmeVC = storyboard.instantiateViewControllerWithIdentifier("NewUOmeViewController") as! NewUOmeViewController
             newUOmeVC.delegate = self
             self.presentViewController(newUOmeVC, animated: true, completion: nil)
         }
@@ -29,8 +29,8 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showUOmeSegue" {
-            let navigationController = segue.destinationViewController as UINavigationController
-            let vc = navigationController.viewControllers[0] as NewUOmeViewController
+            let navigationController = segue.destinationViewController as! UINavigationController
+            let vc = navigationController.viewControllers[0] as! NewUOmeViewController
             vc.delegate = self
         }
     }
@@ -112,7 +112,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = transactionsTableView.dequeueReusableCellWithIdentifier("TransactionCell", forIndexPath: indexPath) as TransactionsCell
+        let cell = transactionsTableView.dequeueReusableCellWithIdentifier("TransactionCell", forIndexPath: indexPath) as! TransactionsCell
         
         // Configure the cell...
         if let transaction = transactions.getTransaction(indexPath.row)  {
