@@ -31,27 +31,20 @@ class Contacts {
     
     func updateContacts() {
         //From the UOless server
-        updateServerContacts()
-        
-        //And from the local address book
-        if (ABAddressBookGetAuthorizationStatus() == .Authorized) {
-            if let adressBook: ABAddressBookRef = createAddressBook() {
-                updateLocalContacts(adressBook)
+        updateServerContacts() {()->() in
+            
+            //From the local address book, once the server contacts have loaded
+            if (ABAddressBookGetAuthorizationStatus() == .Authorized) {
+                if let adressBook: ABAddressBookRef = self.createAddressBook() {
+                    self.updateLocalContacts(adressBook)
+                }
             }
-        }
-        
-        //update sorted list of identifiers
-        contactIdentifiers.removeAll()
-        for contact in contacts {
-            for identifier in contact.identifiers {
-                contactIdentifiers.append(["name":contact.friendlyName,"identifier":identifier])
-            }
-        }
-        contactIdentifiers.sort({$0["name"] < $1["name"] }) //Sort by name ASC
 
+            self.updateIdentifiers()
+        }
     }
     
-    private func updateServerContacts() {
+    private func updateServerContacts(requestCompleted : () -> ()) {
         api.request("contacts", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             if(!succeeded) {
                 if let error_msg = data["text"] as? String {
@@ -60,7 +53,8 @@ class Contacts {
                     println("Unknown error while refreshing contacts")
                 }
             } else {
-                self.contacts.removeAll()
+
+                self.contacts = []
                 if let contacts = data["data"] as? NSMutableArray {
                     for contactObj in contacts {
                         if let contactDict = contactObj as? NSDictionary {
@@ -73,6 +67,7 @@ class Contacts {
                     //no contacts, which is fine
                 }
             }
+            requestCompleted()
         }
     }
     
@@ -98,7 +93,17 @@ class Contacts {
         }
     }
     
-    
+    private func updateIdentifiers() {
+        //update sorted list of identifiers
+        contactIdentifiers.removeAll()
+        for contact in contacts {
+            for identifier in contact.identifiers {
+                contactIdentifiers.append(["name":contact.friendlyName,"identifier":identifier])
+            }
+        }
+        contactIdentifiers.sort({$0["name"] < $1["name"] }) //Sort by name ASC
+    }
+        
     private func createAddressBook() -> ABAddressBookRef?
     {
         var error: Unmanaged<CFError>?

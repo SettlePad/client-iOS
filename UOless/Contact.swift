@@ -14,17 +14,17 @@ class Contact {
     var friendlyName: String
     var favorite: Bool {
         didSet (oldValue) {
-            //TODO: create endpoint on server
-            
-            /*api.request("settings", method:"POST", formdata: ["name":favorite], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-                if(!succeeded) {
-                    if let error_msg = data["text"] as? String {
-                        println(error_msg)
-                    } else {
-                        println("Unknown error while setting name")
+            if id != nil {
+                api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"favorite", "value":favorite], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+                    if(!succeeded) {
+                        if let error_msg = data["text"] as? String {
+                            println(error_msg)
+                        } else {
+                            println("Unknown error while setting name")
+                        }
                     }
                 }
-            }*/
+            }
         }
     }
     

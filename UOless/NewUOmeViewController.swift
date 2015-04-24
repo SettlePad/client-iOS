@@ -378,6 +378,10 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillChangeFrameNotification:", name: UIKeyboardWillChangeFrameNotification, object: nil) //This will be removed at viewWillDisappear
+        
+        //Required to have dynamic row height
+        newUOmeTableView.estimatedRowHeight = 70
+        newUOmeTableView.rowHeight = UITableViewAutomaticDimension
     }
     
     override func viewDidAppear(animated: Bool) {
