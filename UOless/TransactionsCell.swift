@@ -35,15 +35,15 @@ class TransactionsCell: UITableViewCell {
         descriptionLabel.textColor = Colors.black.textToUIColor()
         
         //Amount
-        let floatFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
-        amountLabel.text = transaction.currency+" \(transaction.amount.format(floatFormat))"
+        let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
+        amountLabel.text = transaction.currency.rawValue+" \(transaction.amount.format(doubleFormat))"
         if (transaction.amount < 0) {
             let printamount = -1*transaction.amount
             amountLabel.textColor = Colors.gray.textToUIColor()
-            amountLabel.text = "- " + transaction.currency+" \(printamount.format(floatFormat))"
+            amountLabel.text = "- " + transaction.currency.rawValue + " \(printamount.format(doubleFormat))"
         } else {
             amountLabel.textColor = Colors.success.textToUIColor()
-            amountLabel.text = "+ " + transaction.currency+" \(transaction.amount.format(floatFormat))"
+            amountLabel.text = "+ " + transaction.currency.rawValue + " \(transaction.amount.format(doubleFormat))"
         }
         
         //Counterpart

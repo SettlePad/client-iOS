@@ -42,7 +42,7 @@ class Transactions {
                 "recipient":newTransaction.counterpart_name,
                 "description":newTransaction.description,
                 "amount":newTransaction.amount,
-                "currency":newTransaction.currency
+                "currency":newTransaction.currency.rawValue
             ])
             
         }

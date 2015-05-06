@@ -12,7 +12,8 @@ class ContactCell: UITableViewCell {
 
     @IBOutlet var starImageView: UIImageView!
     @IBOutlet var nameLabel: UILabel!
-    @IBOutlet var limitCountLabel: UILabel!
+    @IBOutlet var limitIndicator: UILabel!
+
     var contact: Contact?
     
     override func awakeFromNib() {
@@ -35,7 +36,15 @@ class ContactCell: UITableViewCell {
         
         nameLabel.text = contact.friendlyName
         self.contact = contact
-        limitCountLabel.text = "\(contact.limits.count)"
+        if contact.limits.count == 0 {
+            limitIndicator.text = ""
+        } else if contact.limits.count == 1 {
+            let limit = contact.limits[0] as Limit
+            let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
+            limitIndicator.text = limit.currency.rawValue + " " + limit.limit.format(doubleFormat)
+        } else {
+            limitIndicator.text = "Multiple limits"
+        }
     }
     
     

@@ -9,9 +9,7 @@
 /* Begin PBXBuildFile section */
 		540165D91A82B4C0009F3405 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540165D81A82B4C0009F3405 /* Contact.swift */; };
 		540B4D601AD17D1C00C94C7F /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540B4D5F1AD17D1C00C94C7F /* ContactCell.swift */; };
-		540B4D621AD17E9600C94C7F /* ContactsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540B4D611AD17E9600C94C7F /* ContactsTableViewController.swift */; };
-		540B4D681AD1878D00C94C7F /* LimitsFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 540B4D671AD1878D00C94C7F /* LimitsFooter.xib */; };
-		540B4D6A1AD1896600C94C7F /* LimitsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540B4D691AD1896600C94C7F /* LimitsTableViewController.swift */; };
+		540B4D621AD17E9600C94C7F /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540B4D611AD17E9600C94C7F /* ContactsViewController.swift */; };
 		540C21671A5717E400E9A29A /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540C21661A5717E400E9A29A /* Transaction.swift */; };
 		540C21741A57453100E9A29A /* ios_attention.png in Resources */ = {isa = PBXBuildFile; fileRef = 540C216E1A57453100E9A29A /* ios_attention.png */; };
 		540C21751A57453100E9A29A /* ios_attention@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 540C216F1A57453100E9A29A /* ios_attention@2x.png */; };
@@ -34,10 +32,11 @@
 		548326401A7E9515004973B7 /* NewUOmeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5483263F1A7E9515004973B7 /* NewUOmeViewController.swift */; };
 		548326421A7ED0AC004973B7 /* NewUOmeFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548326411A7ED0AC004973B7 /* NewUOmeFooterView.swift */; };
 		54D4BD071AD0821000AB262B /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D4BD061AD0821000AB262B /* ErrorMessage.swift */; };
+		54D7B12F1AF9036800513435 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D7B12E1AF9036800513435 /* ContactViewController.swift */; };
 		54DF03691A5597020078AE8B /* TransactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DF03681A5597020078AE8B /* TransactionsCell.swift */; };
 		54DF036C1A55A7F00078AE8B /* u189@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 54DF036B1A55A7F00078AE8B /* u189@3x.png */; };
 		54DF036E1A55A9E20078AE8B /* generalFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DF036D1A55A9E20078AE8B /* generalFunctions.swift */; };
-		54EA13691A9691A500654E84 /* NewUOmeAdressBook.xib in Resources */ = {isa = PBXBuildFile; fileRef = 54EA13681A9691A500654E84 /* NewUOmeAdressBook.xib */; };
+		54EA13691A9691A500654E84 /* NewUOmeAddressBook.xib in Resources */ = {isa = PBXBuildFile; fileRef = 54EA13681A9691A500654E84 /* NewUOmeAddressBook.xib */; };
 		54EA136B1A96980900654E84 /* NewUOmeAddressBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */; };
 		54F9EA471A0831D7009DC930 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F9EA461A0831D7009DC930 /* AppDelegate.swift */; };
 		54F9EA491A0831D7009DC930 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F9EA481A0831D7009DC930 /* LoginViewController.swift */; };
@@ -60,16 +59,14 @@
 /* Begin PBXFileReference section */
 		540165D81A82B4C0009F3405 /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		540B4D5F1AD17D1C00C94C7F /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
-		540B4D611AD17E9600C94C7F /* ContactsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsTableViewController.swift; sourceTree = "<group>"; };
-		540B4D671AD1878D00C94C7F /* LimitsFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LimitsFooter.xib; sourceTree = "<group>"; };
-		540B4D691AD1896600C94C7F /* LimitsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LimitsTableViewController.swift; sourceTree = "<group>"; };
+		540B4D611AD17E9600C94C7F /* ContactsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsViewController.swift; sourceTree = "<group>"; };
 		540C21661A5717E400E9A29A /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		540C216E1A57453100E9A29A /* ios_attention.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ios_attention.png; sourceTree = "<group>"; };
 		540C216F1A57453100E9A29A /* ios_attention@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios_attention@2x.png"; sourceTree = "<group>"; };
 		540C21701A57453100E9A29A /* ios_attention@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios_attention@3x.png"; sourceTree = "<group>"; };
 		540C217E1A5819FF00E9A29A /* TransactionsFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionsFooterView.swift; sourceTree = "<group>"; };
 		540C218C1A5C855400E9A29A /* keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = keychain.swift; sourceTree = "<group>"; };
-		542970781A93DAF000641F9F /* Contacts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contacts.swift; sourceTree = "<group>"; };
+		542970781A93DAF000641F9F /* Contacts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Contacts.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		542A4A791A5DEA5100FF865A /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsViewController.swift; path = ../SettingsViewController.swift; sourceTree = "<group>"; };
 		542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrenciesViewController.swift; sourceTree = "<group>"; };
 		543FEFD41A51861C00C18230 /* u189.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = u189.png; sourceTree = "<group>"; };
@@ -83,14 +80,15 @@
 		545AC3231A90C25000E62E76 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		547116D31AC1E4D600214A06 /* IdentifiersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IdentifiersViewController.swift; sourceTree = "<group>"; };
 		547116D51AC2079600214A06 /* UserIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserIdentifier.swift; sourceTree = "<group>"; };
-		5483263F1A7E9515004973B7 /* NewUOmeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewUOmeViewController.swift; sourceTree = "<group>"; };
+		5483263F1A7E9515004973B7 /* NewUOmeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = NewUOmeViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		548326411A7ED0AC004973B7 /* NewUOmeFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewUOmeFooterView.swift; sourceTree = "<group>"; };
 		54D4BD061AD0821000AB262B /* ErrorMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
+		54D7B12E1AF9036800513435 /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
 		54DF03681A5597020078AE8B /* TransactionsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionsCell.swift; sourceTree = "<group>"; };
 		54DF036B1A55A7F00078AE8B /* u189@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "u189@3x.png"; sourceTree = "<group>"; };
 		54DF036D1A55A9E20078AE8B /* generalFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = generalFunctions.swift; sourceTree = "<group>"; };
-		54EA13681A9691A500654E84 /* NewUOmeAdressBook.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewUOmeAdressBook.xib; sourceTree = "<group>"; };
-		54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewUOmeAddressBook.swift; sourceTree = "<group>"; };
+		54EA13681A9691A500654E84 /* NewUOmeAddressBook.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewUOmeAddressBook.xib; sourceTree = "<group>"; };
+		54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = NewUOmeAddressBook.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		54F9EA411A0831D7009DC930 /* UOless.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UOless.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		54F9EA451A0831D7009DC930 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		54F9EA461A0831D7009DC930 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -141,8 +139,8 @@
 				547116D31AC1E4D600214A06 /* IdentifiersViewController.swift */,
 				543FEFDA1A541B6200C18230 /* TransactionsViewController.swift */,
 				5483263F1A7E9515004973B7 /* NewUOmeViewController.swift */,
-				540B4D611AD17E9600C94C7F /* ContactsTableViewController.swift */,
-				540B4D691AD1896600C94C7F /* LimitsTableViewController.swift */,
+				54D7B12E1AF9036800513435 /* ContactViewController.swift */,
+				540B4D611AD17E9600C94C7F /* ContactsViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -166,11 +164,10 @@
 			children = (
 				540C217E1A5819FF00E9A29A /* TransactionsFooterView.swift */,
 				548326411A7ED0AC004973B7 /* NewUOmeFooterView.swift */,
-				54EA13681A9691A500654E84 /* NewUOmeAdressBook.xib */,
+				54EA13681A9691A500654E84 /* NewUOmeAddressBook.xib */,
 				54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */,
 				54DF03681A5597020078AE8B /* TransactionsCell.swift */,
 				540B4D5F1AD17D1C00C94C7F /* ContactCell.swift */,
-				540B4D671AD1878D00C94C7F /* LimitsFooter.xib */,
 			);
 			name = ViewClasses;
 			sourceTree = "<group>";
@@ -183,6 +180,7 @@
 				54F9EA421A0831D7009DC930 /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		54F9EA421A0831D7009DC930 /* Products */ = {
 			isa = PBXGroup;
@@ -325,7 +323,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				540C21761A57453100E9A29A /* ios_attention@3x.png in Resources */,
-				54EA13691A9691A500654E84 /* NewUOmeAdressBook.xib in Resources */,
+				54EA13691A9691A500654E84 /* NewUOmeAddressBook.xib in Resources */,
 				54F9EA4C1A0831D7009DC930 /* Main.storyboard in Resources */,
 				540C21751A57453100E9A29A /* ios_attention@2x.png in Resources */,
 				543FEFD91A518ACE00C18230 /* settings.plist in Resources */,
@@ -334,7 +332,6 @@
 				540C21741A57453100E9A29A /* ios_attention.png in Resources */,
 				543FEFD61A51861C00C18230 /* u189.png in Resources */,
 				54DF036C1A55A7F00078AE8B /* u189@3x.png in Resources */,
-				540B4D681AD1878D00C94C7F /* LimitsFooter.xib in Resources */,
 				54F9EA4E1A0831D7009DC930 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -362,13 +359,13 @@
 				540165D91A82B4C0009F3405 /* Contact.swift in Sources */,
 				54EA136B1A96980900654E84 /* NewUOmeAddressBook.swift in Sources */,
 				543FEFDE1A542D8C00C18230 /* HMAC.swift in Sources */,
+				54D7B12F1AF9036800513435 /* ContactViewController.swift in Sources */,
 				54F9EA471A0831D7009DC930 /* AppDelegate.swift in Sources */,
 				545AC3241A90C25000E62E76 /* User.swift in Sources */,
 				543FEFDB1A541B6200C18230 /* TransactionsViewController.swift in Sources */,
 				547116D41AC1E4D600214A06 /* IdentifiersViewController.swift in Sources */,
 				54DF03691A5597020078AE8B /* TransactionsCell.swift in Sources */,
-				540B4D621AD17E9600C94C7F /* ContactsTableViewController.swift in Sources */,
-				540B4D6A1AD1896600C94C7F /* LimitsTableViewController.swift in Sources */,
+				540B4D621AD17E9600C94C7F /* ContactsViewController.swift in Sources */,
 				547116D61AC2079600214A06 /* UserIdentifier.swift in Sources */,
 				540C218D1A5C855400E9A29A /* keychain.swift in Sources */,
 				548326421A7ED0AC004973B7 /* NewUOmeFooterView.swift in Sources */,

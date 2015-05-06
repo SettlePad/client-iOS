@@ -35,8 +35,8 @@ class Contacts {
             
             //From the local address book, once the server contacts have loaded
             if (ABAddressBookGetAuthorizationStatus() == .Authorized) {
-                if let adressBook: ABAddressBookRef = self.createAddressBook() {
-                    self.updateLocalContacts(adressBook)
+                if let addressBook: ABAddressBookRef = self.createAddressBook() {
+                    self.updateLocalContacts(addressBook)
                 }
             }
 
@@ -113,11 +113,11 @@ class Contacts {
     func requestLocalAccess(requestCompleted: (succeeded: Bool) -> ()) {
         //Check that status is still not determined
         if (ABAddressBookGetAuthorizationStatus() == .NotDetermined) {
-            if let adressBook: ABAddressBookRef = createAddressBook() {
-                ABAddressBookRequestAccessWithCompletion(adressBook,
+            if let addressBook: ABAddressBookRef = createAddressBook() {
+                ABAddressBookRequestAccessWithCompletion(addressBook,
                     {(granted: Bool, error: CFError!) in
                         if granted {
-                            self.updateLocalContacts(adressBook)
+                            self.updateLocalContacts(addressBook)
                         }
                         requestCompleted(succeeded: granted)
                 })

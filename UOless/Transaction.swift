@@ -17,7 +17,7 @@ class Transaction {
     var is_sender: Bool
     var transaction_id: Int?
     var description: String
-    var currency: String
+    var currency: Currency
     var amount: Double
     var status: transactionStatus
     var reduced: Bool
@@ -157,10 +157,15 @@ class Transaction {
         }
         
         if let parsed = fromDict["currency"] as? String {
-            currency = parsed
+			if let parsedCurrency = Currency(rawValue: parsed) {
+				currency = parsedCurrency
+			} else {
+				currency = Currency.EUR
+				println("Unknown currency parameter")
+			}
         } else {
-            currency = ""
-            println("Failed to get currency parameter")
+			currency = Currency.EUR
+			println("Failed to get currency parameter")
         }
         
         if let parsed = fromDict["amount"] as? Double {
@@ -184,7 +189,7 @@ class Transaction {
         is_read = false
     }
     
-    init(counterpart_name: String, description: String, currency: String, amount: Double) {
+    init(counterpart_name: String, description: String, currency: Currency, amount: Double) {
         time_sent = NSDate()
         time_updated = NSDate()
         self.counterpart_name = counterpart_name

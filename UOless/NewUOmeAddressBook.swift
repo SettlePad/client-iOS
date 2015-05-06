@@ -14,7 +14,7 @@ class NewUOmeAddressBook: UIView {
     typealias footerUpdatedDelegate = (NewUOmeAddressBook) -> ()
     var footerUpdated: footerUpdatedDelegate?
     
-    @IBOutlet var requestAdressBookAccessButton: UIButton!
+    @IBOutlet var requestAddressBookAccessButton: UIButton!
     
     @IBOutlet var detailLabel: UILabel!
     
@@ -38,15 +38,15 @@ class NewUOmeAddressBook: UIView {
         //Determine address book status
         switch contacts.localStatus{
             case .Authorized:
-                self.requestAdressBookAccessButton.removeFromSuperview()
+                self.requestAddressBookAccessButton.removeFromSuperview()
                 self.detailLabel.removeFromSuperview()
             case .Denied:
-                self.requestAdressBookAccessButton.removeFromSuperview()
+                self.requestAddressBookAccessButton.removeFromSuperview()
                 self.detailLabel.text = "You denied UOless access to your local address book, which is why we can only show contacts you've already exchanged UOmes with. You can allow access to your address book in the iOS settings (Privacy, Contacts)."
             case .NotDetermined:
                 self.detailLabel.text = "UOless will not upload any personal data from your contacts to its servers. The technical details: a salted hash of the email addresses and phone numbers of your contacts will at some point in the future created and stored at the servers, to be able to tell you who of your contacts is using our service."
             case .Restricted:
-                self.requestAdressBookAccessButton.removeFromSuperview()
+                self.requestAddressBookAccessButton.removeFromSuperview()
                 self.detailLabel.text = "UOless cannot access your contacts, possibly due to restrictions such as parental controls."
         }
     }

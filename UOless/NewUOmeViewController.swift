@@ -13,13 +13,14 @@ protocol NewUOmeModalDelegate {
     func transactionsPostCompleted(controller:NewUOmeViewController)
 }
 
-class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate  {
-    
+class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, UIPickerViewDelegate, UIPickerViewDataSource   {
+	
     let footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
-    var addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as! NewUOmeAddressBook
+    var addressBookFooter = UINib(nibName: "NewUOmeAddressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as! NewUOmeAddressBook
     
     var delegate:NewUOmeModalDelegate! = nil
-
+	var sortedCurrencies: [Currency] = []
+	var selectedCurrency: Currency = Currency.EUR
     
     @IBOutlet var newUOmeTableView: UITableView!
     
@@ -66,11 +67,14 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 
         }
     }
+    @IBAction func formCurrencyAction(sender: PickerButton) {
+		sender.becomeFirstResponder()
+    }
     
     @IBOutlet var formTo: UITextField!
     @IBOutlet var formDescription: UITextField!
     @IBOutlet var formType: UISegmentedControl!
-    @IBOutlet var formCurrency: UIButton!
+    @IBOutlet var formCurrency: PickerButton!
     @IBOutlet var formAmount: UITextField!
     @IBOutlet var formSaveButton: UIButton!
     
@@ -214,7 +218,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         switchState(.Overview)
         
         addressBookFooter.footerUpdated = {(sender) in
-            self.addressBookFooter = UINib(nibName: "NewUOmeAdressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as! NewUOmeAddressBook
+            self.addressBookFooter = UINib(nibName: "NewUOmeAddressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as! NewUOmeAddressBook
             self.layoutAddressBookFooter()
             
             dispatch_async(dispatch_get_main_queue(), {
@@ -225,6 +229,22 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
                 self.newUOmeTableView.reloadData()
             })
         }
+		
+		//Sort currencies
+		sortedCurrencies = Currency.allValues.sorted({(left: Currency, right: Currency) -> Bool in left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
+		
+		//Link currency picker to delegate and datasource functions below
+		formCurrency.modInputView.dataSource = self
+		formCurrency.modInputView.delegate = self
+		
+		//Set currency picker to user's default currency
+		let row: Int? = find(sortedCurrencies,user!.defaultCurrency)
+		if row != nil {
+			formCurrency.modInputView.selectRow(row!, inComponent: 0, animated: false)
+			selectedCurrency = user!.defaultCurrency
+			formCurrency.setTitle(user!.defaultCurrency.rawValue, forState: UIControlState.Normal)
+		}
+		
     }
     
 
@@ -447,7 +467,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             var transaction = Transaction(
                 counterpart_name: formTo.text,
                 description: formDescription.text,
-                currency: formCurrency.titleLabel!.text!,
+                currency: selectedCurrency,
                 amount: amount
             )
             newTransactions.append(transaction)
@@ -477,4 +497,26 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             }
         }
     }
+	
+	// Currency picker delegate
+	func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int
+	{
+		return 1;
+	}
+	
+	func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int
+	{
+		return sortedCurrencies.count;
+	}
+	
+	func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String
+	{
+		return sortedCurrencies[row].toLongName()
+	}
+	
+	func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
+	{
+		formCurrency.setTitle(sortedCurrencies[row].rawValue, forState: UIControlState.Normal)
+		selectedCurrency = sortedCurrencies[row]
+	}
 }

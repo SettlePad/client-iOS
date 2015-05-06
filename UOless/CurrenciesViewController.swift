@@ -13,29 +13,26 @@ import UIKit
 class CurrenciesViewController: UITableViewController {
     @IBOutlet var currenciesTableView: UITableView!
     
-    var unorderedCurrencies = ["AFN":"Afghani", "ALL":"Lek", "DZD":"Algerian Dinar", "USD":"US Dollar", "EUR":"Euro", "AOA":"Kwanza", "XCD":"East Caribbean Dollar", "ARS":"Argentine Peso", "AMD":"Armenian Dram", "AWG":"Aruban Florin", "AUD":"Australian Dollar", "AZN":"Azerbaijanian Manat", "BSD":"Bahamian Dollar", "BHD":"Bahraini Dinar", "BDT":"Taka", "BBD":"Barbados Dollar", "BYR":"Belarussian Ruble", "BZD":"Belize Dollar", "XOF":"CFA Franc BCEAO", "BMD":"Bermudian Dollar", "BTN":"Ngultrum", "BOB":"Boliviano", "BAM":"Convertible Mark", "BWP":"Pula", "NOK":"Norwegian Krone", "BRL":"Brazilian Real", "BND":"Brunei Dollar", "BGN":"Bulgarian Lev", "BIF":"Burundi Franc", "KHR":"Riel", "XAF":"CFA Franc BEAC", "CAD":"Canadian Dollar", "CVE":"Cape Verde Escudo", "KYD":"Cayman Islands Dollar", "CLP":"Chilean Peso", "CNY":"Yuan Renminbi", "COP":"Colombian Peso", "KMF":"Comoro Franc", "CDF":"Congolais Franc", "NZD":"New Zealand Dollar", "CRC":"Costa Rican Colon", "HRK":"Croatian Kuna", "CUP":"Cuban Peso", "CUC":"Peso Convertible", "ANG":"Netherlands Antillean Guilder", "CZK":"Czech Koruna", "DKK":"Danish Krone", "DJF":"Djibouti Franc", "DOP":"Dominican Peso", "EGP":"Egyptian Pound", "ERN":"Nakfa", "ETB":"Ethiopian Birr", "FKP":"Falkland Islands Pound", "FJD":"Fiji Dollar", "XPF":"CFP Franc", "GMD":"Dalasi", "GEL":"Lari", "GHS":"Ghana Cedi", "GIP":"Gibraltar Pound", "GTQ":"Quetzal", "GBP":"Pound Sterling", "GNF":"Guinea Franc", "GYD":"Guyana Dollar", "HTG":"Gourde", "HNL":"Lempira", "HKD":"Hong Kong Dollar", "HUF":"Forint", "ISK":"Iceland Krona", "INR":"Indian Rupee", "IDR":"Rupiah", "IRR":"Iranian Rial", "IQD":"Iraqi Dinar", "ILS":"New Israeli Sheqel", "JMD":"Jamaican Dollar", "JPY":"Yen", "JOD":"Jordanian Dinar", "KZT":"Tenge", "KES":"Kenyan Shilling", "KPW":"North Korean Won", "KRW":"Won", "KWD":"Kuwaiti Dinar", "KGS":"Som", "LAK":"Kip", "LVL":"Latvian Lats", "LBP":"Lebanese Pound", "LSL":"Loti", "LRD":"Liberian Dollar", "LYD":"Libyan Dinar", "CHF":"Swiss Franc", "LTL":"Lithuanian Litas", "MOP":"Pataca", "MKD":"Denar", "MGA":"Malagasy Ariary", "MWK":"Kwacha", "MYR":"Malaysian Ringgit", "MVR":"Rufiyaa", "MRO":"Ouguiya", "MUR":"Mauritius Rupee", "MXN":"Mexican Peso", "MDL":"Moldovan Leu", "MNT":"Tugrik", "MAD":"Moroccan Dirham", "MZN":"Mozambique Metical", "MMK":"Kyat", "NAD":"Namibia Dollar", "NPR":"Nepalese Rupee", "NIO":"Cordoba Oro", "NGN":"Naira", "OMR":"Rial Omani", "PKR":"Pakistan Rupee", "PAB":"Balboa", "PGK":"Kina", "PYG":"Guarani", "PEN":"Nuevo Sol", "PHP":"Philippine Peso", "PLN":"Zloty", "QAR":"Qatari Rial", "RON":"New Romanian Leu", "RUB":"Russian Ruble", "RWF":"Rwanda Franc", "SHP":"Saint Helena Pound", "WST":"Tala", "STD":"Dobra", "SAR":"Saudi Riyal", "RSD":"Serbian Dinar", "SCR":"Seychelles Rupee", "SLL":"Leone", "SGD":"Singapore Dollar", "SBD":"Solomon Islands Dollar", "SOS":"Somali Shilling", "ZAR":"Rand", "SSP":"South Sudanese Pound", "LKR":"Sri Lanka Rupee", "SDG":"Sudanese Pound", "SRD":"Surinam Dollar", "SZL":"Lilangeni", "SEK":"Swedish Krona", "SYP":"Syrian Pound", "TWD":"New Taiwan Dollar", "TJS":"Somoni", "TZS":"Tanzanian Shilling", "THB":"Baht", "TOP":"Paʻanga", "TTD":"Trinidad and Tobago Dollar", "TND":"Tunisian Dinar", "TRY":"Turkish Lira", "TMT":"Turkmenistan New Manat", "UGX":"Uganda Shilling", "UAH":"Hryvnia", "AED":"UAE Dirham", "UYU":"Peso Uruguayo", "UZS":"Uzbekistan Sum", "VUV":"Vatu", "VEF":"Bolivar Fuerte", "VND":"Dong", "YER":"Yemeni Rial", "ZMW":"New Zambian Kwacha", "ZWL":"Zimbabwe Dollar"] //Copy paste from API
-    
     var selectedIndexPath: NSIndexPath?
 
-    
-    /* type to represent table items
-    `section` stores a `UITableView` section */
-    class Currency: NSObject {
-        let name: String
-        let abbrev: String
-        var section: Int?
-        
-        init(name: String, abbrev: String) {
-            self.name = name
-            self.abbrev = abbrev
-        }
-    }
-    
+	
+	class CurrencyObject: NSObject {
+		let longName: String
+		let abbrev: String
+		let currency: Currency
+		
+		init(abbrev: String, longName: String, currency: Currency) {
+			self.abbrev = abbrev
+			self.longName = longName
+			self.currency = currency
+		}
+	}
+	
     // custom type to represent table sections
     class Section {
-        var currencies: [Currency] = []
-        
-        func addCurrency(currency: Currency) {
+        var currencies: [CurrencyObject] = []
+		
+        func addCurrency(currency: CurrencyObject) {
             self.currencies.append(currency)
         }
     }
@@ -50,29 +47,25 @@ class CurrenciesViewController: UITableViewController {
         if self._sections != nil {
             return self._sections!
         }
-        
-        // create currencies from the currency dictionary
-        var currencies: [Currency] = []
-        for (abbrev, name) in unorderedCurrencies {
-            var currency = Currency(name: name, abbrev: abbrev)
-            currency.section = self.collation.sectionForObject(currency, collationStringSelector: "name")
-            currencies.append(currency)
-        }
-        
+		
         // create empty sections
         var sections = [Section]()
         for i in 0..<self.collation.sectionIndexTitles.count {
             sections.append(Section())
         }
-        
+		
+		
         // put each currency in a section
-        for currency in currencies {
-            sections[currency.section!].addCurrency(currency)
+        for currency in Currency.allValues {
+			let currencyObject = CurrencyObject(abbrev: currency.rawValue, longName: currency.toLongName(), currency: currency)
+			
+			let section = self.collation.sectionForObject(currencyObject, collationStringSelector: "longName")
+            sections[section].addCurrency(currencyObject)
         }
         
         // sort each section
         for section in sections {
-            section.currencies = self.collation.sortedArrayFromArray(section.currencies, collationStringSelector: "name") as! [Currency]
+			 section.currencies = self.collation.sortedArrayFromArray(section.currencies, collationStringSelector: "longName") as! [CurrencyObject]
         }
                 
         self._sections = sections
@@ -93,8 +86,8 @@ class CurrenciesViewController: UITableViewController {
 
         //Move to selected currency
         for (sectionindex, section) in enumerate(sections) {
-            for (rowindex, currency) in enumerate(section.currencies) {
-                if currency.abbrev == user?.defaultCurrency {
+            for (rowindex, currencyObject) in enumerate(section.currencies) {
+                if currencyObject.currency == user?.defaultCurrency {
                     selectedIndexPath = NSIndexPath(forRow:rowindex, inSection:sectionindex)
                 }
             }
@@ -132,11 +125,11 @@ class CurrenciesViewController: UITableViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier("CurrencyCell", forIndexPath: indexPath) as! UITableViewCell
         
         // Configure the cell...
-        let currency = self.sections[indexPath.section].currencies[indexPath.row]
-        cell.textLabel?.text = currency.name
+        let currencyObject = self.sections[indexPath.section].currencies[indexPath.row]
+        cell.textLabel?.text = currencyObject.longName
 
         //Determine whether the selected index path
-        if currency.abbrev == user?.defaultCurrency {
+        if currencyObject.currency == user?.defaultCurrency {
             cell.accessoryType = .Checkmark
         } else {
             cell.accessoryType = .None
@@ -174,9 +167,9 @@ class CurrenciesViewController: UITableViewController {
         //Update currency
         selectedIndexPath = indexPath
         let cell = tableView.cellForRowAtIndexPath(indexPath)
-        let currency = self.sections[indexPath.section].currencies[indexPath.row]
+        let currencyObject = self.sections[indexPath.section].currencies[indexPath.row]
 
-        user?.defaultCurrency = currency.abbrev
+        user?.defaultCurrency = currencyObject.currency
         cell?.accessoryType = .Checkmark
     }
     

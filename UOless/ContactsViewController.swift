@@ -1,5 +1,5 @@
 //
-//  ContactsTableViewController.swift
+//  ContactsViewController.swift
 //  UOless
 //
 //  Created by Rob Everhardt on 05/04/15.
@@ -8,8 +8,9 @@
 
 import UIKit
 
-class ContactsTableViewController: UITableViewController {
-
+class ContactsViewController: UITableViewController {
+	//TODO: add sections
+	
     @IBOutlet var searchBar: UISearchBar!
 
     @IBAction func starTapGestureRecognizer(sender: AnyObject) {
@@ -29,6 +30,8 @@ class ContactsTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+
+        // To hide search bar:
         self.tableView.setContentOffset(CGPointMake(0, searchBar.frame.size.height), animated: false)
         
         //Hide additional gridlines, and set gray background for footer
@@ -105,14 +108,85 @@ class ContactsTableViewController: UITableViewController {
     }
     */
 
-    /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
+
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
+
+
+		if segue.identifier == "contact" {
+			//make sure that the segue is going to secondViewController
+			let selectedIndex : NSIndexPath = self.tableView.indexPathForSelectedRow()!
+			let destVC = segue.destinationViewController as! ContactViewController
+			destVC.contact = contacts.registeredContacts[selectedIndex.row]
+		}
     }
-    */
+
+	
+    func searchBarShouldBeginEditing(searchBar: UISearchBar!) -> Bool // return NO to not become first responder
+    {
+        //contactsTableView.clear()
+        //reload_transactions(searching: true) //want to show search instructions
+        
+        return true
+    }
+    
+    func searchBarTextDidBeginEditing(searchBar: UISearchBar!) // called when text starts editing
+    {
+        
+    }
+    
+    func searchBarShouldEndEditing(searchBar: UISearchBar!) -> Bool // return NO to not resign first responder
+    {
+        return true
+    }
+    
+    func searchBar(searchBar: UISearchBar!, textDidChange searchText: String!) // called when text changes (including clear)
+    {
+        println("search typed")
+    }
+    
+    func searchBarSearchButtonClicked( searchBar: UISearchBar!)
+    {
+        println("searched")
+        
+        //get new results
+        /*transactions.get(searchBar.text){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+            if (succeeded) {
+                dispatch_async(dispatch_get_main_queue(), {
+                    //so it is run now, instead of at the end of code execution
+                    self.reload_transactions()
+                })
+            } else {
+                displayError(error_msg!, self)
+            }
+        }*/
+        
+        //reload_transactions(loading: true) //want to show spinner
+    }
+    
+    func searchBarCancelButtonClicked( searchBar: UISearchBar!)
+    {
+        //To hide searchbar
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        let y = self.tableView!.contentOffset.y + searchBar!.frame.height
+        let newContentOffset = CGPoint(x:0, y: y)
+        self.tableView.setContentOffset(newContentOffset, animated: true)
+        
+        //self.transactionsTableView.scrollRectToVisible(CGRectMake(0, 44,0,0), animated: true)
+        
+        /*transactions.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+            if (succeeded) {
+                dispatch_async(dispatch_get_main_queue(), {
+                    //so it is run now, instead of at the end of code execution
+                    self.reload_transactions()
+                })
+            } else {
+                displayError(error_msg!, self)
+            }
+        }*/
+        
+        //reload_transactions(loading: true) //want to show spinner
+    }
 
 }

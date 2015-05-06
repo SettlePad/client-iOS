@@ -31,7 +31,7 @@ class Contact {
     
     
     var identifiers = [String]()
-    var limits = [String:Float]()
+    private(set) var limits = [Limit]()
     var registered: Bool //Contacts that do not come from the UOless server but fmor the local address book get false. Of those, a subset will have a UOless account as well, but we cannot know without sharing the whole address book with the UOless server. And that we don't do
     
     //TODO: autolimit to implement
@@ -87,4 +87,59 @@ class Contact {
         
         self.registered = registered
     }
+	
+	func addLimit(currency: Currency, limit: Double) {
+		var row: Int?
+		for (index,limit) in enumerate(limits) {
+			if limit.currency == currency {
+				row = index
+			}
+		}
+	
+		//only add if there is no limit for this currency yet
+		if row == nil {
+			limits.append(Limit(currency: currency, limit: limit))
+		} else {
+			limits[row!] = Limit(currency: currency, limit: limit)
+		}
+
+		//TODO
+			/*
+			api.request("TBD/"+id!.description, method:"POST", formdata: ["field":"favorite", "value":favorite], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+				if(!succeeded) {
+					if let error_msg = data["text"] as? String {
+						println(error_msg)
+					} else {
+						println("Unknown error while setting name")
+						//roll back addition
+					}
+				}
+			}
+			*/
+	}
+	
+	func removeLimit(currency: Currency) {
+		var row: Int?
+		for (index,limit) in enumerate(limits) {
+			if limit.currency == currency {
+				row = index
+			}
+		}
+		
+		if row != nil {
+			limits.removeAtIndex(row!)
+			//TODO: add API implementation
+		}
+
+	}
+}
+
+class Limit {
+	var currency: Currency
+	var limit: Double
+	
+	init(currency: Currency, limit: Double) {
+		self.currency = currency
+		self.limit = limit
+	}
 }

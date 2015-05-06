@@ -30,9 +30,9 @@ class User {
         }
     }
 
-    var defaultCurrency: String! {
+    var defaultCurrency: Currency! {
         didSet {
-            api.request("settings", method:"POST", formdata: ["default_currency":defaultCurrency], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+            api.request("settings", method:"POST", formdata: ["default_currency":defaultCurrency.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
                 if(!succeeded) {
                     if let error_msg = data["text"] as? String {
                         println(error_msg)
@@ -44,7 +44,7 @@ class User {
         }
     }
     
-    init (id: Int, name: String, series:String, token: String, defaultCurrency: String, userIdentifiers: [UserIdentifier]){
+    init (id: Int, name: String, series:String, token: String, defaultCurrency: Currency, userIdentifiers: [UserIdentifier]){
         self.id = id
         self.name = name
         self.series = series
@@ -86,11 +86,16 @@ class User {
         }
         
         let defaults = NSUserDefaults.standardUserDefaults()
-        if let defaultsStr = defaults.stringForKey("default_currency") {
-            self.defaultCurrency = defaultsStr
-        } else {
-            return nil
+		var found = false
+		if let defaultsStr = defaults.stringForKey("default_currency") {
+			if let currency = Currency(rawValue: defaultsStr) {
+				self.defaultCurrency = currency
+				found = true
+			}
         }
+		if found == false {
+			return nil
+		}
         
         if let data = defaults.objectForKey("userIdentifiers") as? NSData {
             if let subdata = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? [UserIdentifier] {
@@ -130,13 +135,18 @@ class User {
         } else {
             return nil
         }
-        
-        if let strVal = credentials["default_currency"] as? String {
-            self.defaultCurrency = strVal
-        } else {
-            return nil
-        }
-        
+		
+		var found = false
+		if let strVal = credentials["default_currency"] as? String {
+			if let currency = Currency(rawValue: strVal) {
+				self.defaultCurrency = currency
+				found = true
+			}
+		}
+		if found == false {
+			return nil
+		}
+		
         if let arrayVal = credentials["identifiers"] as? [[String:AnyObject]] {
             if arrayVal.count == 0 {
                 println("Empty identifier array")
@@ -179,7 +189,7 @@ class User {
         
         //Set NSUserdefaults
         let defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setObject(defaultCurrency, forKey: "default_currency")
+        defaults.setObject(defaultCurrency.rawValue, forKey: "default_currency")
         let data = NSKeyedArchiver.archivedDataWithRootObject(userIdentifiers)
         defaults.setObject(data, forKey: "userIdentifiers")
     }

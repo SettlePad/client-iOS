@@ -127,10 +127,10 @@ class SettingsViewController: UITableViewController {
     */
     
     func updateLabels () {
-        currencyLabel.text = user?.defaultCurrency
+        currencyLabel.text = user?.defaultCurrency.rawValue
         nameText.text = user?.name
         credentialsLabel.text = user?.userIdentifiers.count.description
-        favoritesLabel.text = contacts.favoriteContacts.count.description
+        favoritesLabel.text = contacts.registeredContacts.count.description
     }
 
 }
