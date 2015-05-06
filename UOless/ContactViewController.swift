@@ -16,8 +16,6 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 	@IBOutlet var nameText: UITextField!
 	@IBOutlet var emailsLabel: UILabel!
 	@IBOutlet var limitsTable: UITableView!
-	
-    @IBOutlet var limitLimitText: UITextField!
 	@IBOutlet var limitCurrencyButton: PickerButton!
     @IBAction func limitCurrencyButtonAction(sender: PickerButton) {
 		sender.becomeFirstResponder()

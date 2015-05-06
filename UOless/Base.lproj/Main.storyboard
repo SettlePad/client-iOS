@@ -769,7 +769,7 @@ john2@doe.com</string>
                     <connections>
                         <outlet property="emailsLabel" destination="O54-bR-VsQ" id="fLu-fw-wTl"/>
                         <outlet property="limitCurrencyButton" destination="cFo-ls-Xx6" id="NzP-SE-WR6"/>
-                        <outlet property="limitLimitText" destination="AQg-xR-0my" id="qjh-eH-9KW"/>
+                        <outlet property="limitLimitText" destination="AQg-xR-0my" id="XpC-2E-zF4"/>
                         <outlet property="limitsTable" destination="Hlg-3V-LQq" id="tc1-jT-wjR"/>
                         <outlet property="nameText" destination="rV9-Z4-i4r" id="7RM-kJ-hVg"/>
                     </connections>
