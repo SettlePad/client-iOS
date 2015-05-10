@@ -11,28 +11,70 @@
 import UIKit
 
 class ContactViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource {
+	
 	var contact:Contact! = nil
 	
 	@IBOutlet var nameText: UITextField!
 	@IBOutlet var emailsLabel: UILabel!
 	@IBOutlet var limitsTable: UITableView!
 	
+    @IBOutlet var starImageView: UIImageView!
     @IBOutlet var limitLimitText: UITextField!
 	@IBOutlet var limitCurrencyButton: PickerButton!
     @IBAction func limitCurrencyButtonAction(sender: PickerButton) {
 		sender.becomeFirstResponder()
 	}
+	
+    @IBAction func limitLimitEditingChanged(sender: AnyObject) {
+		checkLimitForm(false, whileEditing: true)
+    }
+	
+    @IBAction func nameTextEditingDidEnd(sender: AnyObject) {
+        contact.friendlyName = nameText.text
+    }
+	
+    @IBAction func starTapGestureRecognizer(sender: AnyObject) {
+        //Determine the rowindex via the touch point
+        contact.favorite = !contact.favorite
+		dispatch_async(dispatch_get_main_queue(), {
+			self.updateStar()
+		})
+    }
+	
 	@IBAction func addLimitButton(sender: AnyObject) {
-		//contact.addLimit(<#currency: Currency#>, limit: limitLimitText)
+		if checkLimitForm(true, whileEditing: false) {
+			contact.addLimit(selectedCurrency, limit: limitLimitText.text.toDouble()!, updateServer: true)
+			dispatch_async(dispatch_get_main_queue(), {
+				self.limitsTable.reloadData()
+				self.limitLimitText.text = ""
+			})
+		}
 	}
 	
 	
 	var sortedCurrencies: [Currency] = []
 	var selectedCurrency: Currency = Currency.EUR
 	
+	override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+		
+		//Kill inset
+		// iOS 7:
+		limitsTable.separatorStyle = .SingleLine
+		limitsTable.separatorInset = UIEdgeInsetsZero
+		
+		// iOS 8:
+		if UITableView.instancesRespondToSelector("setLayoutMargins:") {
+			limitsTable.layoutMargins = UIEdgeInsetsZero
+		}
+		
+		limitsTable.layoutIfNeeded()
+		
+	}
+	
     override func viewDidLoad() {
         super.viewDidLoad()
-
+		
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -64,6 +106,18 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 		
 		//Hide additional gridlines
 		limitsTable.tableFooterView = UIView(frame:CGRectZero)
+
+
+	}
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+
+		//Set cell height to dynamic
+		limitsTable.rowHeight = UITableViewAutomaticDimension
+		limitsTable.estimatedRowHeight = 40
+		
+		updateStar()
 	}
 
     override func didReceiveMemoryWarning() {
@@ -87,61 +141,58 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 
 	
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("limitCell", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("limitCell", forIndexPath: indexPath) as! LimitCell
 		
 		// Configure the cell...
 		let limit = contact.limits[indexPath.row] as Limit
 		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
-		cell.textLabel!.text = limit.currency.rawValue + " " + limit.limit.format(doubleFormat)
-
+		cell.limitLabel.text = limit.currency.rawValue + " " + limit.limit.format(doubleFormat)
+		//cell.backgroundColor = Colors.danger.backgroundToUIColor()
         return cell
     }
 	
+	//To kill the inset
+	func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
 
-    /*
+		// iOS 7:
+		cell.separatorInset = UIEdgeInsetsZero
+		
+		// iOS 8:
+		if UITableView.instancesRespondToSelector("setLayoutMargins:") {
+			limitsTable.layoutMargins = UIEdgeInsetsZero
+			cell.layoutMargins = UIEdgeInsetsZero
+			cell.preservesSuperviewLayoutMargins = false
+		}
+		
+
+	}
+	
+	func updateStar() {
+		if self.contact.favorite {
+			self.starImageView.image = UIImage(named: "StarFull")
+		} else {
+			self.starImageView.image = UIImage(named: "StarEmpty")
+		}
+	}
+	
     // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+	func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the specified item to be editable.
         return true
     }
-    */
+	
 
-    /*
+	
     // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Delete the row from the data source
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+			let limit = contact.limits[indexPath.row] as Limit
+			contact.removeLimit(limit.currency, updateServer: true)
+			tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        }
     }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return NO if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
-    }
-    */
+	
 
 	
 	// Currency picker delegate
@@ -166,10 +217,15 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 		selectedCurrency = sortedCurrencies[row]
 	}
 	
-	func checkLimitForm(finalCheck: Bool, whileEditing: Bool) {
+	func donePicker () {
+		limitCurrencyButton.resignFirstResponder()
+	}
+	
+	func checkLimitForm(finalCheck: Bool, whileEditing: Bool) -> Bool {
 		var isValid = true
 		var hasGivenFirstResponder = false
-		if let parsed = limitLimitText.text.toDouble() {
+		let parsed = limitLimitText.text.toDouble()
+		if parsed != nil && parsed >= 0 {
 			limitLimitText.backgroundColor = nil
 			limitLimitText.textColor = nil
 		} else {
@@ -183,6 +239,24 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 				}
 			}
 		}
+		return isValid
+	}
+
+}
+
+class LimitCell: UITableViewCell {
+	
+	
+	@IBOutlet var limitLabel: UILabel!
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		// Initialization code
+	}
+	
+	override func setSelected(selected: Bool, animated: Bool) {
+		super.setSelected(selected, animated: animated)
+		
+		// Configure the view for the selected state
 	}
 }
 

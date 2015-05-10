@@ -8,10 +8,24 @@
 
 import Foundation
 
-class Contact {
+class Contact: NSObject { //required for sections in viewcontroller with collation
     var id: Int?
     var name: String
-    var friendlyName: String
+	var friendlyName: String {
+		didSet (oldValue) {
+			if id != nil {
+				api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"friendly_name", "value":friendlyName], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+					if(!succeeded) {
+						if let error_msg = data["text"] as? String {
+							println(error_msg)
+						} else {
+							println("Unknown error while setting friendly name")
+						}
+					}
+				}
+			}
+		}
+	}
     var favorite: Bool {
         didSet (oldValue) {
             if id != nil {
@@ -20,7 +34,7 @@ class Contact {
                         if let error_msg = data["text"] as? String {
                             println(error_msg)
                         } else {
-                            println("Unknown error while setting name")
+                            println("Unknown error while setting favorite")
                         }
                     }
                 }
@@ -34,7 +48,6 @@ class Contact {
     private(set) var limits = [Limit]()
     var registered: Bool //Contacts that do not come from the UOless server but fmor the local address book get false. Of those, a subset will have a UOless account as well, but we cannot know without sharing the whole address book with the UOless server. And that we don't do
     
-    //TODO: autolimit to implement
     init(id: Int? = nil, name: String, friendlyName: String, favorite: Bool, identifiers: [String], registered: Bool) {
         self.id = id
         self.name = name
@@ -88,7 +101,7 @@ class Contact {
         self.registered = registered
     }
 	
-	func addLimit(currency: Currency, limit: Double) {
+	func addLimit(currency: Currency, limit: Double, updateServer: Bool) {
 		var row: Int?
 		for (index,limit) in enumerate(limits) {
 			if limit.currency == currency {
@@ -102,23 +115,24 @@ class Contact {
 		} else {
 			limits[row!] = Limit(currency: currency, limit: limit)
 		}
+		
+		if updateServer {
 
-		//TODO
-			/*
-			api.request("TBD/"+id!.description, method:"POST", formdata: ["field":"favorite", "value":favorite], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			api.request("autolimits/"+id!.description+"/"+currency.rawValue, method:"POST", formdata: ["auto_limit":limit], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
 						println(error_msg)
 					} else {
-						println("Unknown error while setting name")
-						//roll back addition
+						println("Unknown error while adding limit")
 					}
+					//TODO: roll back addition
 				}
 			}
-			*/
+
+		}
 	}
 	
-	func removeLimit(currency: Currency) {
+	func removeLimit(currency: Currency, updateServer: Bool) {
 		var row: Int?
 		for (index,limit) in enumerate(limits) {
 			if limit.currency == currency {
@@ -128,7 +142,19 @@ class Contact {
 		
 		if row != nil {
 			limits.removeAtIndex(row!)
-			//TODO: add API implementation
+
+			if updateServer {
+				api.request("autolimits/"+id!.description+"/"+currency.rawValue, method:"POST", formdata: ["auto_limit":0.0], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+					if(!succeeded) {
+						if let error_msg = data["text"] as? String {
+							println(error_msg)
+						} else {
+							println("Unknown error while removing limit")
+						}
+						//TODO: roll back removal
+					}
+				}
+			}
 		}
 
 	}

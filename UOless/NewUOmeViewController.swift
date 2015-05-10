@@ -213,7 +213,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        newUOmeTableView.rowHeight = UITableViewAutomaticDimension
+        //newUOmeTableView.rowHeight = UITableViewAutomaticDimension
         
         switchState(.Overview)
         
@@ -518,5 +518,9 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 	{
 		formCurrency.setTitle(sortedCurrencies[row].rawValue, forState: UIControlState.Normal)
 		selectedCurrency = sortedCurrencies[row]
+	}
+	
+	func donePicker () {
+		formCurrency.resignFirstResponder()
 	}
 }

@@ -80,7 +80,7 @@ class LoginViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         if user != nil {
-            contacts.updateContacts()
+			contacts.updateContacts(){}
             enter_app()
         }
     }

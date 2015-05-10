@@ -87,16 +87,41 @@ enum Colors {
 
 class PickerButton: UIButton {
 	var modInputView =  UIPickerView()
+	var modAccessoryView = UIToolbar()
+
+
+	required init(coder aDecoder: NSCoder) {
+		super.init(coder: aDecoder)
+
+		modAccessoryView.barStyle = UIBarStyle.Default
+		modAccessoryView.translucent = true
+		modAccessoryView.tintColor = Colors.primary.textToUIColor()
+		modAccessoryView.sizeToFit()
+		
+		//var cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.Plain, target: nil, action: "donePicker")
+		var spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+		var doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Done, target: nil, action: "donePicker")
+		
+		modAccessoryView.setItems([spaceButton, spaceButton, doneButton], animated: false)
+		modAccessoryView.userInteractionEnabled = true
+	}
 	
 	override var inputView: UIView { get {
 		return modInputView
+	}}
+
+	override var inputAccessoryView: UIView { get {
+		return modAccessoryView
 		}}
+
 	
 	override func canBecomeFirstResponder() -> Bool {
 		return true
 		
 	}
 }
+
+
 
 
 enum Currency: String {

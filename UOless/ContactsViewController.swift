@@ -8,9 +8,7 @@
 
 import UIKit
 
-class ContactsViewController: UITableViewController {
-	//TODO: add sections
-	
+class ContactsViewController: UITableViewController {	
     @IBOutlet var searchBar: UISearchBar!
 
     @IBAction func starTapGestureRecognizer(sender: AnyObject) {
@@ -21,7 +19,54 @@ class ContactsViewController: UITableViewController {
         contact.favorite = !contact.favorite
         self.tableView.reloadData()
     }
-    
+	
+	// custom type to represent table sections
+	class Section {
+		var contacts: [Contact] = []
+		
+		func addContact(contact: Contact) {
+			self.contacts.append(contact)
+		}
+	}
+	
+	// `UIKit` convenience class for sectioning a table
+	let collation = UILocalizedIndexedCollation.currentCollation()
+		as! UILocalizedIndexedCollation
+	
+	// table sections
+	var sections: [Section] {
+		// return if already initialized
+		if self._sections != nil {
+			return self._sections!
+		}
+		
+		// create empty sections
+		var sections = [Section]()
+		for i in 0..<self.collation.sectionIndexTitles.count {
+			sections.append(Section())
+		}
+		
+		
+		// put each currency in a section
+		for contact in contacts.registeredContacts {
+			let section = self.collation.sectionForObject(contact, collationStringSelector: "friendlyName")
+			sections[section].addContact(contact)
+		}
+		
+		// sort each section
+		for section in sections {
+			section.contacts = self.collation.sortedArrayFromArray(section.contacts, collationStringSelector: "friendlyName") as! [Contact]
+		}
+		
+		self._sections = sections
+		
+		return self._sections!
+	}
+	var _sections: [Section]?
+	
+	var contactsRefreshControl:UIRefreshControl!
+
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -36,27 +81,49 @@ class ContactsViewController: UITableViewController {
         
         //Hide additional gridlines, and set gray background for footer
         self.tableView.tableFooterView = UIView(frame:CGRectZero)
-        self.tableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
+        //self.tableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
+		
+		//Add pull to refresh
+		self.contactsRefreshControl = UIRefreshControl()
+		self.contactsRefreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+		self.contactsRefreshControl.addTarget(self, action: "refreshContacts", forControlEvents: UIControlEvents.ValueChanged)
+		self.tableView.addSubview(contactsRefreshControl)
+		
     }
+	
+	func refreshContacts() {
+		contacts.updateContacts() {()->() in
+			dispatch_async(dispatch_get_main_queue(), {
+				//so it is run now, instead of at the end of code execution
+				self.tableView.reloadData()
+			})
+			self.contactsRefreshControl.endRefreshing()
+		}
+	}
 
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		tableView.reloadData()
+	}
+	
+
+	
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
-    // MARK: - Table view data source
-
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return 1
+		return self.sections.count
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return contacts.registeredContacts.count
-    }
+        return self.sections[section].contacts.count
+	}
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -65,49 +132,31 @@ class ContactsViewController: UITableViewController {
         //this class is not key value coding-compliant for the key favoritesTableView.'
 
         // Configure the cell...
-        let contact = contacts.registeredContacts[indexPath.row]
+		let contact = self.sections[indexPath.section].contacts[indexPath.row]
+
         cell.markup(contact)
-        
+
+		
         return cell
     }
     
-    
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return NO if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            // Delete the row from the data source
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return NO if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
+	/* section headers appear above each `UITableView` section */
+	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String {
+		// do not display empty `Section`s
+		if !self.sections[section].contacts.isEmpty {
+			return self.collation.sectionTitles[section] as! String
+		}
+		return "" //Only works correct if table style is plain, otherwise height of the next section header will be too big
+	}
+	
+	/* section index titles displayed to the right of the `UITableView` */
+	override func sectionIndexTitlesForTableView(tableView: UITableView) -> [AnyObject] {
+		return self.collation.sectionIndexTitles
+	}
+	
+	override func tableView(tableView: UITableView, sectionForSectionIndexTitle title: String, atIndex index: Int) -> Int {
+		return self.collation.sectionForSectionIndexTitleAtIndex(index)
+	}
 
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

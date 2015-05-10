@@ -80,7 +80,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         */
 
         //Set table background to specific color
-        transactionsTableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
+        //transactionsTableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
         
         //To hide searchbar
         transactionsTableView.setContentOffset(CGPointMake(0, transactionsSearchBar.frame.size.height), animated: false)

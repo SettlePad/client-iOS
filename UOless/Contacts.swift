@@ -28,8 +28,13 @@ class Contacts {
             return ABAddressBookGetAuthorizationStatus()
         }
     }
-    
-    func updateContacts() {
+	
+	func getContactByID(id: Int)->Contact? {
+		let returnArray = contacts.filter { $0.id == id}
+		return returnArray.first
+	}
+	
+    func updateContacts(requestCompleted: () -> ()) {
         //From the UOless server
         updateServerContacts() {()->() in
             
@@ -41,10 +46,13 @@ class Contacts {
             }
 
             self.updateIdentifiers()
+			self.updateAutoLimits(){()->() in
+				requestCompleted()
+			}
         }
     }
     
-    private func updateServerContacts(requestCompleted : () -> ()) {
+    private func updateServerContacts(requestCompleted: () -> ()) {
         api.request("contacts", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             if(!succeeded) {
                 if let error_msg = data["text"] as? String {
@@ -92,7 +100,42 @@ class Contacts {
             }
         }
     }
-    
+	
+	private func updateAutoLimits(requestCompleted : () -> ()) {
+		api.request("autolimits", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			if(!succeeded) {
+				if let error_msg = data["text"] as? String {
+					println(error_msg)
+				} else {
+					println("Unknown error while refreshing autolimits")
+				}
+			} else {
+				if let contactsLimits = data["data"] as? Dictionary <String, Dictionary <String, Double> > {
+					for (contactID,contactLimits) in contactsLimits {
+						for (currencyString,limitDouble) in contactLimits {
+							if let currency = Currency(rawValue: currencyString) {
+								if let contactIDInt = contactID.toInt() {
+									if let contact = self.getContactByID(contactIDInt) {
+										contact.addLimit(currency, limit: limitDouble, updateServer: false)
+									} else {
+										println("Contact with ID not found: "+contactID)
+									}
+								} else {
+									println("Contact ID no Int: "+contactID)
+								}
+							} else {
+								println("Unknown currency: "+currencyString)
+							}
+						}
+					}
+				} else {
+					println("Cannot parse limit as dictionary, might be that there are no limits")
+				}
+			}
+			requestCompleted()
+		}
+	}
+	
     private func updateIdentifiers() {
         //update sorted list of identifiers
         contactIdentifiers.removeAll()

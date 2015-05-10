@@ -22,7 +22,7 @@ class IdentifiersViewController: UITableViewController {
         
         //Hide additional gridlines, and set gray background for footer
         self.tableView.tableFooterView = UIView(frame:CGRectZero)
-        self.tableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
+        //self.tableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
     }
 
     override func didReceiveMemoryWarning() {
