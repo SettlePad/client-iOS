@@ -8,14 +8,15 @@
 
 import UIKit
 
-class ContactsViewController: UITableViewController {	
+class ContactsViewController: UITableViewController {
     @IBOutlet var searchBar: UISearchBar!
 
     @IBAction func starTapGestureRecognizer(sender: AnyObject) {
         //Determine the rowindex via the touch point 
         let tapPoint: CGPoint = sender.locationInView(self.tableView)
         let selectedIndex = self.tableView.indexPathForRowAtPoint(tapPoint)
-        let contact = contacts.registeredContacts[selectedIndex!.row]
+		let contact = self.sections[selectedIndex!.section].contacts[selectedIndex!.row]
+
         contact.favorite = !contact.favorite
         self.tableView.reloadData()
     }
@@ -166,7 +167,7 @@ class ContactsViewController: UITableViewController {
 			//make sure that the segue is going to secondViewController
 			let selectedIndex : NSIndexPath = self.tableView.indexPathForSelectedRow()!
 			let destVC = segue.destinationViewController as! ContactViewController
-			destVC.contact = contacts.registeredContacts[selectedIndex.row]
+			destVC.contact = self.sections[selectedIndex.section].contacts[selectedIndex.row]
 		}
     }
 

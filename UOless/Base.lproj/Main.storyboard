@@ -241,6 +241,7 @@
                     </tabBar>
                     <connections>
                         <segue destination="RpU-bj-Zdy" kind="relationship" relationship="viewControllers" id="bLu-wW-PRM"/>
+                        <segue destination="ifR-6q-0aM" kind="relationship" relationship="viewControllers" id="4gY-xo-ykY"/>
                         <segue destination="p8E-De-gIB" kind="relationship" relationship="viewControllers" id="WRe-Ac-3K6"/>
                     </connections>
                 </tabBarController>
@@ -283,6 +284,96 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d1g-wQ-Rrw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1573" y="1761"/>
+        </scene>
+        <!--Root View Controller-->
+        <scene sceneID="p5P-Hd-BRJ">
+            <objects>
+                <tableViewController id="aYa-iv-mNf" customClass="BalancesViewController" customModule="UOless" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="QjM-rv-Qs8">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Header" rowHeight="75" id="TPr-gm-cNk">
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TPr-gm-cNk" id="K7a-vi-afd">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Euro" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OL2-FY-bPt">
+                                            <rect key="frame" x="5" y="10" width="590" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="To pay: EUR 55.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ndb-AG-oGS">
+                                            <rect key="frame" x="5" y="31" width="590" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <color key="textColor" red="0.99607843137254903" green="0.090196078431372548" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="To receive: EUR 66.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JnB-EO-GKI">
+                                            <rect key="frame" x="5" y="45" width="590" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <color key="textColor" red="0.12156862745098039" green="0.89803921568627454" blue="0.082352941176470587" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="OL2-FY-bPt" secondAttribute="trailing" constant="5" id="DJT-AM-70p"/>
+                                        <constraint firstItem="OL2-FY-bPt" firstAttribute="top" secondItem="K7a-vi-afd" secondAttribute="top" constant="10" id="faX-o9-Zdu"/>
+                                        <constraint firstItem="OL2-FY-bPt" firstAttribute="leading" secondItem="K7a-vi-afd" secondAttribute="leading" constant="5" id="wMZ-1k-OAl"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Balance" textLabel="o4S-ma-jdB" detailTextLabel="Tez-Em-1ay" style="IBUITableViewCellStyleValue1" id="Q26-co-2fZ">
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Q26-co-2fZ" id="Dlu-SB-yM9">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Jack" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="o4S-ma-jdB">
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="EUR 50.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Tez-Em-1ay">
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="aYa-iv-mNf" id="rgf-wA-524"/>
+                            <outlet property="delegate" destination="aYa-iv-mNf" id="l4S-d9-tVK"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Root View Controller" id="aM1-KY-2VF"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="081-sY-CdQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2427" y="3418"/>
+        </scene>
+        <!--Balance-->
+        <scene sceneID="rZJ-48-GQ3">
+            <objects>
+                <navigationController title="Balance" id="ifR-6q-0aM" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Balance" image="Thermometer" id="Eje-nZ-mC5"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="xXT-Za-ZBX">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="aYa-iv-mNf" kind="relationship" relationship="rootViewController" id="nfs-9W-kqA"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="r2P-b7-zC5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1573" y="3418"/>
         </scene>
         <!--Settings-->
         <scene sceneID="fUY-cy-kbW">
@@ -1060,6 +1151,7 @@ john2@doe.com</string>
         <image name="Cog" width="30" height="30"/>
         <image name="List" width="30" height="30"/>
         <image name="StarFull" width="30" height="30"/>
+        <image name="Thermometer" width="30" height="30"/>
         <image name="ios_attention.png" width="20" height="40"/>
         <image name="u189.png" width="189" height="50"/>
     </resources>

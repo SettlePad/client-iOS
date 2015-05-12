@@ -15,6 +15,8 @@ var api = APIController()
 var user = User() //If nil, not logged in
 var transactions=Transactions()
 var contacts = Contacts()
+var balances = Balances()
+
 
 class LoginViewController: UIViewController {
     /*See 

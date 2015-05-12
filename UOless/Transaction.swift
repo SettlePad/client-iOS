@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Transaction {
+class Transaction {	
     var time_sent: NSDate
     var time_updated: NSDate
     var counterpart_name: String

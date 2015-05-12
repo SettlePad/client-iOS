@@ -8,6 +8,8 @@
 
 import UIKit
 
+//TODO: move all these view classes into the viewcontrollers
+
 class TransactionsFooterView: UIView {
     var end_reached = true
     var no_results = true

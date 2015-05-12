@@ -10,7 +10,10 @@ import Foundation
 import AddressBook
 
 class Contacts {
+	//TODO: other API classes do not refer to this class, only by and ID int, as when updating Contacts, the link to the same reference is lost. This can be overcome by updating the Contacts array instead of replacing it
+	
     var contacts = [Contact]()
+	
     var registeredContacts : [Contact] {
         get {
             return contacts.filter { $0.registered}

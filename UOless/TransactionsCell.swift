@@ -80,6 +80,7 @@ class TransactionsCell: UITableViewCell {
 
         
         //Status (text and image)
+		//TODO: clean up status images
         var statusString = "Unknown"
         if transaction.status == .Processed {
             statusLabel.hidden = false

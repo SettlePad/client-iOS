@@ -39,11 +39,12 @@ class ContactCell: UITableViewCell {
         if contact.limits.count == 0 {
             limitIndicator.text = ""
         } else if contact.limits.count == 1 {
-            let limit = contact.limits[0] as Limit
-            let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
-            limitIndicator.text = limit.currency.rawValue + " " + limit.limit.format(doubleFormat)
-        } else {
-            limitIndicator.text = "Multiple limits"
+            //let limit = contact.limits[0] as Limit
+            //let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
+            //limitIndicator.text = limit.currency.rawValue + " " + limit.limit.format(doubleFormat)
+            limitIndicator.text = "Limit set"
+		} else {
+            limitIndicator.text = "Limits set"
         }
     }
     
