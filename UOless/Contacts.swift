@@ -23,9 +23,7 @@ class Contacts {
         }
     }
 
-
-    var contactIdentifiers = [Identifier]() //Identifier, Contact
-	
+    var contactIdentifiers = [Dictionary<String,String>]() //Name, Identifier
     var localStatus: ABAuthorizationStatus {
         get {
             return ABAddressBookGetAuthorizationStatus()
@@ -35,11 +33,6 @@ class Contacts {
 	func getContactByID(id: Int)->Contact? {
 		let returnArray = contacts.filter { $0.id == id}
 		return returnArray.first
-	}
-
-	func getContactByIdentifier(identifierStr: String)->Contact? {
-		let returnArray = contactIdentifiers.filter {$0.identifierStr == identifierStr}
-		return returnArray.first?.contact
 	}
 	
     func updateContacts(requestCompleted: () -> ()) {
@@ -146,12 +139,11 @@ class Contacts {
         //update sorted list of identifiers
         contactIdentifiers.removeAll()
         for contact in contacts {
-            for identifierStr in contact.identifiers {
-				contactIdentifiers.append(Identifier(identifierStr: identifierStr,contact: contact))
+            for identifier in contact.identifiers {
+                contactIdentifiers.append(["name":contact.friendlyName,"identifier":identifier])
             }
         }
-		contactIdentifiers.sort({(left: Identifier, right: Identifier) -> Bool in
-			left.identifierStr.localizedCaseInsensitiveCompare(right.identifierStr) == NSComparisonResult.OrderedDescending})
+        contactIdentifiers.sort({$0["name"] < $1["name"] }) //Sort by name ASC
     }
         
     private func createAddressBook() -> ABAddressBookRef?
@@ -222,14 +214,4 @@ class Contacts {
         contactIdentifiers = []
     }
 
-}
-
-class Identifier {
-	var identifierStr: String
-	var contact: Contact
-	
-	init (identifierStr: String, contact: Contact) {
-		self.identifierStr = identifierStr
-		self.contact = contact
-	}
 }

@@ -87,7 +87,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         case NewUOme //show suggestions for email address
     }
     
-    var matchedContactIdentifiers = [Identifier]() //Name, Identifier
+    var matchedContactIdentifiers = [Dictionary<String,String>]() //Name, Identifier
     
     var state: State = .Overview
     var actInd: UIActivityIndicatorView = UIActivityIndicatorView()
@@ -349,13 +349,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             // Configure the cell...
             let contactIdentifier = matchedContactIdentifiers[indexPath.row]
-			if contactIdentifier.contact.friendlyName != "" {
-				cell.textLabel?.text = contactIdentifier.contact.friendlyName
-			} else {
-				cell.textLabel?.text = contactIdentifier.contact.name
-			}
-
-            cell.detailTextLabel?.text =  contactIdentifier.identifierStr
+            cell.textLabel?.text = contactIdentifier["name"]
+            cell.detailTextLabel?.text =  contactIdentifier["identifier"]
             return cell
         }
     }
@@ -388,7 +383,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         if (self.state == .NewUOme) {
             //Set value as "to"
             let contactIdentifier = matchedContactIdentifiers[indexPath.row]
-            formTo.text = contactIdentifier.identifierStr
+            formTo.text = contactIdentifier["identifier"]
             switchState(.Overview)
             //goto amount
             if formDescription.text == "" {
@@ -470,8 +465,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             }
             
             var transaction = Transaction(
-				counterpart: contacts.getContactByIdentifier(formTo.text),
-				identifier: formTo.text,
+                counterpart_name: formTo.text,
                 description: formDescription.text,
                 currency: selectedCurrency,
                 amount: amount
@@ -498,7 +492,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     func getMatchedContactIdentifiers(needle: String){
         matchedContactIdentifiers.removeAll()
         for contactIdentifier in contacts.contactIdentifiers {
-            if (contactIdentifier.identifierStr.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact.name.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact.friendlyName.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
+            if (contactIdentifier["identifier"]!.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier["name"]!.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
                 matchedContactIdentifiers.append(contactIdentifier)
             }
         }

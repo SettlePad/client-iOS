@@ -27,18 +27,8 @@ class BalancesViewController: UITableViewController {
 		self.balancesRefreshControl.addTarget(self, action: "refreshBalances", forControlEvents: UIControlEvents.ValueChanged)
 		self.tableView.addSubview(balancesRefreshControl)
 		
-		//Hide additional gridlines, and set gray background for footer
-		self.tableView.tableFooterView = UIView(frame:CGRectZero)
-		
 		//refresh Balances
-		refreshBalances()
 		balancesRefreshControl.beginRefreshing()
-		
-		//
-		
-		//Set section header height to dynamic
-		tableView.sectionHeaderHeight = UITableViewAutomaticDimension
-		tableView.estimatedSectionHeaderHeight = 60
     }
 	
 	func refreshBalances() {
@@ -61,7 +51,7 @@ class BalancesViewController: UITableViewController {
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return balances.sortedCurrencies.count
+        return balances.currencies.count
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -70,58 +60,36 @@ class BalancesViewController: UITableViewController {
         return balances.getBalancesForCurrency(balances.sortedCurrencies[section]).count
     }
 
-	override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-		let  headerCell = tableView.dequeueReusableCellWithIdentifier("Header") as! BalanceHeaderCell
-		//headerCell.backgroundColor = UIColor.cyanColor()
-		let currency = balances.sortedCurrencies[section]
-		headerCell.currencyLabel.text = currency.toLongName()
-		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
-		
-		if let currencySummary =  balances.getSummaryForCurrency(currency) {
-			headerCell.getPayLabel.text = "get "+currency.rawValue+" "+currencySummary.get.format(doubleFormat)+", pay "+currency.rawValue+" " + (currencySummary.owe * -1).format(doubleFormat)
-			headerCell.balanceLabel.text = currency.rawValue+" "+currencySummary.balance.format(doubleFormat)
-			
-			if currencySummary.balance < 0 {
-				headerCell.balanceLabel.textColor = Colors.gray.textToUIColor()
-			} else {
-				headerCell.balanceLabel.textColor = Colors.success.textToUIColor()
-			}
-
-		} else {
-			headerCell.getPayLabel.text = "Unknown"
-			headerCell.balanceLabel.text = "Unknown"
-			
+	/*override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+		let  headerCell = tableView.dequeueReusableCellWithIdentifier("Header") as CustomHeaderCell
+		headerCell.backgroundColor = UIColor.cyanColor()
+  
+		switch (section) {
+		case 0:
+			headerCell.headerLabel.text = "Europe";
+			//return sectionHeaderView
+		case 1:
+			headerCell.headerLabel.text = "Asia";
+			//return sectionHeaderView
+		case 2:
+			headerCell.headerLabel.text = "South America";
+			//return sectionHeaderView
+		default:
+			headerCell.headerLabel.text = "Other";
 		}
 		
 		return headerCell
-	}
+	}*/
 	
-	
+    /*
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Balance", forIndexPath: indexPath) as! UITableViewCell
-		let balance = balances.getBalancesForCurrency(balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
+        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath) as! UITableViewCell
 
-		// Configure the cell...
-		if balance.contact.friendlyName != "" {
-			cell.textLabel?.text = balance.contact.friendlyName
-		} else {
-			cell.textLabel?.text = balance.contact.name
-		}
-		
-		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
-		cell.detailTextLabel?.text = balance.currency.rawValue + " " + balance.balance.format(doubleFormat)
+        // Configure the cell...
 
-		if balance.balance < 0 {
-			cell.detailTextLabel?.textColor = Colors.gray.textToUIColor()
-		} else {
-			cell.detailTextLabel?.textColor = Colors.success.textToUIColor()
-		}
-
-		//TODO: add indicator for unprocessed UOmes
-		
         return cell
     }
-	
+    */
 
     /*
     // Override to support conditional editing of the table view.
@@ -168,22 +136,4 @@ class BalancesViewController: UITableViewController {
     }
     */
 
-}
-
-class BalanceHeaderCell : UITableViewCell {
-	@IBOutlet var currencyLabel: UILabel!
-	@IBOutlet var getPayLabel: UILabel!
-	@IBOutlet var balanceLabel: UILabel!
-	
-	override func awakeFromNib() {
-		super.awakeFromNib()
-		// Initialization code
-	}
-	
-	override func setSelected(selected: Bool, animated: Bool) {
-		super.setSelected(selected, animated: animated)
-		
-		// Configure the view for the selected state
-	}
-	
 }

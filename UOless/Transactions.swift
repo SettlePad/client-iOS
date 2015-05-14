@@ -38,37 +38,31 @@ class Transactions {
         var formdataArray : [[String:AnyObject]] = []
         for newTransaction in newTransactions {
             newTransaction.status = .Posted
-			if let identifier = newTransaction.identifier {
-				formdataArray.append([
-					"recipient":identifier,
-					"description":newTransaction.description,
-					"amount":newTransaction.amount,
-					"currency":newTransaction.currency.rawValue
-				])
-			}
+            formdataArray.append([
+                "recipient":newTransaction.counterpart_name,
+                "description":newTransaction.description,
+                "amount":newTransaction.amount,
+                "currency":newTransaction.currency.rawValue
+            ])
+            
         }
-		
-		if (formdataArray.count > 0) {
-			transactions.splice(newTransactions, atIndex: 0)
-			
-			//Do post. When returned succesfully, replace status with what comes back
-			var url = "uome/send/"
-			api.request(url, method: "POST", formdata: formdataArray, secure: true){ (succeeded: Bool, data: NSDictionary) -> () in
-				if(succeeded) {
-					requestCompleted(succeeded: true,error_msg: nil)
-					self.transactions = self.transactions.filter({$0.status != .Posted}) //Delete all 
-					balances.updateBalances(){}
-				} else {
-					if let msg = data["text"] as? String {
-						requestCompleted(succeeded: false,error_msg: msg)
-					} else {
-						requestCompleted(succeeded: false,error_msg: "Unknown")
-					}
-				}
-			}
-		} else {
-			requestCompleted(succeeded: false,error_msg: "No viable transactions")			
-		}
+        transactions.splice(newTransactions, atIndex: 0)
+        
+        //Do post. When returned succesfully, replace status with what comes back
+        var url = "uome/send/"
+        api.request(url, method: "POST", formdata: formdataArray, secure: true){ (succeeded: Bool, data: NSDictionary) -> () in
+            if(succeeded) {
+                requestCompleted(succeeded: true,error_msg: nil)
+                self.transactions = self.transactions.filter({$0.status != .Posted}) //Delete all 
+            } else {
+                if let msg = data["text"] as? String {
+                    requestCompleted(succeeded: false,error_msg: msg)
+                } else {
+                    requestCompleted(succeeded: false,error_msg: "Unknown")
+                }
+            }
+        }
+        
         //At this point, the transactions array does not contain the new UOme's yet and should be refreshed. We leave this to the view controller (which is triggered by the requestCompleted above)
     }
     
