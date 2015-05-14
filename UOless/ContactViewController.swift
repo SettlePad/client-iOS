@@ -30,12 +30,12 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
 	
     @IBAction func nameTextEditingDidEnd(sender: AnyObject) {
-        contact.friendlyName = nameText.text
+        contact.setFriendlyName(nameText.text, updateServer: true)
     }
 	
     @IBAction func starTapGestureRecognizer(sender: AnyObject) {
         //Determine the rowindex via the touch point
-        contact.favorite = !contact.favorite
+        contact.setFavorite(!contact.favorite, updateServer: true)
 		dispatch_async(dispatch_get_main_queue(), {
 			self.updateStar()
 		})

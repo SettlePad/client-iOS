@@ -10,9 +10,7 @@ import Foundation
 import AddressBook
 
 class Contacts {
-	//TODO: other API classes do not refer to this class, only by and ID int, as when updating Contacts, the link to the same reference is lost. This can be overcome by updating the Contacts array instead of replacing it
-	
-    var contacts = [Contact]()
+    private(set) var contacts = [Contact]()
 	
     var registeredContacts : [Contact] {
         get {
@@ -49,9 +47,7 @@ class Contacts {
             }
 
             self.updateIdentifiers()
-			self.updateAutoLimits(){()->() in
-				requestCompleted()
-			}
+			requestCompleted()
         }
     }
     
@@ -69,7 +65,7 @@ class Contacts {
                 if let contacts = data["data"] as? NSMutableArray {
                     for contactObj in contacts {
                         if let contactDict = contactObj as? NSDictionary {
-                            self.addContact(Contact(fromDict: contactDict, registered: true), merge: false)
+                            self.addContact(Contact(fromDict: contactDict, registered: true))
                         } else {
                             println("Cannot parse contact as dictionary")
                         }
@@ -99,12 +95,12 @@ class Contacts {
                     }
                 }
                 
-                addContact(Contact(id: nil, name: ABRecordCopyCompositeName(person).takeRetainedValue() as String, friendlyName: ABRecordCopyCompositeName(person).takeRetainedValue() as String, favorite: false, identifiers: emails, registered: false), merge: true)
+                addContact(Contact(id: nil, name: ABRecordCopyCompositeName(person).takeRetainedValue() as String, friendlyName: ABRecordCopyCompositeName(person).takeRetainedValue() as String, favorite: false, identifiers: emails, registered: false))
             }
         }
     }
 	
-	private func updateAutoLimits(requestCompleted : () -> ()) {
+	func updateAutoLimits(requestCompleted : () -> ()) {
 		api.request("autolimits", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 			if(!succeeded) {
 				if let error_msg = data["text"] as? String {
@@ -171,16 +167,19 @@ class Contacts {
         }
     }
     
-    private func addContact(contact: Contact, merge: Bool) {
-        if merge {
-            //If merge, then check whether identifier already exists. If so: replace only friendlyname
+    func addContact(contact: Contact) {
+        if contact.id == nil {
+			//Local contact
+            //Check whether identifier already exists on a contact with an id. If so, only replace friendly name if that is not set. Only add if that is not the case.
             for index in stride(from: contact.identifiers.count - 1, through: 0, by: -1) {
                 //Check whether identifier is present already
                 var found = false
                 for c in contacts {
                     if let i = find(c.identifiers, contact.identifiers[index]) {
                         //replace friendly name
-                        c.friendlyName = contact.friendlyName
+						if c.friendlyName == "" {
+							c.setFriendlyName(contact.friendlyName,updateServer: false)
+						}
                         found = true
                     }
                 }
@@ -194,7 +193,19 @@ class Contacts {
                 contacts.append(contact)
             }
         } else {
-            contacts.append(contact)
+			//data must come directly from server
+			if let existingContact = self.getContactByID(contact.id!) {
+				//update
+				existingContact.name = contact.name
+				if contact.friendlyName != "" {
+					existingContact.setFriendlyName(contact.friendlyName, updateServer: false)
+				}
+				existingContact.identifiers = contact.identifiers
+				existingContact.setFavorite(contact.favorite, updateServer: false)
+				
+			} else {
+				contacts.append(contact)
+			}
         }
     }
     

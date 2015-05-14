@@ -21,8 +21,8 @@ class Balances {
 		return balances.filter { $0.currency == currency}
 	}
 	
-	func getBalancesForContactID(contactID: Int)->[Balance] {
-		return balances.filter { $0.contactID == contactID}
+	func getBalancesForContact(contact: Contact)->[Balance] {
+		return balances.filter { $0.contact == contact}
 	}
 
 
@@ -44,12 +44,20 @@ class Balances {
 						for (currency,details) in connectionsDict {
 							if let
 								contactID = details["connection_id"] as? Int,
+								contactName = details["connection_name"] as? String,
 								currencyStr = details["currency"] as? String,
 								balance = details["balance"] as? Float,
 								unprocessed = details["unprocessed"] as? Bool
 							{
 								if let currency = Currency(rawValue: currencyStr) {
-									self.balances.append(Balance(contactID: contactID, currency: currency, balance: balance, unprocessed: unprocessed))
+									if let contact = contacts.getContactByID(contactID) {
+										self.balances.append(Balance(contact: contact, currency: currency, balance: balance, unprocessed: unprocessed))
+									} else {
+										//This ID does not exist yet, create it
+										let contact = Contact(id: contactID, name: contactName, friendlyName: contactName, favorite: false, identifiers: [], registered: false)
+										contacts.addContact(contact)
+										self.balances.append(Balance(contact: contact, currency: currency, balance: balance, unprocessed: unprocessed))
+									}
 									self.currencies.insert(currency)
 								} else {
 									println("Unknown currency parsing balance: " + currencyStr)

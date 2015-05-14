@@ -11,35 +11,42 @@ import Foundation
 class Contact: NSObject { //required for sections in viewcontroller with collation
     var id: Int?
     var name: String
-	var friendlyName: String {
-		didSet (oldValue) {
-			if id != nil {
-				api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"friendly_name", "value":friendlyName], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-					if(!succeeded) {
-						if let error_msg = data["text"] as? String {
-							println(error_msg)
-						} else {
-							println("Unknown error while setting friendly name")
-						}
+	private(set) var friendlyName: String
+	
+	func setFriendlyName (newValue: String, updateServer: Bool) {
+		let oldValue = friendlyName
+		if id != nil && newValue != friendlyName && updateServer {
+			api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"friendly_name", "value":friendlyName], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+				if(!succeeded) {
+					if let error_msg = data["text"] as? String {
+						println(error_msg)
+					} else {
+						println("Unknown error while setting friendly name")
 					}
+					self.friendlyName = oldValue
 				}
 			}
 		}
+		friendlyName = newValue
 	}
-    var favorite: Bool {
-        didSet (oldValue) {
-            if id != nil {
-                api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"favorite", "value":favorite], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-                    if(!succeeded) {
-                        if let error_msg = data["text"] as? String {
-                            println(error_msg)
-                        } else {
-                            println("Unknown error while setting favorite")
-                        }
-                    }
-                }
-            }
-        }
+	
+    private(set) var favorite: Bool
+
+	func setFavorite (newValue: Bool, updateServer: Bool) {
+		let oldValue = favorite
+		if id != nil && newValue != favorite && updateServer {
+			api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"favorite", "value":favorite], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+				if(!succeeded) {
+					if let error_msg = data["text"] as? String {
+						println(error_msg)
+					} else {
+						println("Unknown error while setting favorite")
+					}
+					self.favorite = oldValue
+				}
+			}
+		}
+        favorite = newValue
     }
     
     

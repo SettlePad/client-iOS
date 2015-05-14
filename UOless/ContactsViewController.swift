@@ -17,7 +17,7 @@ class ContactsViewController: UITableViewController {
         let selectedIndex = self.tableView.indexPathForRowAtPoint(tapPoint)
 		let contact = self.sections[selectedIndex!.section].contacts[selectedIndex!.row]
 
-        contact.favorite = !contact.favorite
+        contact.setFavorite(!contact.favorite, updateServer: true)
         self.tableView.reloadData()
     }
 	
@@ -93,6 +93,8 @@ class ContactsViewController: UITableViewController {
     }
 	
 	func refreshContacts() {
+		//limits are not updated now
+		
 		contacts.updateContacts() {()->() in
 			dispatch_async(dispatch_get_main_queue(), {
 				//so it is run now, instead of at the end of code execution
