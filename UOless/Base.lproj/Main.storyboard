@@ -9,7 +9,7 @@
         <!--Login-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
-                <viewController storyboardIdentifier="LoginController" title="Login" id="vXZ-lx-hvc" customClass="LoginViewController" customModule="UOless" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LoginController" title="Login" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vXZ-lx-hvc" customClass="LoginViewController" customModule="UOless" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
@@ -61,9 +61,12 @@
                                 <state key="normal" title="Register">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="register:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="UXY-2Z-okB"/>
+                                </connections>
                             </button>
                             <textField hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cFb-Xa-UpZ">
-                                <rect key="frame" x="16" y="422" width="568" height="30"/>
+                                <rect key="frame" x="16" y="428" width="568" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" priority="999" constant="568" id="2Ls-gK-AiX"/>
                                 </constraints>
@@ -79,12 +82,13 @@
                         <constraints>
                             <constraint firstItem="tOJ-9g-k1s" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="27r-kJ-5j0"/>
                             <constraint firstAttribute="centerX" secondItem="Wir-fZ-dMi" secondAttribute="centerX" id="3V6-Me-rIh"/>
+                            <constraint firstItem="Wir-fZ-dMi" firstAttribute="leading" secondItem="cFb-Xa-UpZ" secondAttribute="leading" id="4cB-Gy-JTs"/>
                             <constraint firstAttribute="centerX" secondItem="FtP-ze-IGP" secondAttribute="centerX" id="7NJ-bt-qEc"/>
                             <constraint firstAttribute="centerX" secondItem="eYs-Pd-pfd" secondAttribute="centerX" id="8We-4K-LYQ"/>
                             <constraint firstAttribute="centerX" secondItem="tOJ-9g-k1s" secondAttribute="centerX" id="DEz-y6-Y4K"/>
                             <constraint firstAttribute="centerX" secondItem="cFb-Xa-UpZ" secondAttribute="centerX" id="Ems-Vh-c1Q"/>
                             <constraint firstItem="Wir-fZ-dMi" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="F4P-WL-g5b"/>
-                            <constraint firstItem="Wir-fZ-dMi" firstAttribute="top" secondItem="cFb-Xa-UpZ" secondAttribute="bottom" constant="16" id="Fqf-ry-C1d"/>
+                            <constraint firstItem="Wir-fZ-dMi" firstAttribute="top" secondItem="cFb-Xa-UpZ" secondAttribute="bottom" constant="10" id="Fqf-ry-C1d"/>
                             <constraint firstItem="tOJ-9g-k1s" firstAttribute="top" secondItem="Wir-fZ-dMi" secondAttribute="bottom" constant="10" id="Jzj-Aa-dwa"/>
                             <constraint firstAttribute="centerX" secondItem="BDc-u0-Ici" secondAttribute="centerX" id="MjF-Pr-nNE"/>
                             <constraint firstItem="FtP-ze-IGP" firstAttribute="top" secondItem="BDc-u0-Ici" secondAttribute="bottom" constant="10" id="NO7-3v-14r"/>
@@ -92,6 +96,8 @@
                             <constraint firstItem="eYs-Pd-pfd" firstAttribute="top" secondItem="tOJ-9g-k1s" secondAttribute="bottom" constant="10" id="VsM-RL-Rsd"/>
                             <constraint firstItem="tOJ-9g-k1s" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="Y4S-Da-A9U"/>
                             <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="eYs-Pd-pfd" secondAttribute="bottomMargin" priority="750" constant="30" id="ZJp-1B-I8j"/>
+                            <constraint firstItem="Wir-fZ-dMi" firstAttribute="trailing" secondItem="cFb-Xa-UpZ" secondAttribute="trailing" id="bud-iO-EZB"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="eYs-Pd-pfd" secondAttribute="bottomMargin" priority="500" constant="30" id="cpo-0e-s2p"/>
                             <constraint firstItem="pLG-xO-be0" firstAttribute="centerY" secondItem="eYs-Pd-pfd" secondAttribute="centerY" id="dn3-cN-8wc"/>
                             <constraint firstAttribute="centerX" secondItem="pLG-xO-be0" secondAttribute="centerX" id="f6h-tR-3lJ"/>
                             <constraint firstItem="Wir-fZ-dMi" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="gl4-mw-dpp"/>
@@ -104,8 +110,11 @@
                     <toolbarItems/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="loginButton" destination="eYs-Pd-pfd" id="O9N-hl-XQI"/>
+                        <outlet property="loginBottomConstraint" destination="ZJp-1B-I8j" id="YGo-fZ-rgL"/>
+                        <outlet property="loginButton" destination="eYs-Pd-pfd" id="k1c-8L-dil"/>
+                        <outlet property="registerButton" destination="FtP-ze-IGP" id="eL9-QZ-jSU"/>
                         <outlet property="spinner" destination="pLG-xO-be0" id="y1E-R3-lHp"/>
+                        <outlet property="txtLoginName" destination="cFb-Xa-UpZ" id="Rom-Yo-8Dc"/>
                         <outlet property="txtLoginPass" destination="tOJ-9g-k1s" id="hUu-zd-Wzj"/>
                         <outlet property="txtLoginUser" destination="Wir-fZ-dMi" id="nAL-Y9-8Ma"/>
                     </connections>

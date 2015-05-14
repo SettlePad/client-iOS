@@ -24,10 +24,13 @@ class LoginViewController: UIViewController {
         http://www.raywenderlich.com/83276/beginning-adaptive-layout-tutorial
     */
     
+    @IBOutlet var txtLoginName: UITextField!
     @IBOutlet var txtLoginUser : UITextField! //You’re marking the variables with an exclamation mark (!). This indicates the variables are optional values, but they are implicitly unwrapped. This is a fancy way of saying you can write code assuming that they are set, and your app will crash if they are not set.
     @IBOutlet var txtLoginPass : UITextField!
     @IBOutlet var spinner: UIActivityIndicatorView!
     @IBOutlet var loginButton: UIButton!
+
+    @IBOutlet var registerButton: UIButton!
     @IBOutlet var loginBottomConstraint: NSLayoutConstraint!
 
     override func viewDidLoad() {
@@ -48,25 +51,62 @@ class LoginViewController: UIViewController {
         spinner.hidden = false
         loginButton.hidden = true
         loginButton.enabled = false
-        api.login(txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String) -> () in
 
-            if(succeeded) {
-                //Go to next screen (in main view)
-                self.spinner.hidden = true
-                self.loginButton.hidden = false
-                self.loginButton.enabled = true
-                self.enter_app()
-            } else {
-                displayError(msg, self)
-                
-                // Move to the UI thread
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    self.spinner.hidden = true
-                    self.loginButton.hidden = false
-                    self.loginButton.enabled = true
-                })
-            }
+		if loginButton.titleLabel!.text == "Login" {
+			api.login(txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String) -> () in
+				if(succeeded) {
+					//Go to next screen (in main view)
+					self.spinner.hidden = true
+					self.loginButton.hidden = false
+					self.loginButton.enabled = true
+					self.enter_app()
+				} else {
+					// Move to the UI thread
+					dispatch_async(dispatch_get_main_queue(), { () -> Void in
+						self.spinner.hidden = true
+						self.loginButton.hidden = false
+						self.loginButton.enabled = true
+					})
+					
+					displayError(msg, self)
+				}
+			}
+		} else {
+			//check whether email address is valid
+			
+			api.register(txtLoginName.text, username: txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String) -> () in
+				if(succeeded) {
+					//Go to next screen (in main view)
+					self.spinner.hidden = true
+					self.loginButton.hidden = false
+					self.loginButton.enabled = true
+					self.enter_app()
+				} else {
+					// Move to the UI thread
+					dispatch_async(dispatch_get_main_queue(), { () -> Void in
+						self.spinner.hidden = true
+						self.loginButton.hidden = false
+						self.loginButton.enabled = true
+					})
+					
+					displayError(msg, self)
+				}
+			}
         }
+    }
+    
+    @IBAction func register(sender: AnyObject) {
+		if registerButton.titleLabel!.text == "Register" {
+			txtLoginName.hidden = false
+			loginButton.setTitle("Register", forState: UIControlState.Normal)
+			registerButton.setTitle("Cancel", forState: UIControlState.Normal)
+			txtLoginName.becomeFirstResponder()
+		} else {
+			txtLoginName.hidden = true
+			loginButton.setTitle("Login", forState: UIControlState.Normal)
+			registerButton.setTitle("Register", forState: UIControlState.Normal)
+			txtLoginUser.becomeFirstResponder()
+		}
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -99,9 +139,9 @@ class LoginViewController: UIViewController {
         let rawAnimationCurve = (notification.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber).unsignedIntValue << 16
         let animationCurve = UIViewAnimationOptions(rawValue: UInt(rawAnimationCurve << 16))
         
-        /*if (CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame) > 0) {
+        if (CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame) > 0) {
             //will show
-            self.loginBottomConstraint.constant = CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame)
+            self.loginBottomConstraint.constant = CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame)+10
             self.loginBottomConstraint.priority = 750 //So that this one will overrule the other botom constraint
         } else {
             //will hide
@@ -112,7 +152,7 @@ class LoginViewController: UIViewController {
         UIView.animateWithDuration(animationDuration, delay: 0.0, options: .BeginFromCurrentState | animationCurve, animations: {
             self.view.layoutIfNeeded()
             }, completion: nil
-        )*/
+        )
     
         /*UIView.animateWithDuration(1, animations: { () -> Void in
             self.loginBottomConstraint.constant = keyboardFrame.size.height + 20

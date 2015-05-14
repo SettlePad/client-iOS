@@ -43,6 +43,33 @@ class APIController {
 		}
 	}
 	
+	func register(name: String, username: String, password: String, completed : (succeeded: Bool, msg: String) -> ()) {
+		//if logged in already, first log out
+		if user != nil {
+			logout()
+		}
+		
+		request("register", method:"POST", formdata: ["provider":"password", "name":name, "user":username, "password":password], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
+			if(succeeded) {
+				user = User(credentials: data as! Dictionary)
+				if user != nil {
+					completed(succeeded: true, msg: user!.name)
+					contacts.updateContacts(){
+						contacts.updateAutoLimits(){}
+					}
+				} else {
+					completed(succeeded: false, msg: "Cannot initialize user class")
+				}
+			} else {
+				if let msg = data["text"] as? String {
+					completed(succeeded: false, msg: msg)
+				} else {
+					completed(succeeded: false, msg: "Unknown error")
+				}
+			}
+		}
+	}
+	
 	func logout() {
 		//Invalidate session at server
 		request("logout", method:"POST", formdata: [:], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in

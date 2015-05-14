@@ -15,10 +15,10 @@ func displayError(errorMessage: String, viewController: UIViewController) {
 
     dispatch_async(dispatch_get_main_queue(), { () -> Void in
         viewController.presentViewController(alertController, animated: true, completion: nil)
-        if (user == nil) {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
-                viewController.presentViewController(vc, animated: false, completion: nil)
+		if (user == nil && viewController.restorationIdentifier != "LoginController") {
+			let storyboard = UIStoryboard(name: "Main", bundle: nil)
+			let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
+			viewController.presentViewController(vc, animated: false, completion: nil)
         }
     })
 }
