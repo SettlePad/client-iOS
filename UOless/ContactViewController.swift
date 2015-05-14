@@ -116,7 +116,7 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 		//Set cell height to dynamic
 		limitsTable.rowHeight = UITableViewAutomaticDimension
 		limitsTable.estimatedRowHeight = 40
-		
+
 		updateStar()
 	}
 

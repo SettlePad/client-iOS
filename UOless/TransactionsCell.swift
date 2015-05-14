@@ -47,7 +47,13 @@ class TransactionsCell: UITableViewCell {
         }
         
         //Counterpart
-        counterpartLabel.text = transaction.counterpart_name
+		if let counterpart = transaction.counterpart {
+			counterpartLabel.text = counterpart.name
+		} else if let identifier = transaction.identifier {
+			counterpartLabel.text = identifier
+		} else {
+			counterpartLabel.text = "Unknown"
+		}
         counterpartLabel.textColor = Colors.black.textToUIColor()
 
         
