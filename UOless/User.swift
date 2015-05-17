@@ -242,29 +242,9 @@ class User {
             }
         }
     }
-
-    func verifyIdentifier(identifier:UserIdentifier, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-        api.request("identifiers/verify", method:"POST", formdata: ["identifier":identifier.identifier,"token":token], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-            if(succeeded) {
-                for userIdentifier in self.userIdentifiers {
-                    if userIdentifier.identifier == identifier.identifier {
-                        userIdentifier.verified = true //class is reference type
-                    }
-                }
-                self.save()
-                requestCompleted(succeeded: true,error_msg: nil)
-            } else {
-                if let msg = data["text"] as? String {
-                    requestCompleted(succeeded: false,error_msg: msg)
-                } else {
-                    requestCompleted(succeeded: false,error_msg: "Unknown")
-                }
-            }
-        }
-    }
     
     func resendToken(identifier:UserIdentifier,requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-        api.request("identifiers/resend_token", method:"POST", formdata: ["identifier":identifier.identifier], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+        api.request("register/resend_token", method:"POST", formdata: ["identifier":identifier.identifier,"user_id":self.id], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
             if(succeeded) {
                 requestCompleted(succeeded: true,error_msg: nil)
             } else {
@@ -276,6 +256,22 @@ class User {
             }
         }
     }
+	
+	func verifyIdentifier(identifier:UserIdentifier, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		api.verifyIdentifier(identifier.identifier, userIDInt: self.id, token: token) { (succeeded: Bool, error_msg: String?) -> () in
+			if(succeeded) {
+				for userIdentifier in self.userIdentifiers {
+					if userIdentifier.identifier == identifier.identifier {
+						userIdentifier.verified = true //class is reference type
+					}
+				}
+				self.save()
+				requestCompleted(succeeded: true,error_msg: nil)
+			} else {
+				requestCompleted(succeeded: false,error_msg: error_msg!)
+			}
+		}
+	}
 
     func changePassword(identifier:UserIdentifier, password:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
 

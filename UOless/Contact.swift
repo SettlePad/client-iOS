@@ -117,9 +117,11 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		}
 	
 		//only add if there is no limit for this currency yet
+		var old_limit: Limit?
 		if row == nil {
 			limits.append(Limit(currency: currency, limit: limit))
 		} else {
+			old_limit = limits[row!]
 			limits[row!] = Limit(currency: currency, limit: limit)
 		}
 		
@@ -132,7 +134,22 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 					} else {
 						println("Unknown error while adding limit")
 					}
-					//TODO: roll back addition
+					//roll back addition
+					
+					for (index,limit) in enumerate(self.limits) {
+						if limit.currency == currency {
+							row = index
+						}
+					}
+					
+					if row != nil {
+						if old_limit != nil {
+							self.limits[row!] = old_limit!
+						} else {
+							self.limits.removeAtIndex(row!)
+						}
+					}
+
 				}
 			}
 
@@ -148,6 +165,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		}
 		
 		if row != nil {
+			var old_limit = limits[row!]
 			limits.removeAtIndex(row!)
 
 			if updateServer {
@@ -158,7 +176,9 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 						} else {
 							println("Unknown error while removing limit")
 						}
-						//TODO: roll back removal
+
+						//roll back removal
+						self.limits.append(old_limit)
 					}
 				}
 			}

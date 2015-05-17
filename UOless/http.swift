@@ -43,28 +43,38 @@ class APIController {
 		}
 	}
 	
-	func register(name: String, username: String, password: String, completed : (succeeded: Bool, msg: String) -> ()) {
+	func register(name: String, username: String, password: String, preferredCurrency: String, completed : (succeeded: Bool, error_msg: String?, userID: Int?) -> ()) {
 		//if logged in already, first log out
 		if user != nil {
 			logout()
 		}
 		
-		request("register", method:"POST", formdata: ["provider":"password", "name":name, "user":username, "password":password], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
+		request("register/account", method:"POST", formdata: ["type":"email", "name":name, "identifier":username, "password":password, "primary_currency":preferredCurrency], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
 			if(succeeded) {
-				user = User(credentials: data as! Dictionary)
-				if user != nil {
-					completed(succeeded: true, msg: user!.name)
-					contacts.updateContacts(){
-						contacts.updateAutoLimits(){}
-					}
+				if let userID = data["user_id"] as? Int {
+					completed(succeeded: true, error_msg: nil, userID: userID)
 				} else {
-					completed(succeeded: false, msg: "Cannot initialize user class")
+					completed(succeeded: false, error_msg: "Did not get a user ID. Try to log in manually", userID:nil)
 				}
 			} else {
 				if let msg = data["text"] as? String {
-					completed(succeeded: false, msg: msg)
+					completed(succeeded: false, error_msg: msg, userID:nil)
 				} else {
-					completed(succeeded: false, msg: "Unknown error")
+					completed(succeeded: false, error_msg: "Unknown error", userID:nil)
+				}
+			}
+		}
+	}
+	
+	func verifyIdentifier(identifierStr: String, userIDInt: Int, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		request("register/verify", method:"POST", formdata: ["identifier":identifierStr,"token":token,"user_id":userIDInt], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
+			if(succeeded) {
+				requestCompleted(succeeded: true,error_msg: nil)
+			} else {
+				if let msg = data["text"] as? String {
+					requestCompleted(succeeded: false,error_msg: msg)
+				} else {
+					requestCompleted(succeeded: false,error_msg: "Unknown")
 				}
 			}
 		}

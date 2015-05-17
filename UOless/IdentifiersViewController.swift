@@ -324,33 +324,16 @@ class IdentifiersViewController: UITableViewController {
     }
     
     func validationCodeForm(identifier: UserIdentifier) {
-        //show change password form
-        let alertController = UIAlertController(title: "Validate " + identifier.identifier, message: "Enter the validationcode you received", preferredStyle: .Alert)
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in }
-        
-        let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
-            let validationTextField = alertController.textFields![0] as! UITextField
-            user!.verifyIdentifier(identifier, token: validationTextField.text) { (succeeded, error_msg) -> () in
-                if !succeeded {
-                    displayError(error_msg!,self)
-                } else {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.tableView.reloadData()
-                    })
-                }
-            }
+        //show validation code form
+		displayValidationForm(identifier.identifier, user!.id, self, {},{}) { (succeeded, error_msg) -> () in
+			if !succeeded {
+				displayError(error_msg!,self)
+			} else {
+				dispatch_async(dispatch_get_main_queue(), {
+					self.tableView.reloadData()
+				})
+			}
         }
-        
-        alertController.addTextFieldWithConfigurationHandler { (textField) in
-            textField.placeholder = "Validation code"
-        }
-        
-        
-        alertController.addAction(cancelAction)
-        alertController.addAction(enterAction)
-        
-        self.presentViewController(alertController, animated: true, completion: nil)
     }
 
 }

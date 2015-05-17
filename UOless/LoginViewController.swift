@@ -46,62 +46,73 @@ class LoginViewController: UIViewController {
     @IBAction func login(sender: UIButton) {
         doLogin()
     }
+	
+	var formForRegistration = false
     
     func doLogin() {
-        spinner.hidden = false
-        loginButton.hidden = true
-        loginButton.enabled = false
-
-		if loginButton.titleLabel!.text == "Login" {
+		if formForRegistration == false {
+			spinning(true)
+			
 			api.login(txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String) -> () in
+				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+					self.txtLoginPass.text = ""
+				})
+				self.spinning(false)
 				if(succeeded) {
 					//Go to next screen (in main view)
-					self.spinner.hidden = true
-					self.loginButton.hidden = false
-					self.loginButton.enabled = true
 					self.enter_app()
 				} else {
-					// Move to the UI thread
-					dispatch_async(dispatch_get_main_queue(), { () -> Void in
-						self.spinner.hidden = true
-						self.loginButton.hidden = false
-						self.loginButton.enabled = true
-					})
-					
 					displayError(msg, self)
 				}
 			}
 		} else {
 			//check whether email address is valid
+			var preferredCurency: String = "EUR"
+			if let currencyCode = NSLocale.currentLocale().objectForKey(NSLocaleCurrencyCode) as? String {
+				preferredCurency = currencyCode
+			}
 			
-			api.register(txtLoginName.text, username: txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String) -> () in
-				if(succeeded) {
-					//Go to next screen (in main view)
-					self.spinner.hidden = true
-					self.loginButton.hidden = false
-					self.loginButton.enabled = true
-					self.enter_app()
-				} else {
-					// Move to the UI thread
-					dispatch_async(dispatch_get_main_queue(), { () -> Void in
-						self.spinner.hidden = true
-						self.loginButton.hidden = false
-						self.loginButton.enabled = true
-					})
+			if validateRegistrationForm(false, finalCheck: true) {
+				spinning(true)
+				
+				api.register(txtLoginName.text, username: txtLoginUser.text, password: txtLoginPass.text, preferredCurrency: preferredCurency){ (succeeded: Bool, error_msg: String?, userID: Int?) -> () in
 					
-					displayError(msg, self)
+					if(succeeded) {
+						dispatch_async(dispatch_get_main_queue(), { () -> Void in
+							self.register(self) //switch back to login view
+						})
+							
+						//Show validation form
+						displayValidationForm(self.txtLoginUser.text, userID!, self, {() -> () in self.spinning(false)},{}) { (succeeded, error_msg) -> () in
+							
+							self.spinning(false)
+							
+							if !succeeded {
+								displayError(error_msg!,self)
+							} else {
+								//When validated: log in
+								self.doLogin()
+							}
+						}
+
+					} else {
+						self.spinning(false)
+						displayError(error_msg!, self)
+					}
 				}
 			}
         }
     }
-    
+	
     @IBAction func register(sender: AnyObject) {
-		if registerButton.titleLabel!.text == "Register" {
+		if formForRegistration == false {
+			formForRegistration = true
 			txtLoginName.hidden = false
 			loginButton.setTitle("Register", forState: UIControlState.Normal)
 			registerButton.setTitle("Cancel", forState: UIControlState.Normal)
 			txtLoginName.becomeFirstResponder()
 		} else {
+			formForRegistration = false
 			txtLoginName.hidden = true
 			loginButton.setTitle("Login", forState: UIControlState.Normal)
 			registerButton.setTitle("Register", forState: UIControlState.Normal)
@@ -181,11 +192,120 @@ class LoginViewController: UIViewController {
     }
     
     func enter_app() {
-
         dispatch_async(dispatch_get_main_queue()) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController") as! UIViewController
             self.presentViewController(vc, animated: false, completion: nil)
         }
+    }
+	
+	func spinning(spin: Bool) {
+		if spin {
+			dispatch_async(dispatch_get_main_queue(), { () -> Void in
+				self.spinner.hidden = false
+				self.loginButton.hidden = true
+				self.loginButton.enabled = false
+				self.registerButton.hidden = true
+				self.registerButton.enabled = false
+			})
+		} else {
+			dispatch_async(dispatch_get_main_queue(), { () -> Void in
+				self.spinner.hidden = true
+				self.loginButton.hidden = false
+				self.loginButton.enabled = true
+				self.registerButton.hidden = false
+				self.registerButton.enabled = true
+			})
+		}
+	}
+	
+	func validateRegistrationForm (whileEditing: Bool, finalCheck: Bool) -> Bool {
+		var isValid = true
+		var hasGivenFirstResponder = false
+		
+		/*Could also color the border, with
+		formTo.layer.borderWidth = 1.0
+		formTo.layer.borderColor = Colors.danger.textToUIColor().CGColor
+		*/
+		
+		
+		if txtLoginName.text != "" {
+			txtLoginName.backgroundColor = nil
+			txtLoginName.textColor = nil
+		} else {
+			isValid = false
+			if finalCheck {
+				txtLoginName.backgroundColor = Colors.danger.backgroundToUIColor()
+				txtLoginName.textColor = Colors.danger.textToUIColor()
+				if (!hasGivenFirstResponder && finalCheck) {
+					txtLoginName.becomeFirstResponder()
+					hasGivenFirstResponder = true
+				}
+				
+			}
+		}
+		
+		if txtLoginUser.text.isEmail() {
+			txtLoginUser.backgroundColor = nil
+			txtLoginUser.textColor = nil
+		} else {
+			isValid = false
+			if finalCheck || (txtLoginUser.text != "" && !whileEditing) {
+				txtLoginUser.backgroundColor = Colors.danger.backgroundToUIColor()
+				txtLoginUser.textColor = Colors.danger.textToUIColor()
+				if (!hasGivenFirstResponder && finalCheck) {
+					txtLoginUser.becomeFirstResponder()
+					hasGivenFirstResponder = true
+				}
+			}
+		}
+
+		if txtLoginPass.text != "" {
+			txtLoginPass.backgroundColor = nil
+			txtLoginPass.textColor = nil
+		} else {
+			isValid = false
+			if finalCheck {
+				txtLoginPass.backgroundColor = Colors.danger.backgroundToUIColor()
+				txtLoginPass.textColor = Colors.danger.textToUIColor()
+				if (!hasGivenFirstResponder && finalCheck) {
+					txtLoginPass.becomeFirstResponder()
+					hasGivenFirstResponder = true
+				}
+				
+			}
+		}
+		
+		return isValid
+	}
+    @IBAction func loginUserEditingDidChange(sender: AnyObject) {
+		if formForRegistration {
+			validateRegistrationForm(true,finalCheck: false)
+		}
+	}
+    @IBAction func loginUserEditingDidEnd(sender: AnyObject) {
+		if formForRegistration {
+			validateRegistrationForm(false,finalCheck: false)
+		}
+    }
+    @IBAction func loginPassEditingDidChange(sender: AnyObject) {
+		if formForRegistration {
+			validateRegistrationForm(true,finalCheck: false)
+		}
+    }
+    @IBAction func loginPassEditingDidEnd(sender: AnyObject) {
+		if formForRegistration {
+			validateRegistrationForm(false,finalCheck: false)
+		}
+    }
+    @IBAction func loginNameEditingDidChange(sender: AnyObject) {
+		if formForRegistration {
+			validateRegistrationForm(true,finalCheck: false)
+		}
+    }
+    @IBAction func loginNameEditingDidEnd(sender: AnyObject) {
+		if formForRegistration {
+			validateRegistrationForm(false,finalCheck: false)
+		}
     }
 }

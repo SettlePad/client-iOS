@@ -9,7 +9,9 @@
 import UIKit
 
 class BalancesViewController: UITableViewController {
-
+	//TODO: add footer like in transactions
+	//TODO: clean up, looks ugly
+	
 	var balancesRefreshControl:UIRefreshControl!
 
     override func viewDidLoad() {

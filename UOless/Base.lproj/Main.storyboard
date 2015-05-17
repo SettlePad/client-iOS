@@ -35,6 +35,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" returnKeyType="next"/>
                                 <connections>
+                                    <action selector="loginUserEditingDidChange:" destination="vXZ-lx-hvc" eventType="editingChanged" id="kyH-bs-nwr"/>
+                                    <action selector="loginUserEditingDidEnd:" destination="vXZ-lx-hvc" eventType="editingDidEnd" id="lUL-DB-J9u"/>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="xyK-s3-OUe"/>
                                 </connections>
                             </textField>
@@ -46,6 +48,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="go" secureTextEntry="YES"/>
                                 <connections>
+                                    <action selector="loginPassEditingDidChange:" destination="vXZ-lx-hvc" eventType="editingChanged" id="xIv-ig-nGa"/>
+                                    <action selector="loginPassEditingDidEnd:" destination="vXZ-lx-hvc" eventType="editingDidEnd" id="10h-7A-dDz"/>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="3Hf-Pp-j2F"/>
                                 </connections>
                             </textField>
@@ -73,6 +77,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" returnKeyType="next"/>
                                 <connections>
+                                    <action selector="loginNameEditingDidChange:" destination="vXZ-lx-hvc" eventType="editingChanged" id="gDz-GA-7c0"/>
+                                    <action selector="loginNameEditingDidEnd:" destination="vXZ-lx-hvc" eventType="editingDidEnd" id="olz-Gb-zjs"/>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="DLu-xs-NXD"/>
                                 </connections>
                             </textField>
