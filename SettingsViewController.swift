@@ -1,9 +1,9 @@
 //
 //  SettingsViewController.swift
-//  UOless
+//  SettlePad
 //
 //  Created by Rob Everhardt on 07/01/15.
-//  Copyright (c) 2015 UOless. All rights reserved.
+//  Copyright (c) 2015 SettlePad. All rights reserved.
 //
 
 import UIKit
