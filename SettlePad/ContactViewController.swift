@@ -33,6 +33,10 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
         contact.setFriendlyName(nameText.text, updateServer: true)
     }
 	
+    @IBAction func viewTapped(sender: AnyObject) {
+        view.endEditing(true)
+    }
+    
     @IBAction func starTapGestureRecognizer(sender: AnyObject) {
         //Determine the rowindex via the touch point
         contact.setFavorite(!contact.favorite, updateServer: true)

@@ -8,10 +8,7 @@
 
 import UIKit
 
-class BalancesViewController: UITableViewController {
-	//TODO: add footer like in transactions
-	//TODO: clean up, looks ugly
-	
+class BalancesViewController: UITableViewController {	
 	var balancesRefreshControl:UIRefreshControl!
 
     override func viewDidLoad() {
@@ -35,12 +32,6 @@ class BalancesViewController: UITableViewController {
 		//refresh Balances
 		refreshBalances()
 		balancesRefreshControl.beginRefreshing()
-		
-		//
-		
-		//Set section header height to dynamic
-		tableView.sectionHeaderHeight = UITableViewAutomaticDimension
-		tableView.estimatedSectionHeaderHeight = 60
     }
 	
 	func refreshBalances() {
@@ -72,9 +63,8 @@ class BalancesViewController: UITableViewController {
         return balances.getBalancesForCurrency(balances.sortedCurrencies[section]).count
     }
 
-	override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+	/*override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 		let  headerCell = tableView.dequeueReusableCellWithIdentifier("Header") as! BalanceHeaderCell
-		//headerCell.backgroundColor = UIColor.cyanColor()
 		let currency = balances.sortedCurrencies[section]
 		headerCell.currencyLabel.text = currency.toLongName()
 		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
@@ -96,6 +86,35 @@ class BalancesViewController: UITableViewController {
 		}
 		
 		return headerCell
+	}*/
+	
+	
+	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+		let currency = balances.sortedCurrencies[section]
+		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
+		if let currencySummary =  balances.getSummaryForCurrency(currency) {
+			//return currency.rawValue+" "+currencySummary.balance.format(doubleFormat)+" (get "+currencySummary.get.format(doubleFormat)+", owe " + (currencySummary.owe * -1).format(doubleFormat)+")"
+			return currency.rawValue+" "+currencySummary.balance.format(doubleFormat)
+		} else {
+			return "Unknown"
+		}
+	}
+	
+	override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+		let headerView = view as! UITableViewHeaderFooterView
+		let currency = balances.sortedCurrencies[section]
+		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
+
+		
+		if let currencySummary =  balances.getSummaryForCurrency(currency) {
+			if currencySummary.balance < 0 {
+				headerView.textLabel.textColor = Colors.gray.textToUIColor()
+			} else {
+				headerView.textLabel.textColor = Colors.success.textToUIColor()
+			}
+		}
+		
+		//headerView.contentView.backgroundColor = UIColor(red: 0/255, green: 181/255, blue: 229/255, alpha: 1.0) //make the background color light blue
 	}
 	
 	
@@ -170,22 +189,4 @@ class BalancesViewController: UITableViewController {
     }
     */
 
-}
-
-class BalanceHeaderCell : UITableViewCell {
-	@IBOutlet var currencyLabel: UILabel!
-	@IBOutlet var getPayLabel: UILabel!
-	@IBOutlet var balanceLabel: UILabel!
-	
-	override func awakeFromNib() {
-		super.awakeFromNib()
-		// Initialization code
-	}
-	
-	override func setSelected(selected: Bool, animated: Bool) {
-		super.setSelected(selected, animated: animated)
-		
-		// Configure the view for the selected state
-	}
-	
 }

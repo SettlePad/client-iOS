@@ -52,11 +52,11 @@ enum Colors {
     func textToUIColor() -> UIColor{
         switch (self) {
         case .primary:
-            return UIColor(red: 0x1a/255, green: 0x9a/255, blue: 0xcb/255, alpha: 1.0)
+            return UIColor(red: 0x86/255, green: 0xc5/255, blue: 0x40/255, alpha: 1.0)
         case .gray:
-            return UIColor(red: 0x77/255, green: 0x77/255, blue: 0x77/255, alpha: 1.0)
+            return UIColor(red: 0x6F/255, green: 0x6F/255, blue: 0x6F/255, alpha: 1.0)
         case .success:
-            return UIColor(red: 0x08/255, green: 0x99/255, blue: 0x00/255, alpha: 1.0)
+			return UIColor(red: 0x86/255, green: 0xc5/255, blue: 0x40/255, alpha: 1.0)
         case .warning:
             return UIColor(red: 0xbd/255, green: 0x62/255, blue: 0x00/255, alpha: 1.0)
         case .danger:

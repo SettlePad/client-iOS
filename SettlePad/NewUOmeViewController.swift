@@ -402,7 +402,6 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillChangeFrameNotification:", name: UIKeyboardWillChangeFrameNotification, object: nil) //This will be removed at viewWillDisappear
         
         //Required to have dynamic row height
         newUOmeTableView.estimatedRowHeight = 70
@@ -412,37 +411,6 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         formTo.becomeFirstResponder() //If done earlier (eg. at viewWillAppear), the layouting is not done yet and keyboard will pop up before that. As that triggers an animated re-layouting, width-changes can also be seen animated. Can also do a self.view.layoutIfNeeded() before this line
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillChangeFrameNotification, object: nil)
-    }
-    
-    func keyboardWillChangeFrameNotification(notification: NSNotification) {
-        let userInfo = notification.userInfo!
-        
-        let animationDuration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as! NSNumber).doubleValue
-        let keyboardEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
-        let convertedKeyboardEndFrame = view.convertRect(keyboardEndFrame, fromView: view.window)
-        let rawAnimationCurve = (notification.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber).unsignedIntValue << 16
-        let animationCurve = UIViewAnimationOptions(rawValue: UInt(rawAnimationCurve << 16))
-        
-        /*
-        if (CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame) > 0) {
-            //will show
-        } else {
-            //will hide
-        }
-        */
-        
-        tableBottomConstraint.constant = CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame)
-        
-        
-        UIView.animateWithDuration(animationDuration, delay: 0.0, options: .BeginFromCurrentState | animationCurve, animations: {
-            self.view.layoutIfNeeded()
-            }, completion: nil
-        )
     }
     
     func textFieldShouldReturn(textField: UITextField!) -> Bool {

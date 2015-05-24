@@ -15,7 +15,6 @@ class TransactionsCell: UITableViewCell {
     @IBOutlet var counterpartLabel: UILabel!
     @IBOutlet var statusLabel: UILabel!
     @IBOutlet var timeLabel: UILabel!
-    @IBOutlet var statusImageView: UIImageView!
 
     @IBOutlet var spinner: UIActivityIndicatorView!
     override func awakeFromNib() {
@@ -85,8 +84,7 @@ class TransactionsCell: UITableViewCell {
         timeLabel.textColor = Colors.gray.textToUIColor()
 
         
-        //Status (text and image)
-		//TODO: clean up status images
+        //Status
         var statusString = "Unknown"
         if transaction.status == .Processed {
             statusLabel.hidden = false
@@ -101,8 +99,7 @@ class TransactionsCell: UITableViewCell {
                 //reduced
                 statusString = ""
             }
-            //cell.statusImageView.image = UIImage(named: "ios_new")
-            statusImageView.image = nil
+
             statusLabel.text = statusString
             statusLabel.textColor = Colors.primary.textToUIColor()
 
@@ -118,8 +115,6 @@ class TransactionsCell: UITableViewCell {
                 statusString = "Swipe to approve"
                 statusLabel.textColor = Colors.primary.textToUIColor()
             }
-            statusImageView.image = UIImage(named: "ios_attention")
-            //statusImageView.image = nil
             
             statusLabel.text = statusString
             
@@ -129,7 +124,6 @@ class TransactionsCell: UITableViewCell {
             amountLabel.hidden = false
             
             statusLabel.textColor = Colors.primary.textToUIColor()
-            statusImageView.image = nil
             statusLabel.text = "Swipe to delete"
         } else if transaction.status == .Posted {
             statusLabel.hidden = true
@@ -137,7 +131,6 @@ class TransactionsCell: UITableViewCell {
             amountLabel.hidden = true
             
             spinner.startAnimating()
-            statusImageView.image = nil
             statusLabel.textColor = Colors.gray.textToUIColor()
         } else { // cancelled/ rejected
             statusLabel.hidden = false
@@ -145,7 +138,6 @@ class TransactionsCell: UITableViewCell {
             amountLabel.hidden = false
             
             //transaction canceled
-            statusImageView.image = nil
             statusString = "Rejected/ canceled"
             statusLabel.text = statusString
             

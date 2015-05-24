@@ -161,17 +161,6 @@ class User {
                     println("Cannot load identifier")
                     return nil
                 }
-
-                /*used before Xcode 6.3 was released
-
-                    switch (parsableIdentifier["identifier"], parsableIdentifier["source"], parsableIdentifier["verified"]) {
-                    case let (identifier as String, source as String, verified as Bool):
-                        self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified))
-                    default:
-                        println("Cannot load identifier")
-                        return nil
-                    }
-                */
             }
         } else {
             return nil

@@ -31,7 +31,6 @@ class LoginViewController: UIViewController {
     @IBOutlet var loginButton: UIButton!
 
     @IBOutlet var registerButton: UIButton!
-    @IBOutlet var loginBottomConstraint: NSLayoutConstraint!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,17 +118,7 @@ class LoginViewController: UIViewController {
 			txtLoginUser.becomeFirstResponder()
 		}
     }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillChangeFrameNotification:", name: UIKeyboardWillChangeFrameNotification, object: nil)
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillChangeFrameNotification, object: nil)
-    }
-    
+	
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         if user != nil {
@@ -140,36 +129,7 @@ class LoginViewController: UIViewController {
         }
     }
     
-    
-    func keyboardWillChangeFrameNotification(notification: NSNotification) {
-        let userInfo = notification.userInfo!
-        
-        let animationDuration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as! NSNumber).doubleValue
-        let keyboardEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
-        let convertedKeyboardEndFrame = view.convertRect(keyboardEndFrame, fromView: view.window)
-        let rawAnimationCurve = (notification.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber).unsignedIntValue << 16
-        let animationCurve = UIViewAnimationOptions(rawValue: UInt(rawAnimationCurve << 16))
-        
-        if (CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame) > 0) {
-            //will show
-            self.loginBottomConstraint.constant = CGRectGetMaxY(view.bounds) - CGRectGetMinY(convertedKeyboardEndFrame)+10
-            self.loginBottomConstraint.priority = 750 //So that this one will overrule the other botom constraint
-        } else {
-            //will hide
-            self.loginBottomConstraint.priority = 250 //So that the other bottom constraint (with fixed height) will take over
-        }
-
-        
-        UIView.animateWithDuration(animationDuration, delay: 0.0, options: .BeginFromCurrentState | animationCurve, animations: {
-            self.view.layoutIfNeeded()
-            }, completion: nil
-        )
-    
-        /*UIView.animateWithDuration(1, animations: { () -> Void in
-            self.loginBottomConstraint.constant = keyboardFrame.size.height + 20
-        })*/
-    }
-    
+	
     
     @IBAction func viewTapped(sender : AnyObject) {
         //To hide the keyboard, when needed
