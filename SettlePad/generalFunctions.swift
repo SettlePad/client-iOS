@@ -44,11 +44,8 @@ enum Colors {
     case primary
     case gray
     case success
-    case warning
     case danger
-    case info
-    case black
-    
+	
     func textToUIColor() -> UIColor{
         switch (self) {
         case .primary:
@@ -57,14 +54,8 @@ enum Colors {
             return UIColor(red: 0x6F/255, green: 0x6F/255, blue: 0x6F/255, alpha: 1.0)
         case .success:
 			return UIColor(red: 0x86/255, green: 0xc5/255, blue: 0x40/255, alpha: 1.0)
-        case .warning:
-            return UIColor(red: 0xbd/255, green: 0x62/255, blue: 0x00/255, alpha: 1.0)
         case .danger:
             return UIColor(red: 0xbb/255, green: 0x00/255, blue: 0x05/255, alpha: 1.0)
-        case .info:
-            return UIColor(red: 0x02/255, green: 0x57/255, blue: 0x77/255, alpha: 1.0)
-        case .black:
-            return UIColor(red: 0x00/255, green: 0x00/255, blue: 0x00/255, alpha: 1.0)
         }
     }
     
@@ -72,12 +63,8 @@ enum Colors {
         switch (self) {
         case .success:
             return UIColor(red: 0xa1/255, green: 0xee/255, blue: 0x9d/255, alpha: 1.0)
-        case .warning:
-            return UIColor(red: 0xff/255, green: 0xd5/255, blue: 0xa8/255, alpha: 1.0)
         case .danger:
             return UIColor(red: 0xfe/255, green: 0xa8/255, blue: 0xaa/255, alpha: 1.0)
-        case .info:
-            return UIColor(red: 0x96/255, green: 0xca/255, blue: 0xde/255, alpha: 1.0)
         default:
             return UIColor.clearColor()
         }

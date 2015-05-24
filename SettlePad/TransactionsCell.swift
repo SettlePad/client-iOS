@@ -31,8 +31,8 @@ class TransactionsCell: UITableViewCell {
     func markup(transaction: Transaction){
         //Description
         descriptionLabel.text = transaction.description
-        descriptionLabel.textColor = Colors.black.textToUIColor()
-        
+        descriptionLabel.textColor = UIColor.blackColor()
+		
         //Amount
         let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
         amountLabel.text = transaction.currency.rawValue+" \(transaction.amount.format(doubleFormat))"
@@ -53,7 +53,7 @@ class TransactionsCell: UITableViewCell {
 		} else {
 			counterpartLabel.text = "Unknown"
 		}
-        counterpartLabel.textColor = Colors.black.textToUIColor()
+        counterpartLabel.textColor = UIColor.blackColor()
 
         
         //Time
