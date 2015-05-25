@@ -247,7 +247,7 @@ class User {
     }
 	
 	func verifyIdentifier(identifier:UserIdentifier, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		api.verifyIdentifier(identifier.identifier, userIDInt: self.id, token: token) { (succeeded: Bool, error_msg: String?) -> () in
+		api.verifyIdentifier(identifier.identifier, token: token) { (succeeded: Bool, error_msg: String?) -> () in
 			if(succeeded) {
 				for userIdentifier in self.userIdentifiers {
 					if userIdentifier.identifier == identifier.identifier {

@@ -39,7 +39,11 @@ class IdentifiersViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Return the number of rows in the section.
-        return user!.userIdentifiers.count
+		if user != nil {
+			return user!.userIdentifiers.count
+		} else {
+			return 0
+		}
     }
 
     
@@ -66,11 +70,7 @@ class IdentifiersViewController: UITableViewController {
     // Override to support conditional editing of the table view.
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the specified item to be editable.
-        if user!.userIdentifiers.count > 1 {
-            return true
-        } else {
-            return false
-        }
+		return true
     }
     
 
@@ -97,7 +97,14 @@ class IdentifiersViewController: UITableViewController {
     }
     
     func deleteIdentifier (identifier: UserIdentifier, tableView: UITableView, indexPath: NSIndexPath) {
-        let alertController = UIAlertController(title: "Are you sure?", message: "Do you really want to delete "+identifier.identifier+"?", preferredStyle: .Alert)
+		var message: String
+		if user!.userIdentifiers.count == 1 {
+			message = "If you proceed, you will close your account and log out. You cannot login ever again. Are you sure that is what you want?"
+		} else {
+			message = "Do you really want to delete "+identifier.identifier+"?"
+		}
+		
+        let alertController = UIAlertController(title: "Are you sure?", message: message, preferredStyle: .Alert)
 
         let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
             tableView.setEditing(false, animated: true)
@@ -110,9 +117,20 @@ class IdentifiersViewController: UITableViewController {
                 if !succeeded {
                     displayError(error_msg!,self)
                 }
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.tableView.reloadData()
-                })
+				if user != nil {
+					if user!.userIdentifiers.count == 0 {
+						api.clearUser() //No need to logout on the server, that is already done with removing the last identifier
+						dispatch_async(dispatch_get_main_queue()) {
+							let storyboard = UIStoryboard(name: "Main", bundle: nil)
+							let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
+							self.presentViewController(vc, animated: false, completion: nil)
+						}
+					} else {
+						dispatch_async(dispatch_get_main_queue(), {
+							self.tableView.reloadData()
+						})
+					}
+				}
             }
         }
         alertController.addAction(destroyAction)
@@ -151,58 +169,51 @@ class IdentifiersViewController: UITableViewController {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         let identifier = user!.userIdentifiers[indexPath.row]
         let cell = tableView.cellForRowAtIndexPath(indexPath)
-        
-        if (identifier.verified && user!.userIdentifiers.count == 1) {
-            //only one option: change password
-            changePasswordForm(identifier)
-        } else {
-            //show Action sheet
 
-            let actionSheetController: UIAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
-            
-            let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
-                //Just dismiss the action sheet
-            }
-            actionSheetController.addAction(cancelAction)
-            
-            let changePasswordAction: UIAlertAction = UIAlertAction(title: "Change password", style: .Default) { action -> Void in
-                self.changePasswordForm(identifier)
-            }
-            actionSheetController.addAction(changePasswordAction)
-            
-            if (identifier.verified == false) {
-                let verifyAction: UIAlertAction = UIAlertAction(title: "Enter verification code", style: .Default) { action -> Void in
-                    let identifier = user!.userIdentifiers[indexPath.row]
-                    self.validationCodeForm(identifier)
-                }
-                actionSheetController.addAction(verifyAction)
-                
-                let resendCodeAction: UIAlertAction = UIAlertAction(title: "Resend verification code", style: .Default) { action -> Void in
-                    user!.resendToken(identifier) { (succeeded: Bool, error_msg: String?) -> () in
-                        if !succeeded {
-                            displayError(error_msg!,self)
-                        }
-                    }
-                }
-                actionSheetController.addAction(resendCodeAction)
-            }
-            
-            if (user!.userIdentifiers.count > 1) {
-                let verifyAction: UIAlertAction = UIAlertAction(title: "Delete", style: .Destructive) { action -> Void in
-                    let identifier = user!.userIdentifiers[indexPath.row]
-                    self.deleteIdentifier (identifier, tableView: tableView, indexPath: indexPath)
-                }
-                actionSheetController.addAction(verifyAction)
-            }
+		//show Action sheet
 
-            //We need to provide a popover sourceView when using it on iPad
-            actionSheetController.popoverPresentationController?.sourceView = cell?.contentView
-            actionSheetController.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Up | UIPopoverArrowDirection.Down
-            actionSheetController.popoverPresentationController?.sourceRect = CGRectMake(cell!.frame.width / 2, cell!.frame.height,0,0)
+		let actionSheetController: UIAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
+		
+		let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
+			//Just dismiss the action sheet
+		}
+		actionSheetController.addAction(cancelAction)
+		
+		let changePasswordAction: UIAlertAction = UIAlertAction(title: "Change password", style: .Default) { action -> Void in
+			self.changePasswordForm(identifier)
+		}
+		actionSheetController.addAction(changePasswordAction)
+		
+		if (identifier.verified == false) {
+			let verifyAction: UIAlertAction = UIAlertAction(title: "Enter verification code", style: .Default) { action -> Void in
+				let identifier = user!.userIdentifiers[indexPath.row]
+				self.validationCodeForm(identifier)
+			}
+			actionSheetController.addAction(verifyAction)
+			
+			let resendCodeAction: UIAlertAction = UIAlertAction(title: "Resend verification code", style: .Default) { action -> Void in
+				user!.resendToken(identifier) { (succeeded: Bool, error_msg: String?) -> () in
+					if !succeeded {
+						displayError(error_msg!,self)
+					}
+				}
+			}
+			actionSheetController.addAction(resendCodeAction)
+		}
+	
+		let verifyAction: UIAlertAction = UIAlertAction(title: "Delete", style: .Destructive) { action -> Void in
+			let identifier = user!.userIdentifiers[indexPath.row]
+			self.deleteIdentifier (identifier, tableView: tableView, indexPath: indexPath)
+		}
+		actionSheetController.addAction(verifyAction)
 
-            //Present the AlertController
-            self.presentViewController(actionSheetController, animated: true, completion: nil)
-        }
+		//We need to provide a popover sourceView when using it on iPad
+		actionSheetController.popoverPresentationController?.sourceView = cell?.contentView
+		actionSheetController.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Up | UIPopoverArrowDirection.Down
+		actionSheetController.popoverPresentationController?.sourceRect = CGRectMake(cell!.frame.width / 2, cell!.frame.height,0,0)
+
+		//Present the AlertController
+		self.presentViewController(actionSheetController, animated: true, completion: nil)
     }
     
     func changePasswordForm(identifier: UserIdentifier) {
@@ -325,7 +336,7 @@ class IdentifiersViewController: UITableViewController {
     
     func validationCodeForm(identifier: UserIdentifier) {
         //show validation code form
-		displayValidationForm(identifier.identifier, user!.id, self, {},{}) { (succeeded, error_msg) -> () in
+		displayValidationForm(identifier.identifier, self, {},{}) { (succeeded, error_msg) -> () in
 			if !succeeded {
 				displayError(error_msg!,self)
 			} else {

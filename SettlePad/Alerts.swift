@@ -23,7 +23,7 @@ func displayError(errorMessage: String, viewController: UIViewController) {
     })
 }
 
-func displayValidationForm(identifierStr: String, userIDInt: Int, viewController: UIViewController, verificationCanceled: () -> (), verificationStarted: () -> (), verificationCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
+func displayValidationForm(identifierStr: String, viewController: UIViewController, verificationCanceled: () -> (), verificationStarted: () -> (), verificationCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
 	
 	let alertController = UIAlertController(title: "Validate " + identifierStr, message: "Enter the validationcode you received in your email", preferredStyle: .Alert)
 	
@@ -34,7 +34,7 @@ func displayValidationForm(identifierStr: String, userIDInt: Int, viewController
 	let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
 		verificationStarted()
 		let validationTextField = alertController.textFields![0] as! UITextField
-		api.verifyIdentifier(identifierStr, userIDInt: userIDInt, token: validationTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+		api.verifyIdentifier(identifierStr, token: validationTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
 				verificationCompleted(succeeded: false, error_msg: error_msg!)
 			} else {

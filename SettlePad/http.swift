@@ -16,7 +16,7 @@ import Foundation
 
 class APIController {
 
-    func login(username: String, password: String, loginCompleted : (succeeded: Bool, msg: String) -> ()) {
+	func login(username: String, password: String, loginCompleted : (succeeded: Bool, msg: String, code: String) -> ()) {
 		//if logged in already, first log out
 		if user != nil {
 			logout()
@@ -26,18 +26,18 @@ class APIController {
 			if(succeeded) {
 				user = User(credentials: data as! Dictionary)
 				if user != nil {
-					loginCompleted(succeeded: true, msg: user!.name)
+					loginCompleted(succeeded: true, msg: user!.name, code:"")
 					contacts.updateContacts(){
 						contacts.updateAutoLimits(){}
 					}
 				} else {
-					loginCompleted(succeeded: false, msg: "Cannot initialize user class")
+					loginCompleted(succeeded: false, msg: "Cannot initialize user class", code: "")
 				}
 			} else {
-				if let msg = data["text"] as? String {
-					loginCompleted(succeeded: false, msg: msg)
+				if let msg = data["text"] as? String, code = data["code"] as? String {
+					loginCompleted(succeeded: false, msg: msg, code: code)
 				} else {
-					loginCompleted(succeeded: false, msg: "Unknown error")
+					loginCompleted(succeeded: false, msg: "Unknown error", code: "unknown")
 				}
 			}
 		}
@@ -66,8 +66,8 @@ class APIController {
 		}
 	}
 	
-	func verifyIdentifier(identifierStr: String, userIDInt: Int, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		request("register/verify", method:"POST", formdata: ["identifier":identifierStr,"token":token,"user_id":userIDInt], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
+	func verifyIdentifier(identifierStr: String, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		request("register/verify", method:"POST", formdata: ["identifier":identifierStr,"token":token], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
 			if(succeeded) {
 				requestCompleted(succeeded: true,error_msg: nil)
 			} else {

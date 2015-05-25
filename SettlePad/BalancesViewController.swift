@@ -10,6 +10,7 @@ import UIKit
 
 class BalancesViewController: UITableViewController {	
 	var balancesRefreshControl:UIRefreshControl!
+	var footer = BalancesFooterView(frame: CGRectMake(0, 0, 320, 44))
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +28,7 @@ class BalancesViewController: UITableViewController {
 		self.tableView.addSubview(balancesRefreshControl)
 		
 		//Hide additional gridlines, and set gray background for footer
-		self.tableView.tableFooterView = UIView(frame:CGRectZero)
+		//self.tableView.tableFooterView = UIView(frame:CGRectZero)
 		
 		//refresh Balances
 		refreshBalances()
@@ -36,11 +37,15 @@ class BalancesViewController: UITableViewController {
 	
 	func refreshBalances() {
 		balances.updateBalances() {()->() in
+			self.footer.no_results = (balances.sortedCurrencies.count == 0)
 			dispatch_async(dispatch_get_main_queue(), {
 				//so it is run now, instead of at the end of code execution
 				self.tableView.reloadData()
+
+				self.balancesRefreshControl.endRefreshing()
+				self.footer.setNeedsDisplay()
+				self.tableView.tableFooterView = self.footer
 			})
-			self.balancesRefreshControl.endRefreshing()
 		}
 	}
 
@@ -90,13 +95,18 @@ class BalancesViewController: UITableViewController {
 	
 	
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		let currency = balances.sortedCurrencies[section]
-		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
-		if let currencySummary =  balances.getSummaryForCurrency(currency) {
-			//return currency.rawValue+" "+currencySummary.balance.format(doubleFormat)+" (get "+currencySummary.get.format(doubleFormat)+", owe " + (currencySummary.owe * -1).format(doubleFormat)+")"
-			return currency.rawValue+" "+currencySummary.balance.format(doubleFormat)
+		if balances.sortedCurrencies.count < section {
+			return "Refresh please" //To overcome bad access
 		} else {
-			return "Unknown"
+			let currency = balances.sortedCurrencies[section]
+
+			if let currencySummary =  balances.getSummaryForCurrency(currency) {
+				let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
+				//return currency.rawValue+" "+currencySummary.balance.format(doubleFormat)+" (get "+currencySummary.get.format(doubleFormat)+", owe " + (currencySummary.owe * -1).format(doubleFormat)+")"
+				return currency.rawValue+" "+currencySummary.balance.format(doubleFormat)
+			} else {
+				return "Unknown"
+			}
 		}
 	}
 	
@@ -189,4 +199,41 @@ class BalancesViewController: UITableViewController {
     }
     */
 
+}
+
+
+class BalancesFooterView: UIView {
+	var no_results = true
+	
+	override init (frame : CGRect) {
+		super.init(frame : frame)
+		self.opaque = false //Required for transparent background
+	}
+	
+	/*convenience override init () {
+	self.init(frame:CGRectMake(0, 0, 320, 44)) //By default, make a rect of 320x44
+	}*/
+	
+	required init(coder aDecoder: NSCoder) {
+		fatalError("This class does not support NSCoding")
+	}
+	
+	
+	override func drawRect(rect: CGRect) {
+		//To make sure we are not adding one layer of text onto another
+		for view in self.subviews {
+			view.removeFromSuperview()
+		}
+		
+		
+		if self.no_results {
+			let footerLabel: UILabel = UILabel(frame: rect)
+			footerLabel.textColor = Colors.gray.textToUIColor()
+			footerLabel.font = UIFont.boldSystemFontOfSize(11)
+			footerLabel.textAlignment = NSTextAlignment.Center
+			
+			footerLabel.text = "You do not owe anyone, nor do they owe you!"
+			self.addSubview(footerLabel)
+		}
+	}
 }

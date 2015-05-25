@@ -52,16 +52,35 @@ class LoginViewController: UIViewController {
 		if formForRegistration == false {
 			spinning(true)
 			
-			api.login(txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String) -> () in
-				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					self.txtLoginPass.text = ""
-				})
+			api.login(txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String, code: String) -> () in
 				self.spinning(false)
 				if(succeeded) {
 					//Go to next screen (in main view)
+					dispatch_async(dispatch_get_main_queue(), { () -> Void in
+						self.txtLoginPass.text = ""
+					})
 					self.enter_app()
 				} else {
-					displayError(msg, self)
+					if (code == "not_validated" ) {
+						//Show validation form
+						displayValidationForm(self.txtLoginUser.text, self, {() -> () in self.spinning(true)},{}) { (succeeded, error_msg) -> () in
+							
+							self.spinning(false)
+							
+							if !succeeded {
+								println(error_msg!)
+								displayError(error_msg!,self)
+							} else {
+								//When validated: log in
+								self.doLogin()
+							}
+						}
+					} else {
+						dispatch_async(dispatch_get_main_queue(), { () -> Void in
+							self.txtLoginPass.text = ""
+						})
+						displayError(msg, self)
+					}
 				}
 			}
 		} else {
@@ -82,7 +101,7 @@ class LoginViewController: UIViewController {
 						})
 							
 						//Show validation form
-						displayValidationForm(self.txtLoginUser.text, userID!, self, {() -> () in self.spinning(false)},{}) { (succeeded, error_msg) -> () in
+						displayValidationForm(self.txtLoginUser.text, self, {() -> () in self.spinning(true)},{}) { (succeeded, error_msg) -> () in
 							
 							self.spinning(false)
 							
