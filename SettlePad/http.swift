@@ -30,6 +30,7 @@ class APIController {
 					contacts.updateContacts(){
 						contacts.updateAutoLimits(){}
 					}
+					
 				} else {
 					loginCompleted(succeeded: false, msg: "Cannot initialize user class", code: "")
 				}
@@ -80,6 +81,48 @@ class APIController {
 		}
 	}
 	
+	func requestPasswordReset(identifierStr: String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		request("register/request_reset_password", method:"POST", formdata: ["identifier":identifierStr], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
+			if(succeeded) {
+				requestCompleted(succeeded: true,error_msg: nil)
+			} else {
+				if let msg = data["text"] as? String {
+					requestCompleted(succeeded: false,error_msg: msg)
+				} else {
+					requestCompleted(succeeded: false,error_msg: "Unknown")
+				}
+			}
+		}
+	}
+	
+	func resetPassword(identifierStr: String, passwordStr: String, tokenStr: String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		request("register/reset_password", method:"POST", formdata: ["identifier":identifierStr, "token":tokenStr, "password":passwordStr], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
+			if(succeeded) {
+				requestCompleted(succeeded: true,error_msg: nil)
+			} else {
+				if let msg = data["text"] as? String {
+					requestCompleted(succeeded: false,error_msg: msg)
+				} else {
+					requestCompleted(succeeded: false,error_msg: "Unknown")
+				}
+			}
+		}
+	}
+
+	func registerAPNToken(tokenStr: String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		request("apn", method:"POST", formdata: ["token":tokenStr], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			if(succeeded) {
+				requestCompleted(succeeded: true,error_msg: nil)
+			} else {
+				if let msg = data["text"] as? String {
+					requestCompleted(succeeded: false,error_msg: msg)
+				} else {
+					requestCompleted(succeeded: false,error_msg: "Unknown")
+				}
+			}
+		}
+	}
+	
 	func logout() {
 		//Invalidate session at server
 		request("logout", method:"POST", formdata: [:], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
@@ -96,8 +139,10 @@ class APIController {
 	}
 	
 	func clearUser() {
-		user!.wipe()
-		user = nil
+		if user != nil {
+			user!.wipe()
+			user = nil
+		}
 		
 		transactions.clear()
 		contacts.clear()

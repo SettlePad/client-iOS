@@ -19,6 +19,8 @@ var balances = Balances()
 
 
 class LoginViewController: UIViewController {
+	//TODO: disable zombies
+	
     /*See 
         http://www.raywenderlich.com/74904/swift-tutorial-part-2-simple-ios-app
         http://www.raywenderlich.com/83276/beginning-adaptive-layout-tutorial
@@ -63,15 +65,32 @@ class LoginViewController: UIViewController {
 				} else {
 					if (code == "not_validated" ) {
 						//Show validation form
-						displayValidationForm(self.txtLoginUser.text, self, {() -> () in self.spinning(true)},{}) { (succeeded, error_msg) -> () in
+						displayValidationForm(self.txtLoginUser.text, self, {() -> () in self.spinning(false)},{}) { (succeeded, error_msg) -> () in
 							
 							self.spinning(false)
 							
 							if !succeeded {
-								println(error_msg!)
 								displayError(error_msg!,self)
 							} else {
 								//When validated: log in
+								self.doLogin()
+							}
+						}
+					} else if (code == "incorrect_credentials" ) {
+						//Offer to reset password
+						displayIncorrectPasswordForm(self.txtLoginUser.text, self, {() -> () in
+							//When canceled
+							self.spinning(false)
+							dispatch_async(dispatch_get_main_queue(), { () -> Void in
+								self.txtLoginPass.text = ""
+							})
+						},{}) { (succeeded, error_msg) -> () in
+							//When indeed requested password reset
+							if !succeeded {
+								displayError(error_msg!,self)
+							} else {
+								//When validated: log in
+								self.txtLoginPass.text = error_msg!
 								self.doLogin()
 							}
 						}
@@ -101,7 +120,7 @@ class LoginViewController: UIViewController {
 						})
 							
 						//Show validation form
-						displayValidationForm(self.txtLoginUser.text, self, {() -> () in self.spinning(true)},{}) { (succeeded, error_msg) -> () in
+						displayValidationForm(self.txtLoginUser.text, self, {() -> () in self.spinning(false)},{}) { (succeeded, error_msg) -> () in
 							
 							self.spinning(false)
 							
@@ -144,6 +163,14 @@ class LoginViewController: UIViewController {
 			contacts.updateContacts(){
 				contacts.updateAutoLimits(){}
 			}
+
+			//Update user name, default currency and identifiers
+			user!.updateSettings() { (succeeded: Bool, error_msg: String?) -> () in
+				if !succeeded {
+					println(error_msg!)
+				}
+			}
+			
             enter_app()
         }
     }
@@ -176,6 +203,21 @@ class LoginViewController: UIViewController {
             let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController") as! UIViewController
             self.presentViewController(vc, animated: false, completion: nil)
         }
+		
+		// Register for Push Notitications, if running iOS 8
+		//if UIApplication.sharedApplication().respondsToSelector("registerUserNotificationSettings:") {
+		let types:UIUserNotificationType = (.Alert | .Badge | .Sound)
+		let settings:UIUserNotificationSettings = UIUserNotificationSettings(forTypes: types, categories: nil)
+		
+		UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+		UIApplication.sharedApplication().registerForRemoteNotifications()
+		UIApplication.sharedApplication().applicationIconBadgeNumber = 0
+		
+		/*} else {
+		// Register for Push Notifications before iOS 8
+		UIApplication.sharedApplication().registerForRemoteNotificationTypes(.Alert | .Badge | .Sound)
+		}*/
+		
     }
 	
 	func spinning(spin: Bool) {

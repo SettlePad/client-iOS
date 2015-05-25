@@ -106,12 +106,10 @@ class User {
         } else {
             return nil
         }
-
-        //TODO: verify whether info (e.g. user_name, default_currency, contacts and identifiers) are still up to date
     }
-    
+	
     init?(credentials: [String: AnyObject]){
-        
+		
         if let intVal = credentials["user_id"] as? Int {
             self.id = intVal
         } else {
@@ -277,5 +275,55 @@ class User {
         }
     }
 
+    func updateSettings(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		api.request("settings", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			if(succeeded) {
+				if let dataDict = data["data"] as? NSDictionary {
+					if let strVal = dataDict["user_name"] as? String {
+						self.name = strVal
+					} else {
+						println("Inparsable user name")
+					}
+					
+					if let strVal = dataDict["default_currency"] as? String {
+						if let currency = Currency(rawValue: strVal) {
+							self.defaultCurrency = currency
+						} else {
+							println("Currency not on list")
+						}
+					} else {
+						println("Inparsable currency")
+					}
+					
+					if let arrayVal = dataDict["identifiers"] as? [[String:AnyObject]] {
+						self.userIdentifiers = []
+						if arrayVal.count == 0 {
+							println("Empty identifier array")
+						}
+						
+						for parsableIdentifier in arrayVal {
+							if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool {
+								self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified))
+							} else {
+								println("Cannot load identifier")
+							}
+						}
+					}
+					
+					self.save()
+				} else {
+					println("Cannot parse return as dictionary")
+				}
+				
+				requestCompleted(succeeded: true,error_msg: nil)
+			} else {
+				if let msg = data["text"] as? String {
+					requestCompleted(succeeded: false,error_msg: msg)
+				} else {
+					requestCompleted(succeeded: false,error_msg: "Unknown")
+				}
+			}
+		}
+	}
     
 }

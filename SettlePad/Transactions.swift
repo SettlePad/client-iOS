@@ -205,7 +205,7 @@ class Transactions {
                     }
                 }
             } else {
-                requestCompleted(succeeded: false,dataDict: nil, error_msg: "Outdated request")
+                requestCompleted(succeeded: false,dataDict: nil, error_msg: "") //outdated request
             }
         }
     }

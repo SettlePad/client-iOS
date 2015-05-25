@@ -10,7 +10,7 @@ import UIKit
 
 protocol NewUOmeModalDelegate {
     func transactionsPosted(controller:NewUOmeViewController)
-    func transactionsPostCompleted(controller:NewUOmeViewController)
+	func transactionsPostCompleted(controller:NewUOmeViewController, error_msg: String?)
 }
 
 class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, UIPickerViewDelegate, UIPickerViewDataSource   {
@@ -45,19 +45,11 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             //Post
             transactions.post(newTransactions) { (succeeded: Bool, error_msg: String?) -> () in
                 if succeeded == false {
-                    displayError(error_msg!, self)
+					self.delegate.transactionsPostCompleted(self, error_msg: error_msg!)
+				} else {
+					self.delegate.transactionsPostCompleted(self, error_msg: nil)
+				}
 
-                    
-                    //Goto login screen
-                    if (user == nil) {
-                        dispatch_async(dispatch_get_main_queue()) {
-                            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                            let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
-                            self.presentViewController(vc, animated: false, completion: nil)
-                        }
-                    }
-                }
-                self.delegate.transactionsPostCompleted(self)
             }
             
             //Go to transactions

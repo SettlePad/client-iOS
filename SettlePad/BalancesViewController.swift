@@ -95,9 +95,9 @@ class BalancesViewController: UITableViewController {
 	
 	
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		if balances.sortedCurrencies.count < section {
+		/*if balances.sortedCurrencies.count < section {
 			return "Refresh please" //To overcome bad access
-		} else {
+		} else {*/
 			let currency = balances.sortedCurrencies[section]
 
 			if let currencySummary =  balances.getSummaryForCurrency(currency) {
@@ -107,7 +107,7 @@ class BalancesViewController: UITableViewController {
 			} else {
 				return "Unknown"
 			}
-		}
+		//}
 	}
 	
 	override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {

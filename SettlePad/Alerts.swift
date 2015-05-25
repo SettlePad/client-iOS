@@ -25,7 +25,7 @@ func displayError(errorMessage: String, viewController: UIViewController) {
 
 func displayValidationForm(identifierStr: String, viewController: UIViewController, verificationCanceled: () -> (), verificationStarted: () -> (), verificationCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
 	
-	let alertController = UIAlertController(title: "Validate " + identifierStr, message: "Enter the validationcode you received in your email", preferredStyle: .Alert)
+	let alertController = UIAlertController(title: "Validate " + identifierStr, message: "Enter the token you received in your email", preferredStyle: .Alert)
 	
 	let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
 		verificationCanceled()
@@ -44,7 +44,7 @@ func displayValidationForm(identifierStr: String, viewController: UIViewControll
 	}
 	
 	alertController.addTextFieldWithConfigurationHandler { (textField) in
-		textField.placeholder = "Validation code"
+		textField.placeholder = "Token"
 	}
 	
 	
@@ -55,3 +55,91 @@ func displayValidationForm(identifierStr: String, viewController: UIViewControll
 		viewController.presentViewController(alertController, animated: true, completion: nil)
 	})
 }
+
+func displayIncorrectPasswordForm(identifierStr: String, viewController: UIViewController, verificationCanceled: () -> (), verificationStarted: () -> (), verificationCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
+	
+	let alertController = UIAlertController(title: "Incorrect password", message: "If you want to reset your password, a link to do so will be sent to your email address. With the token you receive, you can change your password", preferredStyle: .Alert)
+	
+	let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
+		verificationCanceled()
+	}
+	
+	let requestAction = UIAlertAction(title: "Request reset", style: .Destructive) { (action) in
+		verificationStarted()
+		api.requestPasswordReset(identifierStr) { (succeeded: Bool, error_msg: String?) -> () in
+			if !succeeded {
+				verificationCompleted(succeeded: false, error_msg: error_msg!)
+			} else {
+				displayResetPasswordForm(identifierStr, viewController, {() -> () in
+					//When canceled
+					verificationCanceled()
+				},{() -> () in
+					//verification started
+					verificationStarted()
+				}) { (succeeded, error_msg) -> () in
+					verificationCompleted(succeeded: succeeded, error_msg: error_msg)
+				}
+			}
+		}
+	}
+	
+	let resetAction = UIAlertAction(title: "Change with received token", style: .Default) { (action) in
+		displayResetPasswordForm(identifierStr, viewController, {() -> () in
+			//When canceled
+			verificationCanceled()
+		},{() -> () in
+			//verification started
+			verificationStarted()
+		}) { (succeeded, error_msg) -> () in
+			verificationCompleted(succeeded: succeeded, error_msg: error_msg)
+		}
+	}
+	
+	
+	alertController.addAction(cancelAction)
+	alertController.addAction(requestAction)
+	alertController.addAction(resetAction)
+	
+	dispatch_async(dispatch_get_main_queue(), { () -> Void in
+		viewController.presentViewController(alertController, animated: true, completion: nil)
+	})
+}
+
+func displayResetPasswordForm(identifierStr: String, viewController: UIViewController, verificationCanceled: () -> (), verificationStarted: () -> (), verificationCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
+	let alertController = UIAlertController(title: "Change the password for " + identifierStr, message: "Enter a new password and the token you received in your email", preferredStyle: .Alert)
+	
+	let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
+		verificationCanceled()
+	}
+	
+	let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
+		verificationStarted()
+		let passwordTextField = alertController.textFields![0] as! UITextField
+		let tokenTextField = alertController.textFields![1] as! UITextField
+		api.resetPassword(identifierStr, passwordStr: passwordTextField.text, tokenStr: tokenTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+			if !succeeded {
+				verificationCompleted(succeeded: false, error_msg: error_msg!)
+			} else {
+				verificationCompleted(succeeded: true, error_msg: passwordTextField.text)
+			}
+		}
+	}
+	
+	alertController.addTextFieldWithConfigurationHandler { (textField) in
+		textField.placeholder = "New password"
+		textField.secureTextEntry = true
+	}
+	
+	alertController.addTextFieldWithConfigurationHandler { (textField) in
+		textField.placeholder = "Token"
+	}
+	
+
+	alertController.addAction(cancelAction)
+	alertController.addAction(enterAction)
+	
+	dispatch_async(dispatch_get_main_queue(), { () -> Void in
+		viewController.presentViewController(alertController, animated: true, completion: nil)
+	})
+}
+	

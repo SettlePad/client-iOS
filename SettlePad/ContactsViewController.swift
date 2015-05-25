@@ -9,6 +9,8 @@
 import UIKit
 
 class ContactsViewController: UITableViewController {
+	//TODO: with refreshControl spinning and no connection to server, all section heads are screwed up
+	
     @IBOutlet var searchBar: UISearchBar!
 
     @IBAction func starTapGestureRecognizer(sender: AnyObject) {

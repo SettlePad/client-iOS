@@ -15,7 +15,9 @@ class SettingsViewController: UITableViewController {
     @IBOutlet var credentialsLabel: UILabel!
     @IBOutlet var currencyLabel: UILabel!
     @IBOutlet var favoritesLabel: UILabel!
-   
+	
+	var settingsRefreshControl:UIRefreshControl!
+	
     @IBAction func viewTapped(sender: AnyObject) {
         //To hide the keyboard, when needed
         self.view.endEditing(true)
@@ -42,12 +44,11 @@ class SettingsViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+		//Add pull to refresh
+		self.settingsRefreshControl = UIRefreshControl()
+		self.settingsRefreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+		self.settingsRefreshControl.addTarget(self, action: "refreshUserData", forControlEvents: UIControlEvents.ValueChanged)
+		self.tableView.addSubview(settingsRefreshControl)
     }
 
     override func didReceiveMemoryWarning() {
@@ -132,5 +133,20 @@ class SettingsViewController: UITableViewController {
         credentialsLabel.text = user?.userIdentifiers.count.description
         favoritesLabel.text = contacts.registeredContacts.count.description
     }
+	
+	func refreshUserData () {
+		user!.updateSettings() { (succeeded: Bool, error_msg: String?) -> () in
+
+			if (succeeded) {
+				dispatch_async(dispatch_get_main_queue(), {
+					//so it is run now, instead of at the end of code execution
+					self.updateLabels()
+				})
+			} else {
+				displayError(error_msg!, self)
+			}
+			self.settingsRefreshControl.endRefreshing()
+		}
+	}
 
 }

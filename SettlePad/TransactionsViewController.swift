@@ -16,8 +16,9 @@
 import UIKit
 
 class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
+	//TODO: spinner will not hide when there is no connection to the server. Decrease time-out as well?
 
-
+	//TODO: remove this func?
     @IBAction func newUOmeAction(sender: AnyObject) {
         dispatch_async(dispatch_get_main_queue()) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -40,13 +41,27 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         self.reload_transactions()
     }
     
-    func transactionsPostCompleted(controller:NewUOmeViewController) {
-        self.refreshTransactions()
+	func transactionsPostCompleted(controller:NewUOmeViewController, error_msg: String?) {
+		//Goto login screen
+		if error_msg != nil {
+			displayError(error_msg!, self)
+			if (user == nil) {
+				dispatch_async(dispatch_get_main_queue()) {
+					let storyboard = UIStoryboard(name: "Main", bundle: nil)
+					let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
+					self.presentViewController(vc, animated: false, completion: nil)
+				}
+			} else {
+				self.refreshTransactions()
+			}
+		} else {
+			self.refreshTransactions()
+		}
     }
-    
+	
     @IBOutlet var transactionsTableView: UITableView!
     @IBOutlet var transactionsSearchBar: UISearchBar!
-    
+	
     var transactionsRefreshControl:UIRefreshControl!
     var footer = TransactionsFooterView(frame: CGRectMake(0, 0, 320, 44))
  
@@ -325,7 +340,9 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
                             self.reload_transactions()
                         })
                     } else {
-                        displayError(error_msg!, self)
+						if error_msg! != "" {
+							displayError(error_msg!, self)
+						}
                     }
                 }
             }
