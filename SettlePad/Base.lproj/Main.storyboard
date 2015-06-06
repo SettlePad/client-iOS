@@ -158,7 +158,7 @@
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ohm-wE-qdV" id="dt1-aA-JH0">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="500" text="Museum ticket FOAM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gEj-0I-GMN">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="500" text="Museum ticket FOAM" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gEj-0I-GMN">
                                             <rect key="frame" x="15" y="27" width="487.5" height="16"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <nil key="highlightedColor"/>
@@ -977,72 +977,6 @@ john2@doe.com</string>
                                 <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="TransactionCell" rowHeight="70" id="hJB-9I-Euq" customClass="TransactionsCell" customModule="SettlePad" customModuleProvider="target">
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hJB-9I-Euq" id="iRX-5C-PQ7">
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="500" text="Museum ticket FOAM" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y76-er-pbK">
-                                                    <rect key="frame" x="15" y="27" width="487.5" height="16"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="Anna" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CSg-Y7-wBX">
-                                                    <rect key="frame" x="15" y="8" width="36" height="17"/>
-                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EUR -15.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CM1-lI-2Ax">
-                                                    <rect key="frame" x="522" y="27" width="69.5" height="16"/>
-                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
-                                                    <color key="textColor" red="0.40784313729999999" green="0.40784313729999999" blue="0.40784313729999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="Swipe to accept" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aGo-S6-dZh">
-                                                    <rect key="frame" x="494" y="45" width="97.5" height="16"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="3 months ago" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JfR-0p-Bww">
-                                                    <rect key="frame" x="15" y="45" width="459.5" height="16"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="NvZ-2p-kXk">
-                                                    <rect key="frame" x="522" y="27" width="69.5" height="20"/>
-                                                </activityIndicatorView>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="CSg-Y7-wBX" firstAttribute="leading" secondItem="JfR-0p-Bww" secondAttribute="leading" id="1G3-Pg-8Bw"/>
-                                                <constraint firstItem="aGo-S6-dZh" firstAttribute="leading" secondItem="JfR-0p-Bww" secondAttribute="trailing" constant="20" id="7V8-vQ-cvP"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="JfR-0p-Bww" secondAttribute="bottom" id="82s-8W-diF"/>
-                                                <constraint firstItem="CM1-lI-2Ax" firstAttribute="leading" secondItem="Y76-er-pbK" secondAttribute="trailing" constant="20" id="86n-OU-GBM"/>
-                                                <constraint firstItem="NvZ-2p-kXk" firstAttribute="top" secondItem="CSg-Y7-wBX" secondAttribute="bottom" constant="2" id="Ird-mK-Lf8"/>
-                                                <constraint firstItem="JfR-0p-Bww" firstAttribute="top" secondItem="Y76-er-pbK" secondAttribute="bottom" constant="2" id="RVl-KF-IDq"/>
-                                                <constraint firstItem="aGo-S6-dZh" firstAttribute="top" secondItem="Y76-er-pbK" secondAttribute="bottom" constant="2" id="Smb-1N-ndH"/>
-                                                <constraint firstItem="CSg-Y7-wBX" firstAttribute="top" secondItem="iRX-5C-PQ7" secondAttribute="topMargin" id="f8z-vX-JZf"/>
-                                                <constraint firstItem="NvZ-2p-kXk" firstAttribute="leading" secondItem="Y76-er-pbK" secondAttribute="trailing" constant="20" id="jtF-fj-JNg"/>
-                                                <constraint firstItem="CSg-Y7-wBX" firstAttribute="leading" secondItem="iRX-5C-PQ7" secondAttribute="leading" constant="15" id="k5f-mm-DIN"/>
-                                                <constraint firstItem="Y76-er-pbK" firstAttribute="top" secondItem="CSg-Y7-wBX" secondAttribute="bottom" constant="2" id="mPs-uK-PIc"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="NvZ-2p-kXk" secondAttribute="trailing" id="q1d-xY-ncM"/>
-                                                <constraint firstItem="CM1-lI-2Ax" firstAttribute="top" secondItem="CSg-Y7-wBX" secondAttribute="bottom" constant="2" id="rIb-Kf-cWx"/>
-                                                <constraint firstItem="CSg-Y7-wBX" firstAttribute="leading" secondItem="Y76-er-pbK" secondAttribute="leading" id="v3n-8m-Mt4"/>
-                                                <constraint firstItem="aGo-S6-dZh" firstAttribute="trailing" secondItem="iRX-5C-PQ7" secondAttribute="trailingMargin" id="wI1-oG-eA6"/>
-                                                <constraint firstItem="CM1-lI-2Ax" firstAttribute="trailing" secondItem="iRX-5C-PQ7" secondAttribute="trailingMargin" id="ySL-AW-kP4"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <gestureRecognizers/>
-                                        <connections>
-                                            <outlet property="amountLabel" destination="CM1-lI-2Ax" id="OGM-EG-7O4"/>
-                                            <outlet property="counterpartLabel" destination="CSg-Y7-wBX" id="SNK-En-CD8"/>
-                                            <outlet property="descriptionLabel" destination="Y76-er-pbK" id="5TI-sr-Ea3"/>
-                                            <outlet property="spinner" destination="NvZ-2p-kXk" id="iJW-Q8-a97"/>
-                                            <outlet property="statusLabel" destination="aGo-S6-dZh" id="YBX-Bm-LAH"/>
-                                            <outlet property="timeLabel" destination="JfR-0p-Bww" id="7gY-Ht-7Pd"/>
-                                        </connections>
-                                    </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ContactCell" textLabel="0Zl-Ct-1Ry" detailTextLabel="we0-Yd-HOE" rowHeight="46" style="IBUITableViewCellStyleSubtitle" id="qwG-fb-Ahl">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qwG-fb-Ahl" id="4sc-5G-pzj">
@@ -1063,6 +997,72 @@ john2@doe.com</string>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <gestureRecognizers/>
+                                    </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="TransactionCell" rowHeight="70" id="Ya6-dQ-PQH" customClass="TransactionsCell" customModule="SettlePad" customModuleProvider="target">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ya6-dQ-PQH" id="481-Do-iDG">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="500" text="Museum ticket FOAM" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pUx-Wq-jOE">
+                                                    <rect key="frame" x="15" y="27" width="487.5" height="16"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="Anna" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2pI-ZK-dm6">
+                                                    <rect key="frame" x="15" y="8" width="36" height="17"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EUR -15.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BCZ-jE-0lX">
+                                                    <rect key="frame" x="522" y="27" width="69.5" height="16"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
+                                                    <color key="textColor" red="0.40784313729999999" green="0.40784313729999999" blue="0.40784313729999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="Swipe to accept" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O2o-5a-Cb2">
+                                                    <rect key="frame" x="494" y="45" width="97.5" height="16"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                    <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="3 months ago" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ih8-ka-Y7p">
+                                                    <rect key="frame" x="15" y="45" width="459.5" height="16"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                    <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="64P-Ih-R46">
+                                                    <rect key="frame" x="522" y="27" width="69.5" height="20"/>
+                                                </activityIndicatorView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="BCZ-jE-0lX" firstAttribute="trailing" secondItem="481-Do-iDG" secondAttribute="trailingMargin" id="EK9-zT-eZu"/>
+                                                <constraint firstItem="64P-Ih-R46" firstAttribute="top" secondItem="2pI-ZK-dm6" secondAttribute="bottom" constant="2" id="Idn-gC-CZZ"/>
+                                                <constraint firstItem="2pI-ZK-dm6" firstAttribute="leading" secondItem="Ih8-ka-Y7p" secondAttribute="leading" id="OkB-Go-Nvj"/>
+                                                <constraint firstItem="O2o-5a-Cb2" firstAttribute="leading" secondItem="Ih8-ka-Y7p" secondAttribute="trailing" constant="20" id="RUH-fW-do7"/>
+                                                <constraint firstItem="pUx-Wq-jOE" firstAttribute="top" secondItem="2pI-ZK-dm6" secondAttribute="bottom" constant="2" id="SGs-qb-Mfq"/>
+                                                <constraint firstItem="BCZ-jE-0lX" firstAttribute="top" secondItem="2pI-ZK-dm6" secondAttribute="bottom" constant="2" id="TqD-q5-fco"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="64P-Ih-R46" secondAttribute="trailing" id="ewx-Vr-GbY"/>
+                                                <constraint firstItem="Ih8-ka-Y7p" firstAttribute="top" secondItem="pUx-Wq-jOE" secondAttribute="bottom" constant="2" id="f2o-2s-bEP"/>
+                                                <constraint firstItem="BCZ-jE-0lX" firstAttribute="leading" secondItem="pUx-Wq-jOE" secondAttribute="trailing" constant="20" id="hIn-k8-zJ5"/>
+                                                <constraint firstItem="2pI-ZK-dm6" firstAttribute="top" secondItem="481-Do-iDG" secondAttribute="topMargin" id="hWU-7N-Zvc"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="Ih8-ka-Y7p" secondAttribute="bottom" id="hlg-c9-QBa"/>
+                                                <constraint firstItem="2pI-ZK-dm6" firstAttribute="leading" secondItem="pUx-Wq-jOE" secondAttribute="leading" id="huB-oU-xXV"/>
+                                                <constraint firstItem="O2o-5a-Cb2" firstAttribute="trailing" secondItem="481-Do-iDG" secondAttribute="trailingMargin" id="jeO-j6-ST4"/>
+                                                <constraint firstItem="64P-Ih-R46" firstAttribute="leading" secondItem="pUx-Wq-jOE" secondAttribute="trailing" constant="20" id="mrc-V1-SQV"/>
+                                                <constraint firstItem="2pI-ZK-dm6" firstAttribute="leading" secondItem="481-Do-iDG" secondAttribute="leading" constant="15" id="oLT-Qo-LRX"/>
+                                                <constraint firstItem="O2o-5a-Cb2" firstAttribute="top" secondItem="pUx-Wq-jOE" secondAttribute="bottom" constant="2" id="q60-B7-5PH"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <gestureRecognizers/>
+                                        <connections>
+                                            <outlet property="amountLabel" destination="BCZ-jE-0lX" id="jwb-Zt-fKT"/>
+                                            <outlet property="counterpartLabel" destination="2pI-ZK-dm6" id="fjv-Y5-FUT"/>
+                                            <outlet property="descriptionLabel" destination="pUx-Wq-jOE" id="Z1A-wp-g3H"/>
+                                            <outlet property="spinner" destination="64P-Ih-R46" id="B8l-C8-55E"/>
+                                            <outlet property="statusLabel" destination="O2o-5a-Cb2" id="OZc-Qb-fK5"/>
+                                            <outlet property="timeLabel" destination="Ih8-ka-Y7p" id="C0z-fG-SLr"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>

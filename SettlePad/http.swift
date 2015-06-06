@@ -14,8 +14,7 @@
 
 import Foundation
 
-class APIController {
-
+class APIController {	
 	func login(username: String, password: String, loginCompleted : (succeeded: Bool, msg: String, code: String) -> ()) {
 		//if logged in already, first log out
 		if user != nil {
@@ -26,8 +25,8 @@ class APIController {
 			if(succeeded) {
 				user = User(credentials: data as! Dictionary)
 				if user != nil {
-					loginCompleted(succeeded: true, msg: user!.name, code:"")
 					contacts.updateContacts(){
+						loginCompleted(succeeded: true, msg: user!.name, code:"")
 						contacts.updateAutoLimits(){}
 					}
 					

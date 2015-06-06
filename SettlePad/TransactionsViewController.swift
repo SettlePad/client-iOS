@@ -16,18 +16,6 @@
 import UIKit
 
 class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
-	//TODO: spinner will not hide when there is no connection to the server. Decrease time-out as well?
-
-	//TODO: remove this func?
-    @IBAction func newUOmeAction(sender: AnyObject) {
-        dispatch_async(dispatch_get_main_queue()) {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let newUOmeVC = storyboard.instantiateViewControllerWithIdentifier("NewUOmeViewController") as! NewUOmeViewController
-            newUOmeVC.delegate = self
-            self.presentViewController(newUOmeVC, animated: true, completion: nil)
-        }
-    }
-    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showUOmeSegue" {
             let navigationController = segue.destinationViewController as! UINavigationController
@@ -78,12 +66,11 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         reload_transactions(loading: true) //want to show spinner
         
         transactions.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-            if (succeeded) {
-                dispatch_async(dispatch_get_main_queue(), {
-                    //so it is run now, instead of at the end of code execution
-                    self.reload_transactions()
-                })
-            } else {
+			dispatch_async(dispatch_get_main_queue(), {
+				//so it is run now, instead of at the end of code execution
+				self.reload_transactions()
+			})
+			if (!succeeded) {
                 displayError(error_msg!, self)
             }
         }
@@ -107,6 +94,14 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
             self.transactionsTableView.addSubview(transactionsRefreshControl)
         
     }
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		
+		//Set cell height to dynamic
+		transactionsTableView.rowHeight = UITableViewAutomaticDimension
+		transactionsTableView.estimatedRowHeight = 40
+	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -201,15 +196,13 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     
     func changeTransaction(action:String, transaction:Transaction){
         transactions.changeTransaction(action,transaction: transaction) { (succeeded: Bool, error_msg: String?) -> () in
-            if (succeeded) {
-                dispatch_async(dispatch_get_main_queue(), {
-                    //so it is run now, instead of at the end of code execution
-                    self.refreshTransactions()
-                })
-            } else {
+			dispatch_async(dispatch_get_main_queue(), {
+				//so it is run now, instead of at the end of code execution
+				self.refreshTransactions()
+			})
+			if (!succeeded) {
                 displayError(error_msg!, self)
             }
-            self.transactionsRefreshControl.endRefreshing()
         }
     }
 
@@ -268,12 +261,11 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         
         //get new results
         transactions.get(searchBar.text){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-            if (succeeded) {
-                dispatch_async(dispatch_get_main_queue(), {
-                    //so it is run now, instead of at the end of code execution
-                    self.reload_transactions()
-                })
-            } else {
+			dispatch_async(dispatch_get_main_queue(), {
+				//so it is run now, instead of at the end of code execution
+				self.reload_transactions()
+			})
+			if (!succeeded) {
                 displayError(error_msg!, self)
             }
         }
@@ -292,12 +284,11 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         //self.transactionsTableView.scrollRectToVisible(CGRectMake(0, 44,0,0), animated: true)
         
         transactions.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-            if (succeeded) {
-                dispatch_async(dispatch_get_main_queue(), {
-                    //so it is run now, instead of at the end of code execution
-                    self.reload_transactions()
-                })
-            } else {
+			dispatch_async(dispatch_get_main_queue(), {
+				//so it is run now, instead of at the end of code execution
+				self.reload_transactions()
+			})
+			if (!succeeded) {
                 displayError(error_msg!, self)
             }
         }
@@ -307,15 +298,14 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     
     func refreshTransactions() {        
         transactions.getUpdate(){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-            if (succeeded) {
-                dispatch_async(dispatch_get_main_queue(), {
-                    //so it is run now, instead of at the end of code execution
-                    self.reload_transactions()
-                })
-            } else {
+			dispatch_async(dispatch_get_main_queue(), {
+				//so it is run now, instead of at the end of code execution
+				self.reload_transactions()
+			})
+			if (!succeeded) {
                 displayError(error_msg!, self)
             }
-            self.transactionsRefreshControl.endRefreshing()
+
         }
     }
     
@@ -334,15 +324,12 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
             
             if (maximumOffset - currentOffset) <= 40 {
                 transactions.getMore(){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-                    if (succeeded) {
-                        dispatch_async(dispatch_get_main_queue(), {
-                            //so it is run now, instead of at the end of code execution
-                            self.reload_transactions()
-                        })
-                    } else {
-						if error_msg! != "" {
-							displayError(error_msg!, self)
-						}
+					dispatch_async(dispatch_get_main_queue(), {
+						//so it is run now, instead of at the end of code execution
+						self.reload_transactions()
+					})
+					if (!succeeded && error_msg! != "") {
+						displayError(error_msg!, self)
                     }
                 }
             }
@@ -365,6 +352,9 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         self.footer.no_results = (transactions.getTransactions().count == 0)
         self.footer.setNeedsDisplay()
         self.transactionsTableView.tableFooterView = self.footer
+		if loading == false {
+			transactionsRefreshControl.endRefreshing()
+		}
     }
 }
 

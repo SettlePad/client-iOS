@@ -9,9 +9,6 @@
 import UIKit
 
 class TransactionsCell: UITableViewCell {
-	//TODO: fix layout of transactionsCell: make it dynamic in height
-	
-	
     @IBOutlet var descriptionLabel: UILabel!
     @IBOutlet var amountLabel: UILabel!
     @IBOutlet var counterpartLabel: UILabel!
@@ -53,8 +50,9 @@ class TransactionsCell: UITableViewCell {
 		} else if let identifier = transaction.identifier {
 			counterpartLabel.text = identifier
 		} else {
-			//TODO: this got hit at my iPhone. Why? Has to do with initial loading, where the count of transactions gets fucked up maybe?
-			counterpartLabel.text = "Unknown"
+			//When hit, transactions were loaded before contacts
+			counterpartLabel.text = "Name not loaded yet"
+			contacts.updateContacts({})
 		}
         counterpartLabel.textColor = UIColor.blackColor()
 

@@ -11,6 +11,7 @@ import AddressBook
 
 class Contacts {
     private(set) var contacts = [Contact]()
+	private var contactsUpdating: Bool = false
 	
     var registeredContacts : [Contact] {
         get {
@@ -44,18 +45,24 @@ class Contacts {
 	
     func updateContacts(requestCompleted: () -> ()) {
         //From the server
-        updateServerContacts() {()->() in
-            
-            //From the local address book, once the server contacts have loaded
-            if (ABAddressBookGetAuthorizationStatus() == .Authorized) {
-                if let addressBook: ABAddressBookRef = self.createAddressBook() {
-                    self.updateLocalContacts(addressBook)
-                }
-            }
+		if contactsUpdating == false {
+			contactsUpdating = true
+			updateServerContacts() {()->() in
+				
+				//From the local address book, once the server contacts have loaded
+				if (ABAddressBookGetAuthorizationStatus() == .Authorized) {
+					if let addressBook: ABAddressBookRef = self.createAddressBook() {
+						self.updateLocalContacts(addressBook)
+					}
+				}
 
-            self.updateIdentifiers()
+				self.updateIdentifiers()
+				self.contactsUpdating = false
+				requestCompleted()
+			}
+		} else {
 			requestCompleted()
-        }
+		}
     }
     
     private func updateServerContacts(requestCompleted: () -> ()) {
