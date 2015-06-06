@@ -57,7 +57,7 @@ class Transactions {
 				if(succeeded) {
 					requestCompleted(succeeded: true,error_msg: nil)
 					self.transactions = self.transactions.filter({$0.status != .Posted}) //Delete all 
-					balances.updateBalances(){}
+					balances.updateBalances{(succeeded: Bool, error_msg: String?) -> () in }
 				} else {
 					if let msg = data["text"] as? String {
 						requestCompleted(succeeded: false,error_msg: msg)

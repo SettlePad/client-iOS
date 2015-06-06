@@ -52,7 +52,7 @@ class TransactionsCell: UITableViewCell {
 		} else {
 			//When hit, transactions were loaded before contacts
 			counterpartLabel.text = "Name not loaded yet"
-			contacts.updateContacts({})
+			contacts.updateContacts{(succeeded: Bool, error_msg: String?) -> () in }
 		}
         counterpartLabel.textColor = UIColor.blackColor()
 

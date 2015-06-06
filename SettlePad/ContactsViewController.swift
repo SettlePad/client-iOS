@@ -10,6 +10,8 @@ import UIKit
 
 class ContactsViewController: UITableViewController {
 	//TODO: with refreshControl spinning and no connection to server, all section heads are screwed up
+
+	var registeredContacts: [Contact] = contacts.registeredContacts
 	
     @IBOutlet var searchBar: UISearchBar!
 
@@ -39,9 +41,9 @@ class ContactsViewController: UITableViewController {
 	// table sections
 	var sections: [Section] {
 		// return if already initialized
-		if self._sections != nil {
+		/*if self._sections != nil {
 			return self._sections!
-		}
+		}*/
 		
 		// create empty sections
 		var sections = [Section]()
@@ -51,7 +53,7 @@ class ContactsViewController: UITableViewController {
 		
 		
 		// put each currency in a section
-		for contact in contacts.registeredContacts {
+		for contact in registeredContacts {
 			let section = self.collation.sectionForObject(contact, collationStringSelector: "friendlyName")
 			sections[section].addContact(contact)
 		}
@@ -97,21 +99,35 @@ class ContactsViewController: UITableViewController {
 	func refreshContacts() {
 		//limits are not updated now
 		
-		contacts.updateContacts() {()->() in
-			dispatch_async(dispatch_get_main_queue(), {
-				//so it is run now, instead of at the end of code execution
-				self.tableView.reloadData()
-			})
+		contacts.updateContacts {(succeeded: Bool, error_msg: String?) -> () in
+			if !succeeded {
+				displayError(error_msg!, self)
+			}
+			self.reload()
 			self.contactsRefreshControl.endRefreshing()
 		}
 	}
 
-	override func viewWillAppear(animated: Bool) {
-		super.viewWillAppear(animated)
-		tableView.reloadData()
+	override func viewDidAppear(animated: Bool) {
+		super.viewDidAppear(animated)
+		reload()
 	}
 	
-
+	func reload() {
+		//Filter contacts based on search query
+		if searchBar.text == "" {
+			registeredContacts = contacts.registeredContacts
+		} else {
+			let needle = searchBar.text
+			registeredContacts = contacts.registeredContacts.filter{$0.friendlyName.lowercaseString.rangeOfString(needle.lowercaseString) != nil}
+		}
+		
+		dispatch_async(dispatch_get_main_queue(), {
+			//so it is run now, instead of at the end of code execution
+			self.tableView.reloadData()
+		})
+		
+	}
 	
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -194,55 +210,29 @@ class ContactsViewController: UITableViewController {
         return true
     }
     
-    func searchBar(searchBar: UISearchBar!, textDidChange searchText: String!) // called when text changes (including clear)
-    {
-        println("search typed")
+	func searchBar(searchBar: UISearchBar!, textDidChange searchText: String!) {
+		// called when text changes (including clear)
+		
+        //println("search typed")
+		reload()
     }
     
     func searchBarSearchButtonClicked( searchBar: UISearchBar!)
     {
-        println("searched")
-        
-        //get new results
-        /*transactions.get(searchBar.text){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-            if (succeeded) {
-                dispatch_async(dispatch_get_main_queue(), {
-                    //so it is run now, instead of at the end of code execution
-                    self.reload_transactions()
-                })
-            } else {
-                displayError(error_msg!, self)
-            }
-        }*/
-        
-        //reload_transactions(loading: true) //want to show spinner
-    }
+        //println("searched")
+	}
     
-    func searchBarCancelButtonClicked( searchBar: UISearchBar!)
-    {
-        //To hide searchbar
-        searchBar.text = ""
-        searchBar.resignFirstResponder()
-        let y = self.tableView!.contentOffset.y + searchBar!.frame.height
-        let newContentOffset = CGPoint(x:0, y: y)
-        self.tableView.setContentOffset(newContentOffset, animated: true)
-        
-        //self.transactionsTableView.scrollRectToVisible(CGRectMake(0, 44,0,0), animated: true)
-        
-        /*transactions.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-            if (succeeded) {
-                dispatch_async(dispatch_get_main_queue(), {
-                    //so it is run now, instead of at the end of code execution
-                    self.reload_transactions()
-                })
-            } else {
-                displayError(error_msg!, self)
-            }
-        }*/
-        
-        //reload_transactions(loading: true) //want to show spinner
-    }
 
+	func searchBarCancelButtonClicked( searchBar: UISearchBar!)
+	{
+		//To hide searchbar
+		searchBar.text = ""
+		searchBar.resignFirstResponder()
+		
+		self.tableView.setContentOffset(CGPointMake(0, searchBar.frame.size.height), animated: false)
+		
+		reload()
+	}
 }
 
 

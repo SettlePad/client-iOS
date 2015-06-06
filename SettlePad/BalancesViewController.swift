@@ -36,7 +36,10 @@ class BalancesViewController: UITableViewController {
     }
 	
 	func refreshBalances() {
-		balances.updateBalances() {()->() in
+		balances.updateBalances() {(succeeded: Bool, error_msg: String?) -> () in
+			if !succeeded {
+				displayError(error_msg!, self)	
+			}
 			self.footer.no_results = (balances.sortedCurrencies.count == 0)
 			dispatch_async(dispatch_get_main_queue(), {
 				//so it is run now, instead of at the end of code execution
@@ -149,6 +152,7 @@ class BalancesViewController: UITableViewController {
 		}
 
 		//TODO: add indicator for unprocessed UOmes
+		
 		
         return cell
     }

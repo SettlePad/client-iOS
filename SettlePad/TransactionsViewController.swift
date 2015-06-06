@@ -278,10 +278,8 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         //To hide searchbar
         searchBar.text = ""
         searchBar.resignFirstResponder()
-        let y = self.tableView!.contentOffset.y + searchBar!.frame.height
-        let newContentOffset = CGPoint(x:0, y: y)
-        self.transactionsTableView.setContentOffset(newContentOffset, animated: true)
-        //self.transactionsTableView.scrollRectToVisible(CGRectMake(0, 44,0,0), animated: true)
+		
+		self.transactionsTableView.setContentOffset(CGPointMake(0, transactionsSearchBar.frame.size.height), animated: false)
         
         transactions.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
 			dispatch_async(dispatch_get_main_queue(), {

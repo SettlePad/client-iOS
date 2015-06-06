@@ -43,12 +43,11 @@ class Contacts {
 		return returnArray.first?.contact
 	}
 	
-    func updateContacts(requestCompleted: () -> ()) {
-        //From the server
+    func updateContacts(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		//From the server
 		if contactsUpdating == false {
 			contactsUpdating = true
-			updateServerContacts() {()->() in
-				
+			updateServerContacts() {(succeeded: Bool, error_msg: String?) -> () in
 				//From the local address book, once the server contacts have loaded
 				if (ABAddressBookGetAuthorizationStatus() == .Authorized) {
 					if let addressBook: ABAddressBookRef = self.createAddressBook() {
@@ -58,20 +57,20 @@ class Contacts {
 
 				self.updateIdentifiers()
 				self.contactsUpdating = false
-				requestCompleted()
+				requestCompleted(succeeded: succeeded, error_msg: error_msg)
 			}
 		} else {
-			requestCompleted()
+			requestCompleted(succeeded: false, error_msg: "Already refreshing")
 		}
     }
     
-    private func updateServerContacts(requestCompleted: () -> ()) {
+    private func updateServerContacts(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
         api.request("contacts", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             if(!succeeded) {
                 if let error_msg = data["text"] as? String {
-                    println(error_msg)
-                } else {
-                    println("Unknown error while refreshing contacts")
+					requestCompleted(succeeded: false,error_msg: error_msg)
+				} else {
+					requestCompleted(succeeded: false,error_msg: "Unknown error while refreshing contacts")
                 }
             } else {
 
@@ -87,8 +86,9 @@ class Contacts {
                 } else {
                     //no contacts, which is fine
                 }
-            }
-            requestCompleted()
+				requestCompleted(succeeded: true,error_msg: nil)
+			}
+
         }
     }
     

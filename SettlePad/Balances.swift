@@ -30,14 +30,15 @@ class Balances {
 		return returnArray.first
 	}
 	
-	func updateBalances(requestCompleted: () -> ()) {
+	func updateBalances(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
 		api.request("balance/currencies", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 			if(!succeeded) {
 				if let error_msg = data["text"] as? String {
-					println(error_msg)
+					requestCompleted(succeeded: false,error_msg: error_msg)
 				} else {
-					println("Unknown error while refreshing balances")
+					requestCompleted(succeeded: false,error_msg: "Unknown error while refreshing balances")
 				}
+
 			} else {
 				
 				self.balances = []
@@ -94,16 +95,17 @@ class Balances {
 				} else {
 					//no balances, which is fine
 				}
+
+				self.sortedCurrencies = []
+				for currencySummary in self.currenciesSummary {
+					self.sortedCurrencies.append(currencySummary.currency)
+				}
+				
+				self.sortedCurrencies.sort({(left: Currency, right: Currency) -> Bool in
+					left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
+				
+				requestCompleted(succeeded: true,error_msg: nil)
 			}
-			
-			self.sortedCurrencies = []
-			for currencySummary in self.currenciesSummary {
-				self.sortedCurrencies.append(currencySummary.currency)
-			}
-			
-			self.sortedCurrencies.sort({(left: Currency, right: Currency) -> Bool in
-				left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
-			requestCompleted()
 		}
 	}
 }
