@@ -87,7 +87,7 @@ class User {
         
         let defaults = NSUserDefaults.standardUserDefaults()
 		var found = false
-		if let defaultsStr = defaults.stringForKey("default_currency") {
+		if let defaultsStr = defaults.stringForKey("defaultCurrency") {
 			if let currency = Currency(rawValue: defaultsStr) {
 				self.defaultCurrency = currency
 				found = true
@@ -176,7 +176,7 @@ class User {
         
         //Set NSUserdefaults
         let defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setObject(defaultCurrency.rawValue, forKey: "default_currency")
+        defaults.setObject(defaultCurrency.rawValue, forKey: "defaultCurrency")
         let data = NSKeyedArchiver.archivedDataWithRootObject(userIdentifiers)
         defaults.setObject(data, forKey: "userIdentifiers")
     }
@@ -190,7 +190,7 @@ class User {
 
         //Wipe NSUserdefaults
         let defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setObject(nil, forKey: "default_currency")
+        defaults.setObject(nil, forKey: "defaultCurrency")
         defaults.setObject(nil, forKey: "userIdentifiers")
     }
     

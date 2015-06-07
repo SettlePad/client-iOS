@@ -14,6 +14,8 @@ protocol NewUOmeModalDelegate {
 }
 
 class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, UIPickerViewDelegate, UIPickerViewDataSource   {
+
+	
 	
     let footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
     var addressBookFooter = UINib(nibName: "NewUOmeAddressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as! NewUOmeAddressBook
@@ -26,7 +28,9 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     
     @IBAction func closeView(sender: AnyObject) {
         if state == .Overview {
-            self.dismissViewControllerAnimated(true, completion: nil)
+			//TODO: save draft memo's (via Transactions class, in )
+			self.dismissViewControllerAnimated(true, completion: nil)
+			
         } else {
             formTo.text = ""
             switchState(.Overview)

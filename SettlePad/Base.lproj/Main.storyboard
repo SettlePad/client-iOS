@@ -1110,7 +1110,7 @@ john2@doe.com</string>
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="New memo" id="PbC-uW-t0W">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="MFj-SH-4CB">
+                        <barButtonItem key="leftBarButtonItem" title="Close" id="MFj-SH-4CB">
                             <connections>
                                 <action selector="closeView:" destination="UDK-at-4c7" id="G1M-Fx-JOc"/>
                             </connections>
