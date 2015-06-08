@@ -10,6 +10,8 @@ import Foundation
 import AddressBook
 
 class Contacts {
+	//Save contacts in CoreData
+	
     private(set) var contacts = [Contact]()
 	private var contactsUpdating: Bool = false
 	

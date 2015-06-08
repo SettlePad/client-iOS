@@ -102,7 +102,7 @@ class TransactionsCell: UITableViewCell {
             }
 
             statusLabel.text = statusString
-            statusLabel.textColor = Colors.primary.textToUIColor()
+            statusLabel.textColor = Colors.gray.textToUIColor()
 
         } else if transaction.status == .AwaitingValidation { // recipient should accept first
             statusLabel.hidden = false

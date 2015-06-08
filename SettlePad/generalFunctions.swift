@@ -55,16 +55,14 @@ enum Colors {
         case .success:
 			return UIColor(red: 0x86/255, green: 0xc5/255, blue: 0x40/255, alpha: 1.0)
         case .danger:
-            return UIColor(red: 0xbb/255, green: 0x00/255, blue: 0x05/255, alpha: 1.0)
+            return UIColor(red: 0xc5/255, green: 0x54/255, blue: 0x40/255, alpha: 1.0)
         }
     }
     
     func backgroundToUIColor() -> UIColor{
         switch (self) {
-        case .success:
-            return UIColor(red: 0xa1/255, green: 0xee/255, blue: 0x9d/255, alpha: 1.0)
         case .danger:
-            return UIColor(red: 0xfe/255, green: 0xa8/255, blue: 0xaa/255, alpha: 1.0)
+            return UIColor(red: 0xea/255, green: 0xbe/255, blue: 0xbd/255, alpha: 1.0)
         default:
             return UIColor.clearColor()
         }
