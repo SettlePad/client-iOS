@@ -265,8 +265,8 @@
                         </userDefinedRuntimeAttributes>
                     </tabBar>
                     <connections>
-                        <segue destination="RpU-bj-Zdy" kind="relationship" relationship="viewControllers" id="bLu-wW-PRM"/>
                         <segue destination="ifR-6q-0aM" kind="relationship" relationship="viewControllers" id="4gY-xo-ykY"/>
+                        <segue destination="RpU-bj-Zdy" kind="relationship" relationship="viewControllers" id="bLu-wW-PRM"/>
                         <segue destination="p8E-De-gIB" kind="relationship" relationship="viewControllers" id="WRe-Ac-3K6"/>
                     </connections>
                 </tabBarController>
@@ -312,7 +312,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d1g-wQ-Rrw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1573" y="1761"/>
+            <point key="canvasLocation" x="1573" y="2493"/>
         </scene>
         <!--Balances-->
         <scene sceneID="p5P-Hd-BRJ">
@@ -349,11 +349,17 @@
                             <outlet property="delegate" destination="aYa-iv-mNf" id="l4S-d9-tVK"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Balances" id="aM1-KY-2VF"/>
+                    <navigationItem key="navigationItem" title="Balances" id="aM1-KY-2VF">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="yQU-eo-KAi">
+                            <connections>
+                                <segue destination="V2b-NU-rHk" kind="presentation" id="hp6-KP-NO4"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="081-sY-CdQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2427" y="3418"/>
+            <point key="canvasLocation" x="2385" y="1007"/>
         </scene>
         <!--Balance-->
         <scene sceneID="rZJ-48-GQ3">
@@ -372,7 +378,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="r2P-b7-zC5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1573" y="3418"/>
+            <point key="canvasLocation" x="1573" y="1007"/>
         </scene>
         <!--Settings-->
         <scene sceneID="fUY-cy-kbW">
@@ -540,7 +546,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2357" y="1761"/>
+            <point key="canvasLocation" x="2385" y="2493"/>
         </scene>
         <!--Currencies-->
         <scene sceneID="aRV-qk-acc">
@@ -579,7 +585,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eem-mA-pqh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3130" y="1007"/>
+            <point key="canvasLocation" x="3130" y="1739"/>
         </scene>
         <!--Login credentials-->
         <scene sceneID="sXm-eV-SrR">
@@ -628,7 +634,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3mt-56-Zso" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3130" y="1761"/>
+            <point key="canvasLocation" x="3130" y="2493"/>
         </scene>
         <!--Contacts-->
         <scene sceneID="gOV-zl-pTc">
@@ -716,7 +722,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="3130" y="2521"/>
+            <point key="canvasLocation" x="3130" y="3253"/>
         </scene>
         <!--Contact View Controller-->
         <scene sceneID="QwZ-Xe-4eU">
@@ -896,13 +902,13 @@ john2@doe.com</string>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="3892" y="2521"/>
+            <point key="canvasLocation" x="3892" y="3253"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="uXK-TQ-Ceb">
             <objects>
                 <navigationController storyboardIdentifier="NewUOmeViewController" id="V2b-NU-rHk" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="eAs-RR-SNk">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" translucent="NO" id="eAs-RR-SNk">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" name="alternateSelectedControlTextColor" catalog="System" colorSpace="catalog"/>
@@ -925,11 +931,11 @@ john2@doe.com</string>
                         <viewControllerLayoutGuide type="bottom" id="4kg-ut-2da"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="wxP-Ve-X39">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="to" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="To" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="2y8-Eh-pbS">
-                                <rect key="frame" x="16" y="74" width="568" height="30"/>
+                                <rect key="frame" x="16" y="10" width="568" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next"/>
                                 <connections>
@@ -939,7 +945,7 @@ john2@doe.com</string>
                                 </connections>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="description" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Description" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="iyD-3p-mQo">
-                                <rect key="frame" x="16" y="114" width="568" height="30"/>
+                                <rect key="frame" x="16" y="50" width="568" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="next"/>
                                 <connections>
@@ -948,7 +954,7 @@ john2@doe.com</string>
                                 </connections>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="amount" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Amount" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="W0y-mz-q1u">
-                                <rect key="frame" x="162" y="154" width="422" height="30"/>
+                                <rect key="frame" x="162" y="90" width="422" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="go"/>
                                 <connections>
@@ -957,14 +963,14 @@ john2@doe.com</string>
                                 </connections>
                             </textField>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="b04-kM-7rE">
-                                <rect key="frame" x="16" y="154" width="95" height="29"/>
+                                <rect key="frame" x="16" y="90" width="95" height="29"/>
                                 <segments>
                                     <segment title="I get"/>
                                     <segment title="I owe"/>
                                 </segments>
                             </segmentedControl>
                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GUm-ic-dZZ" customClass="PickerButton" customModule="SettlePad" customModuleProvider="target">
-                                <rect key="frame" x="121" y="154" width="31" height="30"/>
+                                <rect key="frame" x="121" y="90" width="31" height="30"/>
                                 <state key="normal" title="EUR">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -973,7 +979,7 @@ john2@doe.com</string>
                                 </connections>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" allowsSelection="NO" rowHeight="72" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="HSi-vU-gfF">
-                                <rect key="frame" x="0.0" y="244" width="600" height="312"/>
+                                <rect key="frame" x="0.0" y="180" width="600" height="312"/>
                                 <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
@@ -1071,7 +1077,7 @@ john2@doe.com</string>
                                 </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z6x-Ue-bVd">
-                                <rect key="frame" x="224" y="194" width="152" height="30"/>
+                                <rect key="frame" x="224" y="130" width="152" height="30"/>
                                 <state key="normal" title="Save and add another">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -1153,5 +1159,8 @@ john2@doe.com</string>
         <image name="StarFull" width="30" height="30"/>
         <image name="Thermometer" width="30" height="30"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="kFu-fK-0IO"/>
+    </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.52549019607843139" green="0.77254901960784317" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

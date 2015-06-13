@@ -9,8 +9,6 @@
 import UIKit
 
 class BalancesViewController: UITableViewController {	
-	//TODO: change order in tabbar: balances first. Add a + button top right, leading to new memo
-	
 	var balancesRefreshControl:UIRefreshControl!
 	var footer = BalancesFooterView(frame: CGRectMake(0, 0, 320, 44))
 
