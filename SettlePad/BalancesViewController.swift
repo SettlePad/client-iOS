@@ -151,7 +151,7 @@ class BalancesViewController: UITableViewController {
 			cell.detailTextLabel?.textColor = Colors.success.textToUIColor()
 		}
 
-		//TODO: add indicator for unprocessed UOmes
+		//TODO: add indicator for unprocessed memos
 		
 		
         return cell

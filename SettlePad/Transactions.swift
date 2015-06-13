@@ -52,7 +52,7 @@ class Transactions {
 			transactions.splice(newTransactions, atIndex: 0)
 			
 			//Do post. When returned succesfully, replace status with what comes back
-			var url = "uome/send/"
+			var url = "memo/send/"
 			api.request(url, method: "POST", formdata: formdataArray, secure: true){ (succeeded: Bool, data: NSDictionary) -> () in
 				if(succeeded) {
 					requestCompleted(succeeded: true,error_msg: nil)

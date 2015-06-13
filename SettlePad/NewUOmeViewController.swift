@@ -522,7 +522,7 @@ class NewUOmeFooterView: UIView {
 		footerLabel.font = UIFont.boldSystemFontOfSize(11)
 		footerLabel.textAlignment = NSTextAlignment.Center
 		
-		footerLabel.text = "Saved UOmes will be listed here to be all sent at once."
+		footerLabel.text = "Saved memos will be listed here to be all sent at once."
 		self.addSubview(footerLabel)
 	}
 	
