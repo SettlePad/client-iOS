@@ -77,13 +77,13 @@ class Contacts {
             } else {
 
                 self.contacts = []
-                if let contacts = data["data"] as? NSMutableArray {
-                    for contactObj in contacts {
-                        if let contactDict = contactObj as? NSDictionary {
+                if let contacts = data["data"] as? Dictionary <String, Dictionary <String, AnyObject> > {
+                    for (keyString,contactDict) in contacts {
+                        //if let contactDict = contactObj as? NSDictionary {
                             self.addContact(Contact(fromDict: contactDict, registered: true))
-                        } else {
-                            println("Cannot parse contact as dictionary")
-                        }
+                        //} else {
+                            //println("Cannot parse contact as dictionary")
+                        //}
                     }
                 } else {
                     //no contacts, which is fine
