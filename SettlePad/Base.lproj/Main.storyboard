@@ -27,7 +27,7 @@
                                     <action selector="login:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="c2w-Ou-WVA"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="email" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="pete@mailinator.com" borderStyle="roundedRect" placeholder="Email address" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Wir-fZ-dMi">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="email" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email address" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Wir-fZ-dMi">
                                 <rect key="frame" x="16" y="468" width="568" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" priority="999" constant="568" id="RW3-tm-xfe"/>
@@ -40,7 +40,7 @@
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="xyK-s3-OUe"/>
                                 </connections>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="pass" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="aa" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tOJ-9g-k1s">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="pass" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tOJ-9g-k1s">
                                 <rect key="frame" x="16" y="508" width="568" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" priority="999" constant="568" id="ckB-Fx-TeC"/>
