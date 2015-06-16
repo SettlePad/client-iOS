@@ -1,4 +1,4 @@
 client-iOS
 ==========
 
-iOS client for UOless
+iOS client for SettlePad
