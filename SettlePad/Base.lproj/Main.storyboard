@@ -230,7 +230,7 @@
                     <navigationItem key="navigationItem" title="Transactions" id="nmT-HU-Yzm">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="fsY-lJ-U6M">
                             <connections>
-                                <segue destination="V2b-NU-rHk" kind="presentation" identifier="showUOmeSegue" id="kFu-fK-0IO"/>
+                                <segue destination="V2b-NU-rHk" kind="presentation" identifier="showUOmeSegueFromTransactions" id="kFu-fK-0IO"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -352,7 +352,7 @@
                     <navigationItem key="navigationItem" title="Balances" id="aM1-KY-2VF">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="yQU-eo-KAi">
                             <connections>
-                                <segue destination="V2b-NU-rHk" kind="presentation" id="hp6-KP-NO4"/>
+                                <segue destination="V2b-NU-rHk" kind="presentation" identifier="showUOmeSegueFromBalances" id="hp6-KP-NO4"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -1160,7 +1160,7 @@ john2@doe.com</string>
         <image name="Thermometer" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="kFu-fK-0IO"/>
+        <segue reference="hp6-KP-NO4"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.52549019607843139" green="0.77254901960784317" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

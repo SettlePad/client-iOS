@@ -8,10 +8,41 @@
 
 import UIKit
 
-class BalancesViewController: UITableViewController {	
+class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 	var balancesRefreshControl:UIRefreshControl!
 	var footer = BalancesFooterView(frame: CGRectMake(0, 0, 320, 44))
-
+	
+	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+		if segue.identifier == "showUOmeSegueFromBalances" {
+			let navigationController = segue.destinationViewController as! UINavigationController
+			let vc = navigationController.viewControllers[0] as! NewUOmeViewController
+			vc.delegate = self
+		}
+	}
+	
+	func transactionsPosted(controller:NewUOmeViewController) {
+		controller.dismissViewControllerAnimated(true, completion: nil)
+		//do not reload until post completed
+	}
+	
+	func transactionsPostCompleted(controller:NewUOmeViewController, error_msg: String?) {
+		//Goto login screen
+		if error_msg != nil {
+			displayError(error_msg!, self)
+			if (user == nil) {
+				dispatch_async(dispatch_get_main_queue()) {
+					let storyboard = UIStoryboard(name: "Main", bundle: nil)
+					let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
+					self.presentViewController(vc, animated: false, completion: nil)
+				}
+			} else {
+				self.refreshBalances()
+			}
+		} else {
+			self.refreshBalances()
+		}
+	}
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 

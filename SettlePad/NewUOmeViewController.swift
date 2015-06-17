@@ -47,6 +47,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         
         if newTransactions.count > 0 {
             //Post
+			
             transactions.post(newTransactions) { (succeeded: Bool, error_msg: String?) -> () in
                 if succeeded == false {
 					self.delegate.transactionsPostCompleted(self, error_msg: error_msg!)
@@ -56,8 +57,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 
             }
             
-            //Go to transactions
-            
+            //Close viewcontroller
             delegate.transactionsPosted(self)
             self.dismissViewControllerAnimated(true, completion: nil)
 

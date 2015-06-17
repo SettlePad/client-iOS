@@ -17,7 +17,7 @@ import UIKit
 
 class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {	
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "showUOmeSegue" {
+        if segue.identifier == "showUOmeSegueFromTransactions" {
             let navigationController = segue.destinationViewController as! UINavigationController
             let vc = navigationController.viewControllers[0] as! NewUOmeViewController
             vc.delegate = self
