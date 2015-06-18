@@ -160,7 +160,9 @@ class LoginViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         if user != nil {
+			spinning(true)
 			contacts.updateContacts{(succeeded: Bool, error_msg: String?) -> () in
+				self.spinning(false)
 				self.enter_app() //load contacts before entering
 				contacts.updateAutoLimits(){}
 			}
