@@ -120,6 +120,7 @@ class Transaction {
 				}
 				let contact = Contact(id: counterpartID, name: counterpartName, friendlyName: counterpartName, favorite: false, identifiers: [], registered: recipientRegistered)
 				contacts.addContact(contact)
+				counterpart = contact
 			}
 		} else {
 			counterpart = nil
