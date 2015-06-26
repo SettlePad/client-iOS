@@ -35,7 +35,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	func setFavorite (newValue: Bool, updateServer: Bool) {
 		let oldValue = favorite
 		if id != nil && newValue != favorite && updateServer {
-			api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"favorite", "value":favorite], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"favorite", "value":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
 						println(error_msg)
