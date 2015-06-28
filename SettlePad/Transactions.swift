@@ -18,7 +18,8 @@ class Transactions {
     var end_reached = false
     
     var lastRequest = NSDate(timeIntervalSinceNow: -24*60*60) //Only newer requests for getInternal will be succesfully completed. By default somewhere in the past (now one day)
-    
+	var blockingRequestActive = false
+	
     init() {
 
     }
@@ -79,7 +80,7 @@ class Transactions {
         var url = "transactions/initial/"+String(nr_of_results)+"/"+self.search
         self.transactions = [] //already clear out before reponse
         self.end_reached = false
-        getInternal(url){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
+        getInternal(url, oneAtATime: true){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
             self.transactions = [] //clear again to be sure
             if (succeeded) {
                 if let transactions = dataDict!["transactions"] as? NSMutableArray {
@@ -110,7 +111,7 @@ class Transactions {
         } else if  transactions.count  == 0 {
             //No transactions yet, so ignore request
         } else {
-            getInternal(url){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
+            getInternal(url, oneAtATime: true){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
                 if (succeeded) {
                     if let transactions = dataDict!["transactions"] as? NSMutableArray {
                         self.updateParams(dataDict!) //Update request parameters
@@ -118,6 +119,7 @@ class Transactions {
                             if let transactionDict = transactionObj as? NSDictionary {
                                 var transaction = Transaction(fromDict: transactionDict)
                                 self.transactions.append(transaction) //Add in rear
+								//TODO: add bool that checks whether we are already receiving something, otherwise we'll get the same response multiple times
                             } else {
                                 println("Cannot parse transaction as dictionary")
                             }
@@ -134,8 +136,8 @@ class Transactions {
     
     func getUpdate(requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
         var url = "transactions/changes/\(oldestID)/\(newestID)/\(lastUpdate)"+"/"+String(nr_of_results)+"/"+search
-        
-        getInternal(url){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
+		
+        getInternal(url, oneAtATime: true){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
             if (succeeded) {
                 if let updatedTransactionsArray = dataDict!["updates"]!["transactions"] as? NSMutableArray {
 
@@ -182,32 +184,42 @@ class Transactions {
         }
     }
     
-    private func getInternal(url: String, requestCompleted : (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> ()) {
+	private func getInternal(url: String, oneAtATime: Bool, requestCompleted : (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> ()) {
         var requestDate = NSDate()
         //println("Transaction request: "+url)
-        api.request(url, method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		if oneAtATime && blockingRequestActive {
+			requestCompleted(succeeded: false,dataDict: nil, error_msg: "") //another blocking request is already pending
+		} else {
+			if oneAtATime {
+				self.blockingRequestActive = true
+			}
+			api.request(url, method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             //println(data)
-            if (requestDate.compare(self.lastRequest) != NSComparisonResult.OrderedAscending) { //requestDate is later than or equal to lastRequest
-                if(succeeded) {
-                    self.lastRequest = requestDate
-                    if let dataDict = data["data"] as? NSDictionary {
-                        requestCompleted(succeeded: true,dataDict:dataDict,error_msg:nil)
-                    } else {
-                        //no transactions
-                        requestCompleted(succeeded: true,dataDict:[:],error_msg:nil)
+				if (requestDate.compare(self.lastRequest) != NSComparisonResult.OrderedAscending) { //requestDate is later than or equal to lastRequest
+					if(succeeded) {
+						self.lastRequest = requestDate
+						if let dataDict = data["data"] as? NSDictionary {
+							requestCompleted(succeeded: true,dataDict:dataDict,error_msg:nil)
+						} else {
+							//no transactions
+							requestCompleted(succeeded: true,dataDict:[:],error_msg:nil)
 
-                    }
-                } else {
-                    if let error_msg = data["text"] as? String {
-                        requestCompleted(succeeded: false,dataDict: nil, error_msg: error_msg)
-                    } else {
-                        requestCompleted(succeeded: false,dataDict: nil, error_msg: "Unknown error")
-                    }
-                }
-            } else {
-                requestCompleted(succeeded: false,dataDict: nil, error_msg: "") //outdated request
-            }
-        }
+						}
+					} else {
+						if let error_msg = data["text"] as? String {
+							requestCompleted(succeeded: false,dataDict: nil, error_msg: error_msg)
+						} else {
+							requestCompleted(succeeded: false,dataDict: nil, error_msg: "Unknown error")
+						}
+					}
+				} else {
+					requestCompleted(succeeded: false,dataDict: nil, error_msg: "") //outdated request
+				}
+				if oneAtATime {
+					self.blockingRequestActive = false
+				}
+			}
+		}
     }
     
     private func updateParams(data: NSDictionary) {
