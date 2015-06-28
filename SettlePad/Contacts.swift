@@ -98,18 +98,15 @@ class Contacts {
         if let people = ABAddressBookCopyArrayOfAllPeople(addressBook)?.takeRetainedValue() as? [ABRecord] {
             for person in people {
                 var emails = [String]()
-                if let emailProperty: ABMultiValueRef = ABRecordCopyValue(person, kABPersonEmailProperty)?.takeRetainedValue() {
-                    if let allEmailIDs: NSArray = ABMultiValueCopyArrayOfAllValues(emailProperty)?.takeUnretainedValue() {
-                        for emailID in allEmailIDs {
-                            let email = emailID as! String
-        
-                            //Verify that email address is really an email address
-                            if email.isEmail() {
-                                emails.append(email)
-                            }
-                        }
-                    }
-                }
+				
+				let emailMVR: ABMultiValueRef = ABRecordCopyValue(person, kABPersonEmailProperty).takeRetainedValue()
+				for (var i = 0; i < ABMultiValueGetCount(emailMVR); i++) {
+					if let email = ABMultiValueCopyValueAtIndex(emailMVR, i).takeRetainedValue() as? String {
+						if email.isEmail() {
+							emails.append(email)
+						}
+					}
+				}
                 
                 addContact(Contact(id: nil, name: ABRecordCopyCompositeName(person).takeRetainedValue() as String, friendlyName: ABRecordCopyCompositeName(person).takeRetainedValue() as String, favorite: false, identifiers: emails, registered: false))
             }
@@ -177,6 +174,7 @@ class Contacts {
                     {(granted: Bool, error: CFError!) in
                         if granted {
                             self.updateLocalContacts(addressBook)
+							self.updateIdentifiers()
                         }
                         requestCompleted(succeeded: granted)
                 })
