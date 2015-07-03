@@ -737,7 +737,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="750" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="John Doe" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="rV9-Z4-i4r">
-                                <rect key="frame" x="95.5" y="10" width="448.5" height="30"/>
+                                <rect key="frame" x="112" y="10" width="432" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
@@ -756,7 +756,7 @@
                                 </connections>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="1000" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O54-bR-VsQ">
-                                <rect key="frame" x="95.5" y="60" width="488.5" height="54"/>
+                                <rect key="frame" x="112" y="60" width="472" height="54"/>
                                 <string key="text">john@doe.com
 john@doe2.com
 john2@doe.com</string>
@@ -764,7 +764,7 @@ john2@doe.com</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="249" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="46" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="Hlg-3V-LQq">
-                                <rect key="frame" x="95.5" y="134" width="488.5" height="276"/>
+                                <rect key="frame" x="112" y="182" width="472" height="228"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="limitCell" id="gWh-jN-W4A" customClass="LimitCell" customModule="SettlePad" customModuleProvider="target">
@@ -773,7 +773,7 @@ john2@doe.com</string>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FSm-p1-XmE">
-                                                    <rect key="frame" x="0.0" y="10" width="488" height="25"/>
+                                                    <rect key="frame" x="0.0" y="10" width="472" height="25"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
@@ -797,24 +797,26 @@ john2@doe.com</string>
                                 </connections>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UDJ-A5-47T">
-                                <rect key="frame" x="16" y="10" width="59.5" height="20.5"/>
+                                <rect key="frame" x="16" y="10" width="76" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Email(s)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rdP-dv-b7i">
-                                <rect key="frame" x="16" y="60" width="59.5" height="20.5"/>
+                                <rect key="frame" x="16" y="60" width="76" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="SettlePad will automatically accept incoming memos until the sum of the last 24 hours crosses the specified (positive) limit." lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fsc-dW-RlW">
-                                <rect key="frame" x="95.5" y="450" width="488.5" height="26.5"/>
+                                <rect key="frame" x="112" y="450" width="472" height="26.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Limits" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nHY-HC-xDi">
-                                <rect key="frame" x="16" y="134" width="59.5" height="20.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nHY-HC-xDi">
+                                <rect key="frame" x="16" y="134" width="76" height="41"/>
+                                <string key="text">Memo
+accepting</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
@@ -827,7 +829,7 @@ john2@doe.com</string>
                                 </connections>
                             </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="750" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="100" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AQg-xR-0my">
-                                <rect key="frame" x="136.5" y="415" width="407" height="30"/>
+                                <rect key="frame" x="153" y="415" width="390.5" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                                 <connections>
@@ -835,7 +837,7 @@ john2@doe.com</string>
                                 </connections>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cFo-ls-Xx6" customClass="PickerButton" customModule="SettlePad" customModuleProvider="target">
-                                <rect key="frame" x="95.5" y="415" width="31" height="30"/>
+                                <rect key="frame" x="112" y="415" width="31" height="30"/>
                                 <state key="normal" title="EUR">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -843,6 +845,14 @@ john2@doe.com</string>
                                     <action selector="limitCurrencyButtonAction:" destination="U9C-am-4Pg" eventType="touchUpInside" id="Qwu-gZ-uIL"/>
                                 </connections>
                             </button>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Ky3-HH-Txe">
+                                <rect key="frame" x="112" y="134" width="320" height="29"/>
+                                <segments>
+                                    <segment title="Manual"/>
+                                    <segment title="Auto up to limit"/>
+                                    <segment title="Automatic"/>
+                                </segments>
+                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -865,15 +875,18 @@ john2@doe.com</string>
                             <constraint firstItem="O54-bR-VsQ" firstAttribute="trailing" secondItem="xER-Zm-WiR" secondAttribute="trailingMargin" id="L6F-Or-SAX"/>
                             <constraint firstItem="UDJ-A5-47T" firstAttribute="leading" secondItem="xER-Zm-WiR" secondAttribute="leadingMargin" id="NWU-XU-Dt2"/>
                             <constraint firstItem="UDJ-A5-47T" firstAttribute="leading" secondItem="nHY-HC-xDi" secondAttribute="leading" id="OED-Vw-Is6"/>
-                            <constraint firstItem="nHY-HC-xDi" firstAttribute="top" secondItem="Hlg-3V-LQq" secondAttribute="top" id="P0Y-Hf-LDu"/>
                             <constraint firstAttribute="trailingMargin" secondItem="awV-aD-hZe" secondAttribute="trailing" id="P61-I0-nsv"/>
+                            <constraint firstItem="Ky3-HH-Txe" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="awV-aD-hZe" secondAttribute="trailing" id="RRg-qU-Xfb"/>
+                            <constraint firstItem="Hlg-3V-LQq" firstAttribute="top" secondItem="Ky3-HH-Txe" secondAttribute="bottom" constant="20" id="Snh-s5-S1m"/>
                             <constraint firstItem="AQg-xR-0my" firstAttribute="top" secondItem="cFo-ls-Xx6" secondAttribute="top" id="UO0-n6-Yy0"/>
                             <constraint firstItem="rV9-Z4-i4r" firstAttribute="leading" secondItem="nHY-HC-xDi" secondAttribute="trailing" constant="20" id="UrZ-pK-zcN"/>
                             <constraint firstItem="fsc-dW-RlW" firstAttribute="leading" secondItem="Hlg-3V-LQq" secondAttribute="leading" id="VCH-g2-bSE"/>
-                            <constraint firstItem="Hlg-3V-LQq" firstAttribute="top" secondItem="O54-bR-VsQ" secondAttribute="bottom" constant="20" id="Wo7-Sp-PVa"/>
+                            <constraint firstItem="Ky3-HH-Txe" firstAttribute="leading" secondItem="rV9-Z4-i4r" secondAttribute="leading" id="WTt-QO-8Me"/>
                             <constraint firstItem="O54-bR-VsQ" firstAttribute="top" secondItem="rV9-Z4-i4r" secondAttribute="bottom" constant="20" id="bFQ-TZ-NeX"/>
                             <constraint firstItem="rV9-Z4-i4r" firstAttribute="centerY" secondItem="awV-aD-hZe" secondAttribute="centerY" id="di6-2F-2hI"/>
                             <constraint firstItem="GnW-pF-LyX" firstAttribute="centerY" secondItem="AQg-xR-0my" secondAttribute="centerY" id="hGL-Ig-OZV"/>
+                            <constraint firstItem="Ky3-HH-Txe" firstAttribute="top" secondItem="O54-bR-VsQ" secondAttribute="bottom" constant="20" id="nnz-NZ-rfM"/>
+                            <constraint firstItem="Ky3-HH-Txe" firstAttribute="top" secondItem="nHY-HC-xDi" secondAttribute="top" id="s4C-gl-YGC"/>
                             <constraint firstItem="fsc-dW-RlW" firstAttribute="trailing" secondItem="xER-Zm-WiR" secondAttribute="trailingMargin" id="vCm-Tj-s07"/>
                             <constraint firstItem="GnW-pF-LyX" firstAttribute="centerX" secondItem="awV-aD-hZe" secondAttribute="centerX" id="vJ8-wF-yWT"/>
                         </constraints>

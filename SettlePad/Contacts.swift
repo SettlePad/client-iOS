@@ -101,14 +101,16 @@ class Contacts {
 				
 				let emailMVR: ABMultiValueRef = ABRecordCopyValue(person, kABPersonEmailProperty).takeRetainedValue()
 				for (var i = 0; i < ABMultiValueGetCount(emailMVR); i++) {
-					if let email = ABMultiValueCopyValueAtIndex(emailMVR, i).takeRetainedValue() as? String {
+					if let email = ABMultiValueCopyValueAtIndex(emailMVR, i)?.takeRetainedValue() as? String {
 						if email.isEmail() {
 							emails.append(email)
 						}
 					}
 				}
-                
-                addContact(Contact(id: nil, name: ABRecordCopyCompositeName(person).takeRetainedValue() as String, friendlyName: ABRecordCopyCompositeName(person).takeRetainedValue() as String, favorite: false, identifiers: emails, registered: false))
+				
+				if let name = ABRecordCopyCompositeName(person)?.takeRetainedValue() as? String {
+					addContact(Contact(id: nil, name: name, friendlyName: name, favorite: false, identifiers: emails, registered: false))
+				}
             }
         }
     }
