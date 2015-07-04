@@ -142,8 +142,8 @@ class Contacts {
 							}
 						}
 					}
-				} else {
-					println("Cannot parse limit as dictionary, might be that there are no limits")
+				//} else {
+					//println("Cannot parse limit as dictionary, might be that there are no limits")
 				}
 			}
 			requestCompleted()

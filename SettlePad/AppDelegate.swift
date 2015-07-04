@@ -15,8 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
-		application.applicationIconBadgeNumber = 0
+
+		setBadgeNumber(0)
 		application.cancelAllLocalNotifications()
 		
         return true
@@ -69,6 +69,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
+	
+	func setBadgeNumber(number: Int) {
+		if UIDevice.currentDevice().systemVersion.compare("8.0",
+			options: NSStringCompareOptions.NumericSearch) != NSComparisonResult.OrderedAscending {
+				if UIApplication.sharedApplication().currentUserNotificationSettings().types & UIUserNotificationType.Badge != nil {
+					UIApplication.sharedApplication().applicationIconBadgeNumber = number
+				//} else {
+				//	println("No permission to set badge number")
+				}
+		} else {
+			UIApplication.sharedApplication().applicationIconBadgeNumber = number
+		}
+	}
 
 }
 

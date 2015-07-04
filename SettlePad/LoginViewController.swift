@@ -212,12 +212,16 @@ class LoginViewController: UIViewController {
 		
 		UIApplication.sharedApplication().registerUserNotificationSettings(settings)
 		UIApplication.sharedApplication().registerForRemoteNotifications()
-		UIApplication.sharedApplication().applicationIconBadgeNumber = 0
-		
+
+		if let appDelegate = UIApplication.sharedApplication().delegate as? AppDelegate {
+			appDelegate.setBadgeNumber(0)
+		}
+	
 		/*} else {
 		// Register for Push Notifications before iOS 8
 		UIApplication.sharedApplication().registerForRemoteNotificationTypes(.Alert | .Badge | .Sound)
 		}*/
+
 		
     }
 	
