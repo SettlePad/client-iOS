@@ -17,10 +17,12 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 	@IBOutlet var nameText: UITextField!
 	@IBOutlet var emailsLabel: UILabel!
 	@IBOutlet var limitsTable: UITableView!
-	
+    @IBOutlet var autoAcceptSegment: UISegmentedControl!
     @IBOutlet var starImageView: UIImageView!
     @IBOutlet var limitLimitText: UITextField!
 	@IBOutlet var limitCurrencyButton: PickerButton!
+    @IBOutlet var limitNotesLabel: UILabel!
+    @IBOutlet var limitAddButton: UIButton!
     @IBAction func limitCurrencyButtonAction(sender: PickerButton) {
 		sender.becomeFirstResponder()
 	}
@@ -55,6 +57,29 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 		}
 	}
 	
+
+    @IBAction func autoAcceptValueChanged(sender: AnyObject) {
+        if let autoAccept = AutoAccept(rawValue: autoAcceptSegment.selectedSegmentIndex) {
+            contact.setAutoAccept(autoAccept, updateServer: true)
+			renderLimitTable()
+		}
+    }
+
+	func renderLimitTable() {
+		if contact.autoAccept == .UpToDefinedLimit {
+			limitsTable.hidden = false
+			limitCurrencyButton.hidden = false
+			limitLimitText.hidden = false
+			limitNotesLabel.hidden = false
+			limitAddButton.hidden = false
+		} else {
+			limitsTable.hidden = true
+			limitCurrencyButton.hidden = true
+			limitLimitText.hidden = true
+			limitNotesLabel.hidden = true
+			limitAddButton.hidden = true
+		}
+	}
 	
 	var sortedCurrencies: [Currency] = []
 	var selectedCurrency: Currency = Currency.EUR
@@ -93,6 +118,8 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 		nameText.placeholder = contact.name
 		emailsLabel.text = "\r\n".join(contact.identifiers)
 		
+		autoAcceptSegment.selectedSegmentIndex = contact.autoAccept.rawValue
+			
 		//Sort currencies
 		sortedCurrencies = Currency.allValues.sorted({(left: Currency, right: Currency) -> Bool in left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
 		
@@ -108,6 +135,7 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 			limitCurrencyButton.setTitle(user!.defaultCurrency.rawValue, forState: UIControlState.Normal)
 		}
 		
+		
 		//Hide additional gridlines
 		limitsTable.tableFooterView = UIView(frame:CGRectZero)
 
@@ -122,6 +150,7 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 		limitsTable.estimatedRowHeight = 40
 
 		updateStar()
+		renderLimitTable()
 	}
 
     override func didReceiveMemoryWarning() {

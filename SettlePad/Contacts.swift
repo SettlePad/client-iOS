@@ -109,7 +109,7 @@ class Contacts {
 				}
 				
 				if let name = ABRecordCopyCompositeName(person)?.takeRetainedValue() as? String {
-					addContact(Contact(id: nil, name: name, friendlyName: name, favorite: false, identifiers: emails, registered: false))
+					addContact(Contact(id: nil, name: name, friendlyName: name, favorite: false, autoAccept: .Manual, identifiers: emails, registered: false))
 				}
             }
         }
@@ -219,7 +219,7 @@ class Contacts {
 				}
 				existingContact.identifiers = contact.identifiers
 				existingContact.setFavorite(contact.favorite, updateServer: false)
-				
+				existingContact.setAutoAccept(contact.autoAccept, updateServer: false)
 			} else {
 				contacts.append(contact)
 			}

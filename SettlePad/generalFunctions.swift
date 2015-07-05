@@ -69,6 +69,12 @@ enum Colors {
     }
 }
 
+//Auto limit
+enum AutoAccept: Int {
+	case Manual = 0
+	case UpToDefinedLimit = 1
+	case Auto = 2
+}
 
 class PickerButton: UIButton {
 	var modInputView =  UIPickerView()

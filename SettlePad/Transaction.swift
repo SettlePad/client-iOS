@@ -118,7 +118,7 @@ class Transaction {
 				} else {
 					recipientRegistered = false
 				}
-				let contact = Contact(id: counterpartID, name: counterpartName, friendlyName: counterpartName, favorite: false, identifiers: [], registered: recipientRegistered)
+				let contact = Contact(id: counterpartID, name: counterpartName, friendlyName: counterpartName, favorite: false, autoAccept: .Manual, identifiers: [], registered: recipientRegistered)
 				contacts.addContact(contact)
 				counterpart = contact
 			}

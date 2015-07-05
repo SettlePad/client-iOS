@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -321,7 +321,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="44" sectionFooterHeight="22" id="QjM-rv-Qs8">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Balance" textLabel="o9N-81-EFf" detailTextLabel="KeS-Bg-aFl" style="IBUITableViewCellStyleValue1" id="hPE-46-Nhw">
                                 <autoresizingMask key="autoresizingMask"/>
@@ -331,7 +331,7 @@
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="o9N-81-EFf">
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="KeS-Bg-aFl">
@@ -387,7 +387,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="44" sectionFooterHeight="22" id="pfr-oQ-sGv">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <gestureRecognizers/>
                         <sections>
                             <tableViewSection headerTitle="Profile" id="23M-ey-g1k">
@@ -737,7 +737,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="750" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="John Doe" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="rV9-Z4-i4r">
-                                <rect key="frame" x="112" y="10" width="432" height="30"/>
+                                <rect key="frame" x="16" y="10" width="528" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
@@ -756,7 +756,7 @@
                                 </connections>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="1000" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O54-bR-VsQ">
-                                <rect key="frame" x="112" y="60" width="472" height="54"/>
+                                <rect key="frame" x="16" y="60" width="568" height="54"/>
                                 <string key="text">john@doe.com
 john@doe2.com
 john2@doe.com</string>
@@ -764,7 +764,7 @@ john2@doe.com</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="249" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="46" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="Hlg-3V-LQq">
-                                <rect key="frame" x="112" y="182" width="472" height="228"/>
+                                <rect key="frame" x="16" y="182" width="568" height="228"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="limitCell" id="gWh-jN-W4A" customClass="LimitCell" customModule="SettlePad" customModuleProvider="target">
@@ -773,9 +773,9 @@ john2@doe.com</string>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FSm-p1-XmE">
-                                                    <rect key="frame" x="0.0" y="10" width="472" height="25"/>
+                                                    <rect key="frame" x="0.0" y="10" width="568" height="25"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -796,29 +796,9 @@ john2@doe.com</string>
                                     <outlet property="delegate" destination="U9C-am-4Pg" id="jQR-0Q-99p"/>
                                 </connections>
                             </tableView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UDJ-A5-47T">
-                                <rect key="frame" x="16" y="10" width="76" height="20.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Email(s)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rdP-dv-b7i">
-                                <rect key="frame" x="16" y="60" width="76" height="20.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="SettlePad will automatically accept incoming memos until the sum of the last 24 hours crosses the specified (positive) limit." lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fsc-dW-RlW">
-                                <rect key="frame" x="112" y="450" width="472" height="26.5"/>
+                                <rect key="frame" x="16" y="450" width="568" height="26.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nHY-HC-xDi">
-                                <rect key="frame" x="16" y="134" width="76" height="41"/>
-                                <string key="text">Memo
-accepting</string>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GnW-pF-LyX">
@@ -829,7 +809,7 @@ accepting</string>
                                 </connections>
                             </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="750" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="100" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AQg-xR-0my">
-                                <rect key="frame" x="153" y="415" width="390.5" height="30"/>
+                                <rect key="frame" x="57" y="415" width="486.5" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                                 <connections>
@@ -837,7 +817,7 @@ accepting</string>
                                 </connections>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cFo-ls-Xx6" customClass="PickerButton" customModule="SettlePad" customModuleProvider="target">
-                                <rect key="frame" x="112" y="415" width="31" height="30"/>
+                                <rect key="frame" x="16" y="415" width="31" height="30"/>
                                 <state key="normal" title="EUR">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -846,47 +826,42 @@ accepting</string>
                                 </connections>
                             </button>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Ky3-HH-Txe">
-                                <rect key="frame" x="112" y="134" width="320" height="29"/>
+                                <rect key="frame" x="16" y="134" width="233" height="29"/>
                                 <segments>
                                     <segment title="Manual"/>
-                                    <segment title="Auto up to limit"/>
+                                    <segment title="Up to limit"/>
                                     <segment title="Automatic"/>
                                 </segments>
+                                <connections>
+                                    <action selector="autoAcceptValueChanged:" destination="U9C-am-4Pg" eventType="valueChanged" id="cXY-wA-ugB"/>
+                                </connections>
                             </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="rV9-Z4-i4r" firstAttribute="top" secondItem="UDJ-A5-47T" secondAttribute="top" id="0sY-QN-dan"/>
                             <constraint firstItem="awV-aD-hZe" firstAttribute="leading" secondItem="rV9-Z4-i4r" secondAttribute="trailing" constant="10" id="129-jg-8b0"/>
                             <constraint firstItem="rV9-Z4-i4r" firstAttribute="top" secondItem="6n2-TH-j4U" secondAttribute="bottom" constant="10" id="1IN-gy-rOz"/>
-                            <constraint firstItem="O54-bR-VsQ" firstAttribute="top" secondItem="rdP-dv-b7i" secondAttribute="top" id="1xj-HA-ywG"/>
                             <constraint firstItem="fsc-dW-RlW" firstAttribute="top" secondItem="cFo-ls-Xx6" secondAttribute="bottom" constant="5" id="2F6-pj-Izg"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Hlg-3V-LQq" secondAttribute="trailing" id="6sk-Ip-tZJ"/>
                             <constraint firstItem="rV9-Z4-i4r" firstAttribute="leading" secondItem="Hlg-3V-LQq" secondAttribute="leading" id="8Uc-rL-Sh7"/>
                             <constraint firstItem="wXu-IZ-smX" firstAttribute="top" secondItem="fsc-dW-RlW" secondAttribute="bottom" constant="10" id="9D7-Gf-nis" customClass="KeyboardLayoutConstraint" customModule="SettlePad" customModuleProvider="target"/>
-                            <constraint firstItem="rV9-Z4-i4r" firstAttribute="leading" secondItem="UDJ-A5-47T" secondAttribute="trailing" constant="20" id="9YG-eL-3Zh"/>
                             <constraint firstItem="cFo-ls-Xx6" firstAttribute="top" secondItem="Hlg-3V-LQq" secondAttribute="bottom" constant="5" id="A4B-BN-Kcm"/>
-                            <constraint firstItem="UDJ-A5-47T" firstAttribute="leading" secondItem="rdP-dv-b7i" secondAttribute="leading" id="Ceb-sr-tOV"/>
                             <constraint firstItem="rV9-Z4-i4r" firstAttribute="leading" secondItem="O54-bR-VsQ" secondAttribute="leading" id="Cqd-1b-46n"/>
                             <constraint firstItem="rV9-Z4-i4r" firstAttribute="trailing" secondItem="AQg-xR-0my" secondAttribute="trailing" id="DFD-Uk-ARB"/>
                             <constraint firstItem="AQg-xR-0my" firstAttribute="leading" secondItem="cFo-ls-Xx6" secondAttribute="trailing" constant="10" id="Eil-gT-KYK"/>
-                            <constraint firstItem="rV9-Z4-i4r" firstAttribute="leading" secondItem="rdP-dv-b7i" secondAttribute="trailing" constant="20" id="Gxy-yr-6oI"/>
                             <constraint firstItem="rV9-Z4-i4r" firstAttribute="leading" secondItem="cFo-ls-Xx6" secondAttribute="leading" id="HTu-Qz-MMy"/>
                             <constraint firstItem="O54-bR-VsQ" firstAttribute="trailing" secondItem="xER-Zm-WiR" secondAttribute="trailingMargin" id="L6F-Or-SAX"/>
-                            <constraint firstItem="UDJ-A5-47T" firstAttribute="leading" secondItem="xER-Zm-WiR" secondAttribute="leadingMargin" id="NWU-XU-Dt2"/>
-                            <constraint firstItem="UDJ-A5-47T" firstAttribute="leading" secondItem="nHY-HC-xDi" secondAttribute="leading" id="OED-Vw-Is6"/>
                             <constraint firstAttribute="trailingMargin" secondItem="awV-aD-hZe" secondAttribute="trailing" id="P61-I0-nsv"/>
                             <constraint firstItem="Ky3-HH-Txe" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="awV-aD-hZe" secondAttribute="trailing" id="RRg-qU-Xfb"/>
                             <constraint firstItem="Hlg-3V-LQq" firstAttribute="top" secondItem="Ky3-HH-Txe" secondAttribute="bottom" constant="20" id="Snh-s5-S1m"/>
                             <constraint firstItem="AQg-xR-0my" firstAttribute="top" secondItem="cFo-ls-Xx6" secondAttribute="top" id="UO0-n6-Yy0"/>
-                            <constraint firstItem="rV9-Z4-i4r" firstAttribute="leading" secondItem="nHY-HC-xDi" secondAttribute="trailing" constant="20" id="UrZ-pK-zcN"/>
                             <constraint firstItem="fsc-dW-RlW" firstAttribute="leading" secondItem="Hlg-3V-LQq" secondAttribute="leading" id="VCH-g2-bSE"/>
                             <constraint firstItem="Ky3-HH-Txe" firstAttribute="leading" secondItem="rV9-Z4-i4r" secondAttribute="leading" id="WTt-QO-8Me"/>
                             <constraint firstItem="O54-bR-VsQ" firstAttribute="top" secondItem="rV9-Z4-i4r" secondAttribute="bottom" constant="20" id="bFQ-TZ-NeX"/>
                             <constraint firstItem="rV9-Z4-i4r" firstAttribute="centerY" secondItem="awV-aD-hZe" secondAttribute="centerY" id="di6-2F-2hI"/>
                             <constraint firstItem="GnW-pF-LyX" firstAttribute="centerY" secondItem="AQg-xR-0my" secondAttribute="centerY" id="hGL-Ig-OZV"/>
+                            <constraint firstItem="rV9-Z4-i4r" firstAttribute="leading" secondItem="xER-Zm-WiR" secondAttribute="leadingMargin" id="kJE-VW-LTX"/>
                             <constraint firstItem="Ky3-HH-Txe" firstAttribute="top" secondItem="O54-bR-VsQ" secondAttribute="bottom" constant="20" id="nnz-NZ-rfM"/>
-                            <constraint firstItem="Ky3-HH-Txe" firstAttribute="top" secondItem="nHY-HC-xDi" secondAttribute="top" id="s4C-gl-YGC"/>
                             <constraint firstItem="fsc-dW-RlW" firstAttribute="trailing" secondItem="xER-Zm-WiR" secondAttribute="trailingMargin" id="vCm-Tj-s07"/>
                             <constraint firstItem="GnW-pF-LyX" firstAttribute="centerX" secondItem="awV-aD-hZe" secondAttribute="centerX" id="vJ8-wF-yWT"/>
                         </constraints>
@@ -895,9 +870,12 @@ accepting</string>
                         </connections>
                     </view>
                     <connections>
+                        <outlet property="autoAcceptSegment" destination="Ky3-HH-Txe" id="E16-a6-EBP"/>
                         <outlet property="emailsLabel" destination="O54-bR-VsQ" id="fLu-fw-wTl"/>
+                        <outlet property="limitAddButton" destination="GnW-pF-LyX" id="i6D-mU-hdE"/>
                         <outlet property="limitCurrencyButton" destination="cFo-ls-Xx6" id="NzP-SE-WR6"/>
                         <outlet property="limitLimitText" destination="AQg-xR-0my" id="qjh-eH-9KW"/>
+                        <outlet property="limitNotesLabel" destination="fsc-dW-RlW" id="VC7-pY-C1Q"/>
                         <outlet property="limitsTable" destination="Hlg-3V-LQq" id="tc1-jT-wjR"/>
                         <outlet property="nameText" destination="rV9-Z4-i4r" id="7RM-kJ-hVg"/>
                         <outlet property="starImageView" destination="awV-aD-hZe" id="F4D-86-bub"/>

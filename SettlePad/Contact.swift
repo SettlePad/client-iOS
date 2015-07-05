@@ -11,12 +11,32 @@ import Foundation
 class Contact: NSObject { //required for sections in viewcontroller with collation
     var id: Int?
     var name: String
+	
+	private(set) var autoAccept: AutoAccept
+
+	func setAutoAccept(newValue: AutoAccept, updateServer: Bool) {
+		let oldValue = autoAccept
+		if id != nil && newValue != autoAccept && updateServer {
+			api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"auto_accept", "value":newValue.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+				if(!succeeded) {
+					if let error_msg = data["text"] as? String {
+						println(error_msg)
+					} else {
+						println("Unknown error while setting auto accept")
+					}
+					self.autoAccept = oldValue
+				}
+			}
+		}
+		autoAccept = newValue
+	}
+	
 	private(set) var friendlyName: String
 	
 	func setFriendlyName (newValue: String, updateServer: Bool) {
 		let oldValue = friendlyName
 		if id != nil && newValue != friendlyName && updateServer {
-			api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"friendly_name", "value":friendlyName], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"friendly_name", "value":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
 						println(error_msg)
@@ -29,6 +49,8 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		}
 		friendlyName = newValue
 	}
+	
+
 	
     private(set) var favorite: Bool
 
@@ -48,18 +70,17 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		}
         favorite = newValue
     }
-    
-    
-    
+	
     var identifiers = [String]()
     private(set) var limits = [Limit]()
     var registered: Bool //Contacts that do not come from the server but from the local address book get false. Of those, a subset will have an account as well, but we cannot know without sharing the whole address book with the server. And that we don't do
     
-    init(id: Int? = nil, name: String, friendlyName: String, favorite: Bool, identifiers: [String], registered: Bool) {
+	init(id: Int? = nil, name: String, friendlyName: String, favorite: Bool, autoAccept: AutoAccept, identifiers: [String], registered: Bool) {
         self.id = id
         self.name = name
         self.friendlyName = friendlyName
         self.favorite = favorite
+		self.autoAccept = autoAccept
         self.identifiers = identifiers
         self.registered = registered
     }
@@ -92,7 +113,17 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
         } else {
                 self.favorite = false
         }
-        
+		
+		if let parsed = fromDict["auto_accept"] as? Int {
+			if let autoAccept = AutoAccept(rawValue: parsed) {
+				self.autoAccept = autoAccept
+			} else {
+				self.autoAccept = .Manual
+			}
+		} else {
+			self.autoAccept = .Manual
+		}
+		
         if let parsed = fromDict["identifiers"] as? Array <Dictionary <String, AnyObject> > {
             for identifierObj in parsed {
                 if let identifier = identifierObj["identifier"] as? String {
