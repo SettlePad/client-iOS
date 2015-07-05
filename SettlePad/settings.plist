@@ -3,6 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>server</key>
-	<string>http://127.0.0.1/api/</string>
+	<string>http://www.settlepad.com/api/</string>
 </dict>
 </plist>
