@@ -10,16 +10,21 @@ import UIKit
 
 func displayError(errorMessage: String, viewController: UIViewController) {
     let alertController = UIAlertController(title: "Error", message: errorMessage, preferredStyle: .Alert)
-    let OKAction = UIAlertAction(title: "OK", style: .Default, handler: nil)
+	let OKAction = UIAlertAction(title: "OK", style: .Default) { action -> Void in
+		if (user == nil && viewController.restorationIdentifier != "LoginController") {
+			let storyboard = UIStoryboard(name: "Main", bundle: nil)
+			let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
+			dispatch_async(dispatch_get_main_queue(), { () -> Void in
+				viewController.presentViewController(vc, animated: false, completion: nil)
+			})
+		}
+	}
+	
     alertController.addAction(OKAction)
 
     dispatch_async(dispatch_get_main_queue(), { () -> Void in
         viewController.presentViewController(alertController, animated: true, completion: nil)
-		if (user == nil && viewController.restorationIdentifier != "LoginController") {
-			let storyboard = UIStoryboard(name: "Main", bundle: nil)
-			let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
-			viewController.presentViewController(vc, animated: false, completion: nil)
-        }
+
     })
 }
 
