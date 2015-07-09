@@ -12,6 +12,8 @@ class IdentifierCell: UITableViewCell {
 
 	@IBOutlet var identifierLabel: UILabel!
 	@IBOutlet var verificationLabel: UILabel!
+	@IBOutlet var processingSpinner: UIActivityIndicatorView!
+	
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -25,15 +27,21 @@ class IdentifierCell: UITableViewCell {
 
 	func markup(identifier: UserIdentifier){
 		identifierLabel.text = identifier.identifier
-		
-		if identifier.verified {
-			verificationLabel.text = "verified"
-			verificationLabel.textColor = Colors.success.textToUIColor()
+		if identifier.pending {
+			processingSpinner.hidden = false
+			verificationLabel.hidden = true
+			processingSpinner.startAnimating()
 		} else {
-			verificationLabel.text = "not verified"
-			verificationLabel.textColor = Colors.danger.textToUIColor()
+			processingSpinner.hidden = true
+			verificationLabel.hidden = false
+			if identifier.verified {
+				verificationLabel.text = "verified"
+				verificationLabel.textColor = Colors.success.textToUIColor()
+			} else {
+				verificationLabel.text = "not verified"
+				verificationLabel.textColor = Colors.danger.textToUIColor()
+			}
 		}
-
 	}
 	
 }

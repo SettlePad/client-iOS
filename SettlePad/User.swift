@@ -154,7 +154,7 @@ class User {
             
             for parsableIdentifier in arrayVal {
                 if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool {
-                    self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified))
+					self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false))
                 } else {
                     println("Cannot load identifier")
                     return nil
@@ -195,12 +195,22 @@ class User {
     }
     
     func addIdentifier(email:String, password:String,requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		self.userIdentifiers.append(UserIdentifier(identifier: email, source: "email", verified: false, pending: true))
         api.request("identifiers/new", method:"POST", formdata: ["identifier":email,"password":password,"type":"email"], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             if(succeeded) {
-                self.userIdentifiers.append(UserIdentifier(identifier: email, source: "email", verified: false))
+				for index in stride(from: self.userIdentifiers.count - 1, through: 0, by: -1) {
+					if self.userIdentifiers[index].identifier == email {
+						self.userIdentifiers[index].pending = false
+					}
+				}
                 self.save()
                 requestCompleted(succeeded: true,error_msg: nil)
             } else {
+				for index in stride(from: self.userIdentifiers.count - 1, through: 0, by: -1) {
+					if self.userIdentifiers[index].identifier == email {
+						self.userIdentifiers.removeAtIndex(index)
+					}
+				}
                 if let msg = data["text"] as? String {
                     requestCompleted(succeeded: false,error_msg: msg)
                 } else {
@@ -211,14 +221,14 @@ class User {
     }
     
     func deleteIdentifier(identifier:UserIdentifier, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-        api.request("identifiers/delete", method:"POST", formdata: ["identifier":identifier.identifier], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		for index in stride(from: self.userIdentifiers.count - 1, through: 0, by: -1) {
+			if self.userIdentifiers[index].identifier == identifier.identifier {
+				self.userIdentifiers.removeAtIndex(index)
+			}
+		}
+		self.save()
+		api.request("identifiers/delete", method:"POST", formdata: ["identifier":identifier.identifier], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             if(succeeded) {
-                for index in stride(from: self.userIdentifiers.count - 1, through: 0, by: -1) {
-                    if self.userIdentifiers[index].identifier == identifier.identifier {
-                        self.userIdentifiers.removeAtIndex(index)
-                    }
-                }
-                self.save()
                 requestCompleted(succeeded: true,error_msg: nil)
             } else {
                 if let msg = data["text"] as? String {
@@ -245,13 +255,11 @@ class User {
     }
 	
 	func verifyIdentifier(identifier:UserIdentifier, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		identifier.pending = true
 		api.verifyIdentifier(identifier.identifier, token: token) { (succeeded: Bool, error_msg: String?) -> () in
+			identifier.pending = false
 			if(succeeded) {
-				for userIdentifier in self.userIdentifiers {
-					if userIdentifier.identifier == identifier.identifier {
-						userIdentifier.verified = true //class is reference type
-					}
-				}
+				identifier.verified = true //class is reference type
 				self.save()
 				requestCompleted(succeeded: true,error_msg: nil)
 			} else {
@@ -303,7 +311,7 @@ class User {
 						
 						for parsableIdentifier in arrayVal {
 							if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool {
-								self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified))
+								self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false))
 							} else {
 								println("Cannot load identifier")
 							}

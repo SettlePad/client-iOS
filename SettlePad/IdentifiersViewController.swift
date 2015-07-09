@@ -76,7 +76,7 @@ class IdentifiersViewController: UITableViewController {
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        } */   
+        } */
     }
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]?  {
@@ -126,6 +126,11 @@ class IdentifiersViewController: UITableViewController {
 					}
 				}
             }
+			
+			//already add with spinner
+			dispatch_async(dispatch_get_main_queue(), {
+				self.tableView.reloadData()
+			})
         }
         alertController.addAction(destroyAction)
         
@@ -195,11 +200,11 @@ class IdentifiersViewController: UITableViewController {
 			actionSheetController.addAction(resendCodeAction)
 		}
 	
-		let verifyAction: UIAlertAction = UIAlertAction(title: "Delete", style: .Destructive) { action -> Void in
+		let deleteAction: UIAlertAction = UIAlertAction(title: "Delete", style: .Destructive) { action -> Void in
 			let identifier = user!.userIdentifiers[indexPath.row]
 			self.deleteIdentifier (identifier, tableView: tableView, indexPath: indexPath)
 		}
-		actionSheetController.addAction(verifyAction)
+		actionSheetController.addAction(deleteAction)
 
 		//We need to provide a popover sourceView when using it on iPad
 		actionSheetController.popoverPresentationController?.sourceView = cell?.contentView
@@ -273,15 +278,21 @@ class IdentifiersViewController: UITableViewController {
         let addAction = UIAlertAction(title: "Add", style: .Default) { (action) in
             let emailTextField = alertController.textFields![0] as! UITextField
             let firstPasswordTextField = alertController.textFields![1] as! UITextField
-            
+			
             user!.addIdentifier(emailTextField.text, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
                     displayError(error_msg!,self)
-                }
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.tableView.reloadData()
-                })
+				}
+				dispatch_async(dispatch_get_main_queue(), {
+					self.tableView.reloadData()
+				})
             }
+			
+			//already add with spinner
+			dispatch_async(dispatch_get_main_queue(), {
+				self.tableView.reloadData()
+			})
+
         }
         addAction.enabled = false
 
@@ -330,15 +341,26 @@ class IdentifiersViewController: UITableViewController {
     
     func validationCodeForm(identifier: UserIdentifier) {
         //show validation code form
-		displayValidationForm(identifier.identifier, self, {},{}) { (succeeded, error_msg) -> () in
-			if !succeeded {
-				displayError(error_msg!,self)
-			} else {
+		displayValidationForm(identifier.identifier, self, {},
+			{
+				//verificationStarted
+				identifier.pending = true
+				dispatch_async(dispatch_get_main_queue(), {
+					self.tableView.reloadData()
+				})
+			},
+			{(succeeded, error_msg) -> () in
+				//verificationCompleted
+				identifier.pending = false
+				if !succeeded {
+					displayError(error_msg!,self)
+				} else {
+					identifier.verified = true
+				}
 				dispatch_async(dispatch_get_main_queue(), {
 					self.tableView.reloadData()
 				})
 			}
-        }
-    }
-
+		)
+	}
 }
