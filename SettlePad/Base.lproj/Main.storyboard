@@ -596,25 +596,36 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="emailAddressRow" textLabel="SjO-pm-peK" detailTextLabel="yGm-uo-WBM" style="IBUITableViewCellStyleValue1" id="AsB-gc-iaF">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="emailAddressRow" id="Jh0-FS-tPh" customClass="IdentifierCell" customModule="SettlePad" customModuleProvider="target">
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="AsB-gc-iaF" id="20c-3z-D2Q">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Jh0-FS-tPh" id="G3c-bB-QD9">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalCompressionResistancePriority="500" text="email@address.com" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="SjO-pm-peK">
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="validated" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P1C-RD-7P0">
+                                            <rect key="frame" x="519" y="12" width="66" height="19.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalCompressionResistancePriority="500" text="email@address.com" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Ru-En-4CX">
+                                            <rect key="frame" x="15" y="12" width="146" height="19.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="validated" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yGm-uo-WBM">
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="3Ru-En-4CX" firstAttribute="leading" secondItem="G3c-bB-QD9" secondAttribute="leading" constant="15" id="3YW-dK-UTk"/>
+                                        <constraint firstItem="P1C-RD-7P0" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="3Ru-En-4CX" secondAttribute="trailing" constant="10" id="d7q-MT-PLC"/>
+                                        <constraint firstAttribute="trailing" secondItem="P1C-RD-7P0" secondAttribute="trailing" constant="15" id="hpD-8t-x4o"/>
+                                        <constraint firstAttribute="centerY" secondItem="P1C-RD-7P0" secondAttribute="centerY" id="q4o-vk-faF"/>
+                                        <constraint firstAttribute="centerY" secondItem="3Ru-En-4CX" secondAttribute="centerY" id="uvc-u1-wOv"/>
+                                    </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="identifierLabel" destination="3Ru-En-4CX" id="SHe-QS-EtW"/>
+                                    <outlet property="verificationLabel" destination="P1C-RD-7P0" id="9Qu-gQ-ExK"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -674,13 +685,13 @@
                                             </connections>
                                         </imageView>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalCompressionResistancePriority="250" text="Joanna" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="muM-HG-WpE">
-                                            <rect key="frame" x="48" y="12" width="54" height="20"/>
+                                            <rect key="frame" x="48" y="12.5" width="53.5" height="19.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="1" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NUr-Wc-Wg8">
-                                            <rect key="frame" x="549" y="12" width="10" height="20"/>
+                                            <rect key="frame" x="549.5" y="12.5" width="9.5" height="19.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>

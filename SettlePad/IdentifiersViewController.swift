@@ -48,19 +48,13 @@ class IdentifiersViewController: UITableViewController {
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("emailAddressRow", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("emailAddressRow", forIndexPath: indexPath) as! IdentifierCell
 
         // Configure the cell...
+		
+		
         let identifier = user!.userIdentifiers[indexPath.row]
-        cell.textLabel?.text  = identifier.identifier
-        
-        if identifier.verified {
-            cell.detailTextLabel?.text = "verified"
-            cell.detailTextLabel?.textColor = Colors.success.textToUIColor()
-        } else {
-            cell.detailTextLabel?.text = "not verified"
-            cell.detailTextLabel?.textColor = Colors.danger.textToUIColor()
-        }
+		cell.markup(identifier)
         
         return cell
     }

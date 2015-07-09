@@ -23,9 +23,7 @@ class LoginViewController: UIViewController {
         http://www.raywenderlich.com/74904/swift-tutorial-part-2-simple-ios-app
         http://www.raywenderlich.com/83276/beginning-adaptive-layout-tutorial
     */
-	
-	//TODO: disable zombies
-    
+	    
     @IBOutlet var txtLoginName: UITextField!
     @IBOutlet var txtLoginUser : UITextField! //You’re marking the variables with an exclamation mark (!). This indicates the variables are optional values, but they are implicitly unwrapped. This is a fancy way of saying you can write code assuming that they are set, and your app will crash if they are not set.
     @IBOutlet var txtLoginPass : UITextField!
