@@ -27,7 +27,8 @@ class Transaction {
             let minfourDate = now.dateByAddingTimeInterval(NSTimeInterval(-60*4)) //in seconds
             if
                 status == .Draft || //if in draft
-                (is_sender == true && (status == .Processed || status == .AwaitingValidation) && time_sent.compare(minfourDate) != NSComparisonResult.OrderedAscending) //only for last five minutes in API, so show four
+				(is_sender == true && status == .AwaitingValidation) || //Has not been accepted yet
+				(is_sender == true && status == .Processed && time_sent.compare(minfourDate) != NSComparisonResult.OrderedAscending) //only for last five minutes in API, so show four
             {
                 return true
             } else {
