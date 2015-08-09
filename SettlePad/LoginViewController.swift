@@ -50,8 +50,7 @@ class LoginViewController: UIViewController {
     
     func doLogin() {
 		if formForRegistration == false {
-			spinning(true)
-			
+			spinning(true)			
 			api.login(txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String, code: String) -> () in
 				self.spinning(false)
 				if(succeeded) {
@@ -88,8 +87,10 @@ class LoginViewController: UIViewController {
 								displayError(error_msg!,self)
 							} else {
 								//When validated: log in
-								self.txtLoginPass.text = error_msg!
-								self.doLogin()
+								dispatch_async(dispatch_get_main_queue(), { () -> Void in
+									self.txtLoginPass.text = error_msg!
+									self.doLogin()
+								})
 							}
 						}
 					} else {
