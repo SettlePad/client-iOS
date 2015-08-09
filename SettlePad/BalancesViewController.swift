@@ -182,7 +182,7 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 			cell.detailTextLabel?.textColor = Colors.success.textToUIColor()
 		}
 
-		//TODO: add indicator for unprocessed memos
+		//TODO: add indicator for memos that are not yet reduced and call it queued
 		
 		
         return cell

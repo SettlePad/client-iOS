@@ -95,7 +95,7 @@ class TransactionsCell: UITableViewCell {
             //processed
             if (transaction.reduced == false) {
                 //not reduced (yet)
-                statusString = ""
+                statusString = "Queued"
             } else {
                 //reduced
                 statusString = ""
