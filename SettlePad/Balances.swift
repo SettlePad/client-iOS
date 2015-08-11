@@ -59,7 +59,7 @@ class Balances {
 											self.balances.append(Balance(contact: contact, currency: currency, balance: balance, unprocessed: unprocessed))
 										} else {
 											//This ID does not exist yet, create it
-											let contact = Contact(id: contactID, name: contactName, friendlyName: contactName, favorite: false, autoAccept: .Manual, identifiers: [], registered: false)
+											let contact = Contact(id: contactID, name: contactName, friendlyName: "", localName: nil, favorite: false, autoAccept: .Manual, identifiers: [], registered: false)
 											contacts.addContact(contact)
 											self.balances.append(Balance(contact: contact, currency: currency, balance: balance, unprocessed: unprocessed))
 										}

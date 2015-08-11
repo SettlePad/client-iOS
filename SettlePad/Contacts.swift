@@ -109,7 +109,7 @@ class Contacts {
 				}
 				
 				if let name = ABRecordCopyCompositeName(person)?.takeRetainedValue() as? String {
-					addContact(Contact(id: nil, name: name, friendlyName: name, favorite: false, autoAccept: .Manual, identifiers: emails, registered: false))
+					addContact(Contact(id: nil, name: name, friendlyName: "", localName: name, favorite: false, autoAccept: .Manual, identifiers: emails, registered: false))
 				}
             }
         }
@@ -194,9 +194,7 @@ class Contacts {
                 for c in contacts {
                     if let i = find(c.identifiers, contact.identifiers[index]) {
                         //replace friendly name
-						if c.friendlyName == "" {
-							c.setFriendlyName(contact.friendlyName,updateServer: false)
-						}
+						c.localName = contact.localName
                         found = true
                     }
                 }

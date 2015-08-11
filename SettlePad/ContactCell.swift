@@ -34,7 +34,7 @@ class ContactCell: UITableViewCell {
 			starImageView.image = UIImage(named: "StarEmpty")
 		}
 		
-		nameLabel.text = contact.friendlyName
+		nameLabel.text = contact.resultingName
 		self.contact = contact
 		if contact.limits.count == 0 {
 			limitIndicator.text = ""

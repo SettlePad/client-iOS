@@ -345,11 +345,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             // Configure the cell...
             let contactIdentifier = matchedContactIdentifiers[indexPath.row]
-			if contactIdentifier.contact.friendlyName != "" {
-				cell.textLabel?.text = contactIdentifier.contact.friendlyName
-			} else {
-				cell.textLabel?.text = contactIdentifier.contact.name
-			}
+			cell.textLabel?.text = contactIdentifier.contact.resultingName
 
             cell.detailTextLabel?.text =  contactIdentifier.identifierStr
             return cell

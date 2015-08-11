@@ -54,13 +54,13 @@ class ContactsViewController: UITableViewController {
 		
 		// put each currency in a section
 		for contact in registeredContacts {
-			let section = self.collation.sectionForObject(contact, collationStringSelector: "friendlyName")
+			let section = self.collation.sectionForObject(contact, collationStringSelector: "resultingName")
 			sections[section].addContact(contact)
 		}
 		
 		// sort each section
 		for section in sections {
-			section.contacts = self.collation.sortedArrayFromArray(section.contacts, collationStringSelector: "friendlyName") as! [Contact]
+			section.contacts = self.collation.sortedArrayFromArray(section.contacts, collationStringSelector: "resultingName") as! [Contact]
 		}
 		
 		self._sections = sections
@@ -119,7 +119,7 @@ class ContactsViewController: UITableViewController {
 			registeredContacts = contacts.registeredContacts
 		} else {
 			let needle = searchBar.text
-			registeredContacts = contacts.registeredContacts.filter{$0.friendlyName.lowercaseString.rangeOfString(needle.lowercaseString) != nil}
+			registeredContacts = contacts.registeredContacts.filter{$0.resultingName.lowercaseString.rangeOfString(needle.lowercaseString) != nil}
 		}
 		
 		dispatch_async(dispatch_get_main_queue(), {

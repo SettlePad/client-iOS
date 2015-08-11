@@ -727,7 +727,9 @@
                             <outlet property="delegate" destination="23g-hl-Ef4" id="u0l-J1-8w7"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Contacts" id="BCS-Cx-dku"/>
+                    <navigationItem key="navigationItem" title="Contacts" id="BCS-Cx-dku">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="YE9-GL-pTW"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="searchBar" destination="IPX-p9-x3E" id="6yj-vC-SVS"/>
                     </connections>

@@ -10,33 +10,15 @@ import Foundation
 
 class Contact: NSObject { //required for sections in viewcontroller with collation
     var id: Int?
-    var name: String
+    var name: String //The name, as set by the contact itself (from the server)
+	var localName: String? //The name, as set in the address book of the user
 	
-	private(set) var autoAccept: AutoAccept
-
-	func setAutoAccept(newValue: AutoAccept, updateServer: Bool) {
-		let oldValue = autoAccept
-		if id != nil && newValue != autoAccept && updateServer {
-			api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"auto_accept", "value":newValue.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-				if(!succeeded) {
-					if let error_msg = data["text"] as? String {
-						println(error_msg)
-					} else {
-						println("Unknown error while setting auto accept")
-					}
-					self.autoAccept = oldValue
-				}
-			}
-		}
-		autoAccept = newValue
-	}
-	
-	private(set) var friendlyName: String
+	private(set) var friendlyName: String //The name, as set by the user (from the server)
 	
 	func setFriendlyName (newValue: String, updateServer: Bool) {
 		let oldValue = friendlyName
 		if id != nil && newValue != friendlyName && updateServer {
-			api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"friendly_name", "value":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			api.request("contacts/"+id!.description, method:"POST", formdata: ["friendly_name":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
 						println(error_msg)
@@ -50,14 +32,43 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		friendlyName = newValue
 	}
 	
-
+	var resultingName: String {
+		get {
+			if friendlyName != "" {
+				return friendlyName
+			} else if localName != nil {
+				return localName!
+			} else {
+				return name
+			}
+		}
+	}
+	
+	private(set) var autoAccept: AutoAccept
+	
+	func setAutoAccept(newValue: AutoAccept, updateServer: Bool) {
+		let oldValue = autoAccept
+		if id != nil && newValue != autoAccept && updateServer {
+			api.request("contacts/"+id!.description, method:"POST", formdata: ["auto_accept":newValue.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+				if(!succeeded) {
+					if let error_msg = data["text"] as? String {
+						println(error_msg)
+					} else {
+						println("Unknown error while setting auto accept")
+					}
+					self.autoAccept = oldValue
+				}
+			}
+		}
+		autoAccept = newValue
+	}
 	
     private(set) var favorite: Bool
 
 	func setFavorite (newValue: Bool, updateServer: Bool) {
 		let oldValue = favorite
 		if id != nil && newValue != favorite && updateServer {
-			api.request("contacts/"+id!.description, method:"POST", formdata: ["field":"favorite", "value":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			api.request("contacts/"+id!.description, method:"POST", formdata: ["favorite":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
 						println(error_msg)
@@ -75,7 +86,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
     private(set) var limits = [Limit]()
     var registered: Bool //Contacts that do not come from the server but from the local address book get false. Of those, a subset will have an account as well, but we cannot know without sharing the whole address book with the server. And that we don't do
     
-	init(id: Int? = nil, name: String, friendlyName: String, favorite: Bool, autoAccept: AutoAccept, identifiers: [String], registered: Bool) {
+	init(id: Int? = nil, name: String, friendlyName: String, localName: String?, favorite: Bool, autoAccept: AutoAccept, identifiers: [String], registered: Bool) {
         self.id = id
         self.name = name
         self.friendlyName = friendlyName
@@ -101,7 +112,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
         if let parsed = fromDict["friendly_name"] as? String {
             self.friendlyName = parsed
         } else {
-            self.friendlyName = self.name
+            self.friendlyName = ""
         }
         
         if let parsed = fromDict["favorite"] as? Int {

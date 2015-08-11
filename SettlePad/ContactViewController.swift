@@ -110,11 +110,8 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
 		
-		if contact.friendlyName != "" {
-			nameText.text = contact.friendlyName
-		} else {
-			nameText.text = contact.name
-		}
+		nameText.text = contact.friendlyName
+
 		nameText.placeholder = contact.name
 		emailsLabel.text = "\r\n".join(contact.identifiers)
 		
