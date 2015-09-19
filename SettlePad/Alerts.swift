@@ -39,7 +39,7 @@ func displayValidationForm(identifierStr: String, viewController: UIViewControll
 	let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
 		verificationStarted()
 		let validationTextField = alertController.textFields![0] 
-		api.verifyIdentifier(identifierStr, token: validationTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+		api.verifyIdentifier(identifierStr, token: validationTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
 				verificationCompleted(succeeded: false, error_msg: error_msg!)
 			} else {
@@ -121,7 +121,7 @@ func displayResetPasswordForm(identifierStr: String, viewController: UIViewContr
 		verificationStarted()
 		let passwordTextField = alertController.textFields![0] 
 		let tokenTextField = alertController.textFields![1] 
-		api.resetPassword(identifierStr, passwordStr: passwordTextField.text, tokenStr: tokenTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+		api.resetPassword(identifierStr, passwordStr: passwordTextField.text!, tokenStr: tokenTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
 				verificationCompleted(succeeded: false, error_msg: error_msg!)
 			} else {

@@ -112,7 +112,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         
         //If not-empty, show suggestions
         if formTo.text != "" {
-            getMatchedContactIdentifiers(formTo.text)
+            getMatchedContactIdentifiers(formTo.text!)
             switchState(.NewUOme)
         } else {
             switchState(.Overview)
@@ -255,7 +255,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             formTo.layer.borderColor = Colors.danger.textToUIColor().CGColor
         */
         
-        if formTo.text.isEmail() {
+        if formTo.text!.isEmail() {
             formTo.backgroundColor = nil
             formTo.textColor = nil
         } else {
@@ -286,7 +286,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             }
         }
         
-        if let parsed = formAmount.text.toDouble() {
+        if let parsed = formAmount.text!.toDouble() {
             formAmount.backgroundColor = nil
             formAmount.textColor = nil
         } else {
@@ -425,15 +425,15 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         if validateForm(false, finalCheck: true) {
             var amount: Double
             if (formType.selectedSegmentIndex == 0) {
-                amount = formAmount.text.toDouble()!
+                amount = formAmount.text!.toDouble()!
             } else {
-                amount = -1*formAmount.text.toDouble()!
+                amount = -1*formAmount.text!.toDouble()!
             }
             
             var transaction = Transaction(
-				counterpart: contacts.getContactByIdentifier(formTo.text),
-				identifier: formTo.text,
-                description: formDescription.text,
+				counterpart: contacts.getContactByIdentifier(formTo.text!),
+				identifier: formTo.text!,
+                description: formDescription.text!,
                 currency: selectedCurrency,
                 amount: amount
             )

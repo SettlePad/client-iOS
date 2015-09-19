@@ -271,7 +271,7 @@ class ContactNameCell: UITableViewCell {
 	
 	@IBOutlet var nameText: UITextField!
     @IBAction func nameEditingDidEnd(sender: UITextField) {
-		contact?.setFriendlyName(sender.text, updateServer: true)
+		contact?.setFriendlyName(sender.text!, updateServer: true)
 		delegate.reloadContent()
     }
 	
@@ -301,7 +301,7 @@ class ContactEmailInputCell: UITableViewCell {
     @IBAction func emailEditingDidEnd(sender: UITextField) {
 
 		if validateInput() {
-			contact?.updateServerIdentifier(emailText.text)
+			contact?.updateServerIdentifier(emailText.text!)
 			delegate.reloadContent()
 			//TODO: add link procedure to contact with in closure, update of text field
 		}
@@ -329,7 +329,7 @@ class ContactEmailInputCell: UITableViewCell {
 	}
 	
 	func validateInput() -> Bool {
-		if emailText.text.isEmail() {
+		if emailText.text!.isEmail() {
 			emailText.backgroundColor = nil
 			emailText.textColor = nil
 			return true

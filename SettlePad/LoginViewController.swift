@@ -51,7 +51,7 @@ class LoginViewController: UIViewController {
     func doLogin() {
 		if formForRegistration == false {
 			spinning(true)			
-			api.login(txtLoginUser.text, password: txtLoginPass.text){ (succeeded: Bool, msg: String, code: String) -> () in
+			api.login(txtLoginUser.text!, password: txtLoginPass.text!){ (succeeded: Bool, msg: String, code: String) -> () in
 				self.spinning(false)
 				if(succeeded) {
 					//Go to next screen (in main view)
@@ -62,12 +62,12 @@ class LoginViewController: UIViewController {
 				} else {
 					if (code == "not_validated" ) {
 						//Show validation form
-						displayValidationForm(self.txtLoginUser.text, self, {() -> () in self.spinning(false)},{}) { (succeeded, error_msg) -> () in
+						displayValidationForm(self.txtLoginUser.text!, viewController: self, verificationCanceled: {() -> () in self.spinning(false)},verificationStarted: {}) { (succeeded, error_msg) -> () in
 							
 							self.spinning(false)
 							
 							if !succeeded {
-								displayError(error_msg!,self)
+								displayError(error_msg!,viewController: self)
 							} else {
 								//When validated: log in
 								self.doLogin()
@@ -75,16 +75,16 @@ class LoginViewController: UIViewController {
 						}
 					} else if (code == "incorrect_credentials" ) {
 						//Offer to reset password
-						displayIncorrectPasswordForm(self.txtLoginUser.text, self, {() -> () in
+						displayIncorrectPasswordForm(self.txtLoginUser.text!, viewController: self, verificationCanceled: {() -> () in
 							//When canceled
 							self.spinning(false)
 							dispatch_async(dispatch_get_main_queue(), { () -> Void in
 								self.txtLoginPass.text = ""
 							})
-						},{}) { (succeeded, error_msg) -> () in
+						},verificationStarted: {}) { (succeeded, error_msg) -> () in
 							//When indeed requested password reset
 							if !succeeded {
-								displayError(error_msg!,self)
+								displayError(error_msg!,viewController: self)
 							} else {
 								//When validated: log in
 								dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -97,7 +97,7 @@ class LoginViewController: UIViewController {
 						dispatch_async(dispatch_get_main_queue(), { () -> Void in
 							self.txtLoginPass.text = ""
 						})
-						displayError(msg, self)
+						displayError(msg, viewController: self)
 					}
 				}
 			}
@@ -111,7 +111,7 @@ class LoginViewController: UIViewController {
 			if validateRegistrationForm(false, finalCheck: true) {
 				spinning(true)
 				
-				api.register(txtLoginName.text, username: txtLoginUser.text, password: txtLoginPass.text, preferredCurrency: preferredCurency){ (succeeded: Bool, error_msg: String?, userID: Int?) -> () in
+				api.register(txtLoginName.text!, username: txtLoginUser.text!, password: txtLoginPass.text!, preferredCurrency: preferredCurency){ (succeeded: Bool, error_msg: String?, userID: Int?) -> () in
 					
 					if(succeeded) {
 						dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -119,12 +119,12 @@ class LoginViewController: UIViewController {
 						})
 							
 						//Show validation form
-						displayValidationForm(self.txtLoginUser.text, self, {() -> () in self.spinning(false)},{}) { (succeeded, error_msg) -> () in
+						displayValidationForm(self.txtLoginUser.text!, viewController: self, verificationCanceled: {() -> () in self.spinning(false)},verificationStarted: {}) { (succeeded, error_msg) -> () in
 							
 							self.spinning(false)
 							
 							if !succeeded {
-								displayError(error_msg!,self)
+								displayError(error_msg!,viewController: self)
 							} else {
 								//When validated: log in
 								self.doLogin()
@@ -133,7 +133,7 @@ class LoginViewController: UIViewController {
 
 					} else {
 						self.spinning(false)
-						displayError(error_msg!, self)
+						displayError(error_msg!, viewController: self)
 					}
 				}
 			}
@@ -269,7 +269,7 @@ class LoginViewController: UIViewController {
 			}
 		}
 		
-		if txtLoginUser.text.isEmail() {
+		if txtLoginUser.text!.isEmail() {
 			txtLoginUser.backgroundColor = nil
 			txtLoginUser.textColor = nil
 		} else {

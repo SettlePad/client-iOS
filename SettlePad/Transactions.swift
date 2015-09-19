@@ -26,12 +26,12 @@ class Transactions {
     
     func clear() {
         transactions = []
-        var nr_of_results = 20
-        var search = ""
-        var newestID = 0
-        var oldestID = 0
-        var lastUpdate = 0
-        var end_reached = false
+        nr_of_results = 20
+        search = ""
+        newestID = 0
+        oldestID = 0
+        lastUpdate = 0
+        end_reached = false
     }
     
     func post(newTransactions: [Transaction], requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
@@ -50,7 +50,7 @@ class Transactions {
         }
 		
 		if (formdataArray.count > 0) {
-			transactions.insertContentsOf(newTransactions, atIndex: 0)
+			transactions.insertContentsOf(newTransactions, at: 0)
 			
 			//Do post. When returned succesfully, replace status with what comes back
 			let url = "memo/send/"

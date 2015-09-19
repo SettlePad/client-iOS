@@ -131,7 +131,7 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 			serverContacts = contacts.serverContacts
 		} else {
 			let needle = searchBar.text
-			serverContacts = contacts.serverContacts.filter{$0.resultingName.lowercaseString.rangeOfString(needle.lowercaseString) != nil}
+			serverContacts = contacts.serverContacts.filter{$0.resultingName.lowercaseString.rangeOfString(needle!.lowercaseString) != nil}
 		}
 		
 		dispatch_async(dispatch_get_main_queue(), {

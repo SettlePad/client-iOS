@@ -152,9 +152,9 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 		
 		if let currencySummary =  balances.getSummaryForCurrency(currency) {
 			if currencySummary.balance < 0 {
-				headerView.textLabel.textColor = Colors.gray.textToUIColor()
+				headerView.textLabel!.textColor = Colors.gray.textToUIColor()
 			} else {
-				headerView.textLabel.textColor = Colors.success.textToUIColor()
+				headerView.textLabel!.textColor = Colors.success.textToUIColor()
 			}
 		}
 		

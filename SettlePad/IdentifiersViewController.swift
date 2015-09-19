@@ -223,9 +223,9 @@ class IdentifiersViewController: UITableViewController {
         
         let changeAction = UIAlertAction(title: "Change", style: .Default) { (action) in
             let firstPasswordTextField = alertController.textFields![0] 
-            user!.changePassword(identifier, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+            user!.changePassword(identifier, password: firstPasswordTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
-                    displayError(error_msg!,self)
+                    displayError(error_msg!,viewController: self)
                 }
             }
         }
@@ -279,9 +279,9 @@ class IdentifiersViewController: UITableViewController {
             let emailTextField = alertController.textFields![0] 
             let firstPasswordTextField = alertController.textFields![1] 
 			
-            user!.addIdentifier(emailTextField.text, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+            user!.addIdentifier(emailTextField.text!, password: firstPasswordTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
-                    displayError(error_msg!,self)
+					displayError(error_msg!,viewController: self)
 				}
 				dispatch_async(dispatch_get_main_queue(), {
 					self.tableView.reloadData()
@@ -333,7 +333,7 @@ class IdentifiersViewController: UITableViewController {
         let secondPasswordTextField = alertController.textFields![2] 
         
         (alertController.actions[1] as! UIAlertAction).enabled = (
-            emailTextField.text.isEmail() &&
+            emailTextField.text!.isEmail() &&
             firstPasswordTextField.text != "" &&
             firstPasswordTextField.text == secondPasswordTextField.text
         )
@@ -353,7 +353,7 @@ class IdentifiersViewController: UITableViewController {
 				//verificationCompleted
 				identifier.pending = false
 				if !succeeded {
-					displayError(error_msg!,self)
+					displayError(error_msg!,viewController: self)
 				} else {
 					identifier.verified = true
 				}

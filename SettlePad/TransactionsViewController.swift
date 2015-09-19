@@ -261,13 +261,13 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         //println("searched")
         
         //get new results
-        transactions.get(searchBar.text){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+        transactions.get(searchBar.text!){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
 			dispatch_async(dispatch_get_main_queue(), {
 				//so it is run now, instead of at the end of code execution
 				self.reload_transactions()
 			})
 			if (!succeeded) {
-                displayError(error_msg!, self)
+                displayError(error_msg!, viewController: self)
             }
         }
         

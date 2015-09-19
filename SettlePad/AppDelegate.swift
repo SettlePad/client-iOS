@@ -73,7 +73,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	func setBadgeNumber(number: Int) {
 		if UIDevice.currentDevice().systemVersion.compare("8.0",
 			options: NSStringCompareOptions.NumericSearch) != NSComparisonResult.OrderedAscending {
-				if UIApplication.sharedApplication().currentUserNotificationSettings().types.intersect(UIUserNotificationType.Badge) != [] {
+				if UIApplication.sharedApplication().currentUserNotificationSettings()!.types.intersect(UIUserNotificationType.Badge) != [] {
 					UIApplication.sharedApplication().applicationIconBadgeNumber = number
 				//} else {
 				//	println("No permission to set badge number")
