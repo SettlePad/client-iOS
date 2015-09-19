@@ -27,7 +27,6 @@ class APIController {
 				if user != nil {
 					contacts.updateContacts { (succeeded: Bool, error_msg: String?) -> () in
 						loginCompleted(succeeded: true, msg: user!.name, code:"")
-						contacts.updateAutoLimits(){}
 					}
 					
 				} else {

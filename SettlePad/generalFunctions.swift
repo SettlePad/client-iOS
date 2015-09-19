@@ -39,6 +39,14 @@ extension String {
     }
 }
 
+extension UIViewController {
+	func isModal() -> Bool {
+		return (self.presentingViewController?.presentedViewController == self
+			|| (self.navigationController != nil && self.navigationController?.presentingViewController?.presentedViewController == self.navigationController)
+			|| self.tabBarController?.presentingViewController is UITabBarController)
+	}
+}
+
 //Define colors
 enum Colors {
     case primary
@@ -74,6 +82,13 @@ enum AutoAccept: Int {
 	case Manual = 0
 	case UpToDefinedLimit = 1
 	case Auto = 2
+}
+
+//Server presence
+enum ServerPresence: Int {
+	case No = 0
+	case Pending = 1
+	case Yes = 2
 }
 
 class PickerButton: UIButton {

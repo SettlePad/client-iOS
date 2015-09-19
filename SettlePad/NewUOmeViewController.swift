@@ -30,7 +30,6 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         if state == .Overview {
 			//TODO: save draft memo's so that they remain after the app is terminated (via Transactions class, in CoreData, see http://www.raywenderlich.com/85578/first-core-data-app-using-swift)
 			self.dismissViewControllerAnimated(true, completion: nil)
-			
         } else {
             formTo.text = ""
             switchState(.Overview)
@@ -209,8 +208,6 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        //newUOmeTableView.rowHeight = UITableViewAutomaticDimension
-        
         switchState(.Overview)
         
         addressBookFooter.footerUpdated = {(sender) in
@@ -338,6 +335,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             // Configure the cell...
             cell.markup(newTransactions[indexPath.row])
+			cell.layoutIfNeeded() //to get right layout given dynamic height
+			//TODO: fix errors on conflicting constraints
             return cell
         } else {
             //show contacts
@@ -348,7 +347,9 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 			cell.textLabel?.text = contactIdentifier.contact.resultingName
 
             cell.detailTextLabel?.text =  contactIdentifier.identifierStr
-            return cell
+			cell.layoutIfNeeded() //to get right layout given dynamic height
+			//TODO: fix errors on conflicting constraints
+			return cell
         }
     }
 
@@ -395,8 +396,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        //Required to have dynamic row height
-        newUOmeTableView.estimatedRowHeight = 70
+		//Set cell height to dynamic. Note that it also requires a cell.layoutIfNeeded in cellForRowAtIndexPath!
+		newUOmeTableView.estimatedRowHeight = 70
         newUOmeTableView.rowHeight = UITableViewAutomaticDimension
     }
     

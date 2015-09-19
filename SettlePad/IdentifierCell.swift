@@ -9,7 +9,8 @@
 import UIKit
 
 class IdentifierCell: UITableViewCell {
-
+	//TODO: move into viewcontrollers
+	
 	@IBOutlet var identifierLabel: UILabel!
 	@IBOutlet var verificationLabel: UILabel!
 	@IBOutlet var processingSpinner: UIActivityIndicatorView!

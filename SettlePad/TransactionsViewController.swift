@@ -98,7 +98,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		
-		//Set cell height to dynamic
+		//Set cell height to dynamic. Note that it also requires a cell.layoutIfNeeded in cellForRowAtIndexPath!
 		transactionsTableView.rowHeight = UITableViewAutomaticDimension
 		transactionsTableView.estimatedRowHeight = 40
 	}
@@ -128,7 +128,8 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         if let transaction = transactions.getTransaction(indexPath.row)  {
             cell.markup(transaction)
         }
-        
+		cell.layoutIfNeeded() //to get right layout given dynamic height
+		//TODO: fix errors on conflicting constraints
         return cell
     }
     

@@ -11,6 +11,7 @@
 import UIKit
 
 class NewUOmeAddressBook: UIView {
+	
     typealias footerUpdatedDelegate = (NewUOmeAddressBook) -> ()
     var footerUpdated: footerUpdatedDelegate?
     

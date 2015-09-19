@@ -2,154 +2,52 @@
 //  ContactViewController.swift
 //  SettlePad
 //
-//  Created by Rob Everhardt on 05/05/15.
+//  Created by Rob Everhardt on 11/08/15.
 //  Copyright (c) 2015 SettlePad. All rights reserved.
 //
 
-// See http://www.nomtek.com/working-with-pickers/
-
 import UIKit
 
-class ContactViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource {
+protocol ContactViewControllerDelegate {
+	func reloadContent()
+}
+
+class ContactViewController: UITableViewController, ContactViewControllerDelegate {
+	func reloadContent() {
+		self.title = contact.resultingName
+		self.tableView.reloadData()
+	}
 	
 	var contact:Contact! = nil
 	
-	@IBOutlet var nameText: UITextField!
-	@IBOutlet var emailsLabel: UILabel!
-	@IBOutlet var limitsTable: UITableView!
-    @IBOutlet var autoAcceptSegment: UISegmentedControl!
-    @IBOutlet var starImageView: UIImageView!
-    @IBOutlet var limitLimitText: UITextField!
-	@IBOutlet var limitCurrencyButton: PickerButton!
-    @IBOutlet var limitNotesLabel: UILabel!
-    @IBOutlet var limitAddButton: UIButton!
-    @IBAction func limitCurrencyButtonAction(sender: PickerButton) {
-		sender.becomeFirstResponder()
-	}
-	
-    @IBAction func limitLimitEditingChanged(sender: AnyObject) {
-		checkLimitForm(false, whileEditing: true)
-    }
-	
-    @IBAction func nameTextEditingDidEnd(sender: AnyObject) {
-        contact.setFriendlyName(nameText.text, updateServer: true)
-    }
-	
-    @IBAction func viewTapped(sender: AnyObject) {
-        view.endEditing(true)
-    }
-    
-    @IBAction func starTapGestureRecognizer(sender: AnyObject) {
-        //Determine the rowindex via the touch point
-        contact.setFavorite(!contact.favorite, updateServer: true)
-		dispatch_async(dispatch_get_main_queue(), {
-			self.updateStar()
-		})
-    }
-	
-	@IBAction func addLimitButton(sender: AnyObject) {
-		if checkLimitForm(true, whileEditing: false) {
-			contact.addLimit(selectedCurrency, limit: limitLimitText.text.toDouble()!, updateServer: true)
-			dispatch_async(dispatch_get_main_queue(), {
-				self.limitsTable.reloadData()
-				self.limitLimitText.text = ""
-			})
-		}
-	}
-	
+	var delegate:ContactsViewControllerDelegate! = nil
 
-    @IBAction func autoAcceptValueChanged(sender: AnyObject) {
-        if let autoAccept = AutoAccept(rawValue: autoAcceptSegment.selectedSegmentIndex) {
-            contact.setAutoAccept(autoAccept, updateServer: true)
-			renderLimitTable()
-		}
-    }
-
-	func renderLimitTable() {
-		if contact.autoAccept == .UpToDefinedLimit {
-			limitsTable.hidden = false
-			limitCurrencyButton.hidden = false
-			limitLimitText.hidden = false
-			limitNotesLabel.hidden = false
-			limitAddButton.hidden = false
-		} else {
-			limitsTable.hidden = true
-			limitCurrencyButton.hidden = true
-			limitLimitText.hidden = true
-			limitNotesLabel.hidden = true
-			limitAddButton.hidden = true
-		}
-	}
-	
-	var sortedCurrencies: [Currency] = []
-	var selectedCurrency: Currency = Currency.EUR
-	
-	override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-		
-		//Kill inset
-		// iOS 7:
-		limitsTable.separatorStyle = .SingleLine
-		limitsTable.separatorInset = UIEdgeInsetsZero
-		
-		// iOS 8:
-		if UITableView.instancesRespondToSelector("setLayoutMargins:") {
-			limitsTable.layoutMargins = UIEdgeInsetsZero
-		}
-		
-		limitsTable.layoutIfNeeded()
-		
-	}
-	
+    @IBOutlet var saveBarButton: UIBarButtonItem! //Should only be used on modal presentation
+    @IBOutlet var cancelBarButton: UIBarButtonItem! //Should only be used on modal presentation
     override func viewDidLoad() {
         super.viewDidLoad()
-		
+
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-		
-		nameText.text = contact.friendlyName
-
-		nameText.placeholder = contact.name
-		emailsLabel.text = "\r\n".join(contact.identifiers)
-		
-		autoAcceptSegment.selectedSegmentIndex = contact.autoAccept.rawValue
-			
-		//Sort currencies
-		sortedCurrencies = Currency.allValues.sorted({(left: Currency, right: Currency) -> Bool in left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
-		
-		//Link currency picker to delegate and datasource functions below
-		limitCurrencyButton.modInputView.dataSource = self
-		limitCurrencyButton.modInputView.delegate = self
-		
-		//Set currency picker to user's default currency
-		let row: Int? = find(sortedCurrencies,user!.defaultCurrency)
-		if row != nil {
-			limitCurrencyButton.modInputView.selectRow(row!, inComponent: 0, animated: false)
-			selectedCurrency = user!.defaultCurrency
-			limitCurrencyButton.setTitle(user!.defaultCurrency.rawValue, forState: UIControlState.Normal)
+		if(!self.isModal()) {
+			//Pushed from contact list, so use back button instead of configured "Save" and "Cancel"
+			self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem
+			self.navigationItem.rightBarButtonItem = nil
 		}
-		
-		
-		//Hide additional gridlines
-		limitsTable.tableFooterView = UIView(frame:CGRectZero)
+    }
 
-
-	}
-	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 
-		//Set cell height to dynamic
-		limitsTable.rowHeight = UITableViewAutomaticDimension
-		limitsTable.estimatedRowHeight = 40
+		//Set cell height to dynamic. Note that it also requires a cell.layoutIfNeeded in cellForRowAtIndexPath!
+		self.tableView.estimatedRowHeight = 140.0
+		self.tableView.rowHeight = UITableViewAutomaticDimension
 
-		updateStar()
-		renderLimitTable()
+		reloadContent()
 	}
-
+	
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -157,127 +55,198 @@ class ContactViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     // MARK: - Table view data source
 
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Potentially incomplete method implementation.
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Return the number of sections.
-        return 1
-    }
-
-	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete method implementation.
-        // Return the number of rows in the section.
-        return contact.limits.count
-    }
-
-	
-	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("limitCell", forIndexPath: indexPath) as! LimitCell
-		
-		// Configure the cell...
-		let limit = contact.limits[indexPath.row] as Limit
-		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
-		cell.limitLabel.text = limit.currency.rawValue + " " + limit.limit.format(doubleFormat)
-		//cell.backgroundColor = Colors.danger.backgroundToUIColor()
-        return cell
+        return 5
     }
 	
-	//To kill the inset
-	func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-
-		// iOS 7:
-		cell.separatorInset = UIEdgeInsetsZero
-		
-		// iOS 8:
-		if UITableView.instancesRespondToSelector("setLayoutMargins:") {
-			limitsTable.layoutMargins = UIEdgeInsetsZero
-			cell.layoutMargins = UIEdgeInsetsZero
-			cell.preservesSuperviewLayoutMargins = false
-		}
-		
-
-	}
-	
-	func updateStar() {
-		if self.contact.favorite {
-			self.starImageView.image = UIImage(named: "StarFull")
+	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+		if section == 0 {
+			return "Name"
+		} else if section == 1 {
+			return "Email address(es)"
+		} else if section == 2 {
+			return "Balance allocation"
+		} else if section == 3 {
+			return "Acceptance of incoming memos"
 		} else {
-			self.starImageView.image = UIImage(named: "StarEmpty")
+			return nil
 		}
+		
 	}
+
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // Return the number of rows in the section.
+		if section == 0 {
+			//Name
+			return 1
+		} else if section == 1 {
+			//Identifier(s)
+			if contact.id != nil {
+				return contact.identifiers.count //number of email addresses
+			} else {
+				return 1
+			}
+		} else if section == 2 {
+			//Defaulter
+			return 1
+		} else if section == 3 {
+			//Auto acceptance
+			if contact.autoAccept == .UpToDefinedLimit {
+				return 2 //setting + limits bar
+			} else {
+				return 1 //setting
+			}
+		} else {
+			return 1 //delete
+		}
+    }
+
+	
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+		if indexPath.section == 0 {
+			//name
+			let cell = tableView.dequeueReusableCellWithIdentifier("Name", forIndexPath: indexPath) as! ContactNameCell
+			cell.markup(self, contact: contact)
+			return cell
+		} else if indexPath.section == 1 {
+			//identifier(s)
+			if contact.id != nil {
+				let cell = tableView.dequeueReusableCellWithIdentifier("EmailFixed", forIndexPath: indexPath) as! UITableViewCell
+				cell.textLabel?.text = contact.identifiers[indexPath.row]
+				return cell
+			} else {
+				let cell = tableView.dequeueReusableCellWithIdentifier("EmailInput", forIndexPath: indexPath) as! ContactEmailInputCell
+				cell.markup(self, contact: contact)
+				return cell
+			}
+		} else if indexPath.section == 2 {
+			//Defaulter
+			let cell = tableView.dequeueReusableCellWithIdentifier("Status", forIndexPath: indexPath) as! ContactDefaulterCell
+			cell.markup(contact)
+			cell.layoutIfNeeded() //to get right layout given dynamic height
+			//TODO: fix errors on conflicting constraints
+			return cell
+		} else if indexPath.section == 3 {
+			//Auto acceptance
+			if indexPath.row == 0 {
+				let cell = tableView.dequeueReusableCellWithIdentifier("Autoacceptance", forIndexPath: indexPath) as! UITableViewCell
+				if contact.autoAccept == .Manual {
+					cell.detailTextLabel?.text = "None"
+				} else if contact.autoAccept ==  .UpToDefinedLimit {
+					cell.detailTextLabel?.text = "Up to limit"
+				} else {
+					//Automatic
+					cell.detailTextLabel?.text = "All"
+				}
+				return cell
+			} else {
+				let cell = tableView.dequeueReusableCellWithIdentifier("Limits", forIndexPath: indexPath) as! UITableViewCell
+				cell.detailTextLabel?.text = contact.limits.count.description
+				return cell
+			}
+		} else {
+			let cell = tableView.dequeueReusableCellWithIdentifier("Delete", forIndexPath: indexPath) as! UITableViewCell
+			return cell
+		}
+		
+    }
+	
+
 	
     // Override to support conditional editing of the table view.
-	func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the specified item to be editable.
+		return false
+    }
+	
+
+	/*
+    // Override to support editing the table view.
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+
+	}
+	*/
+
+    /*
+    // Override to support rearranging the table view.
+    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
+
+    }
+    */
+
+    /*
+    // Override to support conditional rearranging of the table view.
+    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        // Return NO if you do not want the item to be re-orderable.
         return true
     }
-	
+    */
 
 	
-    // Override to support editing the table view.
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            // Delete the row from the data source
-			let limit = contact.limits[indexPath.row] as Limit
-			contact.removeLimit(limit.currency, updateServer: true)
-			tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        }
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+		if segue.identifier == "autoacceptance" {
+			//make sure that the segue is going to secondViewController
+			let destVC = segue.destinationViewController as! AcceptMemosViewController
+			destVC.contact = contact
+		} else if segue.identifier == "limits" {
+			//make sure that the segue is going to secondViewController
+			let destVC = segue.destinationViewController as! LimitsViewController
+			destVC.contact = contact
+		}
     }
-	
 
-	
-	// Currency picker delegate
-	func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int
-	{
-		return 1;
-	}
-	
-	func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int
-	{
-		return sortedCurrencies.count;
-	}
-	
-	func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String
-	{
-		return sortedCurrencies[row].toLongName()
-	}
-	
-	func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
-	{
-		limitCurrencyButton.setTitle(sortedCurrencies[row].rawValue, forState: UIControlState.Normal)
-		selectedCurrency = sortedCurrencies[row]
-	}
-	
-	func donePicker () {
-		limitCurrencyButton.resignFirstResponder()
-	}
-	
-	func checkLimitForm(finalCheck: Bool, whileEditing: Bool) -> Bool {
-		var isValid = true
-		var hasGivenFirstResponder = false
-		let parsed = limitLimitText.text.toDouble()
-		if parsed != nil && parsed >= 0 {
-			limitLimitText.backgroundColor = nil
-			limitLimitText.textColor = nil
-		} else {
-			isValid = false
-			if finalCheck || (limitLimitText.text != "" && !whileEditing) {
-				limitLimitText.backgroundColor = Colors.danger.backgroundToUIColor()
-				limitLimitText.textColor = Colors.danger.textToUIColor()
-				if (!hasGivenFirstResponder && finalCheck) {
-					limitLimitText.becomeFirstResponder()
-					hasGivenFirstResponder = true
-				}
+    @IBAction func cancelContact(sender: AnyObject) {
+		self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    @IBAction func saveContact(sender: AnyObject) {
+		self.tableView.endEditing(false) //When editing a textbox when the button is pressed, we first want to process the changes of the textbox, before processing the button press
+		contacts.addContactToServer(contact) { (succeeded: Bool, error_msg: String?) -> () in
+			if !succeeded {
+				self.delegate.reloadContent(error_msg!)
+			} else {
+				self.delegate.reloadContent(nil) //Refresh the contact list in the contacts viewController, so that the spinner for the saved contact is gone
 			}
 		}
-		return isValid
-	}
+		self.dismissViewControllerAnimated(true, completion: nil)
 
+    }
+	
+    @IBAction func deleteContact(sender: AnyObject) {
+		//TODO: add unlink procedure to contact
+		//show Action sheet
+		let actionSheetController: UIAlertController = UIAlertController(title: "Are you sure you want to delete this connection?", message: "New memos from this contract are treated as if received from a stranger.", preferredStyle: .Alert)
+		
+		let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
+			//Just dismiss the action sheet
+		}
+		actionSheetController.addAction(cancelAction)
+		
+		let deleteAction: UIAlertAction = UIAlertAction(title: "Delete", style: .Destructive) { action -> Void in
+			self.contact.deleteContact()
+			self.navigationController?.popViewControllerAnimated(true)
+		}
+		actionSheetController.addAction(deleteAction)
+		
+		
+		//Present the AlertController
+		self.presentViewController(actionSheetController, animated: true, completion: nil)
+
+    }
 }
 
-class LimitCell: UITableViewCell {
+class ContactDefaulterCell: UITableViewCell {
+	var contact: Contact?
+
+	@IBOutlet var defaulterSwitch: UISwitch!
+    @IBAction func defaulterChanged(sender: UISwitch) {
+        contact?.setFavorite(!sender.on, updateServer: true)
+    }
 	
-	
-	@IBOutlet var limitLabel: UILabel!
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		// Initialization code
@@ -287,6 +256,88 @@ class LimitCell: UITableViewCell {
 		super.setSelected(selected, animated: animated)
 		
 		// Configure the view for the selected state
+	}
+	
+	
+	func markup(contact: Contact){
+		self.contact = contact
+		defaulterSwitch.on = !contact.favorite
+	}
+}
+
+class ContactNameCell: UITableViewCell {
+	var delegate:ContactViewControllerDelegate! = nil
+	var contact: Contact?
+	
+	@IBOutlet var nameText: UITextField!
+    @IBAction func nameEditingDidEnd(sender: UITextField) {
+		contact?.setFriendlyName(sender.text, updateServer: true)
+		delegate.reloadContent()
+    }
+	
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		// Initialization code
+	}
+	
+	override func setSelected(selected: Bool, animated: Bool) {
+		super.setSelected(selected, animated: animated)
+		
+		// Configure the view for the selected state
+	}
+	
+	func markup(delegate: ContactViewControllerDelegate, contact: Contact){
+		self.delegate = delegate
+		self.contact = contact
+		nameText.text = contact.resultingName
+	}
+}
+
+class ContactEmailInputCell: UITableViewCell {
+	var delegate:ContactViewControllerDelegate! = nil
+	var contact: Contact?
+	
+    @IBOutlet var emailText: UITextField!
+    @IBAction func emailEditingDidEnd(sender: UITextField) {
+
+		if validateInput() {
+			contact?.updateServerIdentifier(emailText.text)
+			delegate.reloadContent()
+			//TODO: add link procedure to contact with in closure, update of text field
+		}
+    }
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		// Initialization code
+	}
+	
+	override func setSelected(selected: Bool, animated: Bool) {
+		super.setSelected(selected, animated: animated)
+		
+		// Configure the view for the selected state
+	}
+	
+	func markup(delegate: ContactViewControllerDelegate, contact: Contact){
+		self.delegate = delegate
+		self.contact = contact
+		if contact.identifiers.count > 0 {
+			emailText.text = contact.identifiers[0]
+			validateInput()
+		} else {
+			emailText.text = ""
+		}
+	}
+	
+	func validateInput() -> Bool {
+		if emailText.text.isEmail() {
+			emailText.backgroundColor = nil
+			emailText.textColor = nil
+			return true
+		} else {
+			emailText.backgroundColor = Colors.danger.backgroundToUIColor()
+			emailText.textColor = Colors.danger.textToUIColor()
+			return false
+		}
 	}
 }
 

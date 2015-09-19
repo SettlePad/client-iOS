@@ -107,20 +107,13 @@ class Transaction {
 		
 		if let
 			counterpartID = fromDict["counterpart_id"] as? Int,
-			counterpartName = fromDict["counterpart_name"] as? String,
-			registeredInt = fromDict["recipient_registered"] as? Int
+			counterpartName = fromDict["counterpart_name"] as? String
 		{
 			if let contact = contacts.getContactByID(counterpartID) {
 				counterpart = contact
 			} else {
-				var recipientRegistered: Bool
-				if (registeredInt == 1) {
-					recipientRegistered = true
-				} else {
-					recipientRegistered = false
-				}
-				let contact = Contact(id: counterpartID, name: counterpartName, friendlyName: "", localName: nil, favorite: false, autoAccept: .Manual, identifiers: [], registered: recipientRegistered)
-				contacts.addContact(contact)
+				let contact = Contact(id: counterpartID, name: counterpartName, friendlyName: "", localName: nil, favorite: false, autoAccept: .Manual, identifiers: [], serverContact: .No) //TODO: there should be an identifier here
+				contacts.addContactToList(contact, updateIdentifiers: true)
 				counterpart = contact
 			}
 		} else {

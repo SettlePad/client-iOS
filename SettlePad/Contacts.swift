@@ -15,9 +15,15 @@ class Contacts {
     private(set) var contacts = [Contact]()
 	private var contactsUpdating: Bool = false
 	
-    var registeredContacts : [Contact] {
+    var serverContacts : [Contact] {
         get {
-            return contacts.filter { $0.registered}
+            return contacts.filter {
+				if $0.serverContact == .Yes || $0.serverContact == .Pending {
+					return true
+				} else {
+					return false
+				}
+			}
         }
     }
     var favoriteContacts : [Contact] {
@@ -56,8 +62,6 @@ class Contacts {
 						self.updateLocalContacts(addressBook)
 					}
 				}
-
-				self.updateIdentifiers()
 				self.contactsUpdating = false
 				requestCompleted(succeeded: succeeded, error_msg: error_msg)
 			}
@@ -75,16 +79,12 @@ class Contacts {
 					requestCompleted(succeeded: false,error_msg: "Unknown error while refreshing contacts")
                 }
             } else {
-
                 self.contacts = []
-                if let contacts = data["data"] as? Dictionary <String, Dictionary <String, AnyObject> > {
-                    for (keyString,contactDict) in contacts {
-                        //if let contactDict = contactObj as? NSDictionary {
-                            self.addContact(Contact(fromDict: contactDict, registered: true))
-                        //} else {
-                            //println("Cannot parse contact as dictionary")
-                        //}
+                if let contacts = data["data"] as? [Dictionary <String, AnyObject>] {
+                    for contactDict in contacts {
+						self.addContactToList(Contact(fromDict: contactDict, serverContact: .Yes), updateIdentifiers: false)
                     }
+					self.updateIdentifiers()
                 } else {
                     //no contacts, which is fine
                 }
@@ -109,47 +109,13 @@ class Contacts {
 				}
 				
 				if let name = ABRecordCopyCompositeName(person)?.takeRetainedValue() as? String {
-					addContact(Contact(id: nil, name: name, friendlyName: "", localName: name, favorite: false, autoAccept: .Manual, identifiers: emails, registered: false))
+					addContactToList(Contact(id: nil, name: name, friendlyName: "", localName: name, favorite: false, autoAccept: .Manual, identifiers: emails, serverContact: .No), updateIdentifiers: false)
 				}
             }
+			self.updateIdentifiers()
         }
     }
-	
-	func updateAutoLimits(requestCompleted : () -> ()) {
-		api.request("autolimits", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(!succeeded) {
-				if let error_msg = data["text"] as? String {
-					println(error_msg)
-				} else {
-					println("Unknown error while refreshing autolimits")
-				}
-			} else {
-				if let contactsLimits = data["data"] as? Dictionary <String, Dictionary <String, Double> > {
-					for (contactID,contactLimits) in contactsLimits {
-						for (currencyString,limitDouble) in contactLimits {
-							if let currency = Currency(rawValue: currencyString) {
-								if let contactIDInt = contactID.toInt() {
-									if let contact = self.getContactByID(contactIDInt) {
-										contact.addLimit(currency, limit: limitDouble, updateServer: false)
-									} else {
-										println("Contact with ID not found: "+contactID)
-									}
-								} else {
-									println("Contact ID no Int: "+contactID)
-								}
-							} else {
-								println("Unknown currency: "+currencyString)
-							}
-						}
-					}
-				//} else {
-					//println("Cannot parse limit as dictionary, might be that there are no limits")
-				}
-			}
-			requestCompleted()
-		}
-	}
-	
+		
     private func updateIdentifiers() {
         //update sorted list of identifiers
         contactIdentifiers.removeAll()
@@ -184,13 +150,16 @@ class Contacts {
         }
     }
     
-    func addContact(contact: Contact) {
-        if contact.id == nil {
+	func addContactToList(contact: Contact, updateIdentifiers: Bool) {
+		//TODO: this function should be rethought! Its messed up, when adding and removing server contacts
+		
+        if contact.serverContact == .No {
 			//Local contact
             //Check whether identifier already exists on a contact with an id. If so, only replace friendly name if that is not set. Only add if that is not the case.
             for index in stride(from: contact.identifiers.count - 1, through: 0, by: -1) {
                 //Check whether identifier is present already
                 var found = false
+				
                 for c in contacts {
                     if let i = find(c.identifiers, contact.identifiers[index]) {
                         //replace friendly name
@@ -208,22 +177,96 @@ class Contacts {
                 contacts.append(contact)
             }
         } else {
+			//TODO: this function overwrites local contacts. Should split it into two variables?
 			//data must come directly from server
-			if let existingContact = self.getContactByID(contact.id!) {
+			var existingContact: Contact? = nil
+			if contact.id != nil {
+				existingContact = self.getContactByID(contact.id!)
+			} else {
+				existingContact = self.getContactByIdentifier(contact.identifiers[0])
+			}
+			if existingContact != nil {
 				//update
-				existingContact.name = contact.name
+				existingContact!.name = contact.name
 				if contact.friendlyName != "" {
-					existingContact.setFriendlyName(contact.friendlyName, updateServer: false)
+					existingContact!.setFriendlyName(contact.friendlyName, updateServer: false)
 				}
-				existingContact.identifiers = contact.identifiers
-				existingContact.setFavorite(contact.favorite, updateServer: false)
-				existingContact.setAutoAccept(contact.autoAccept, updateServer: false)
+				existingContact!.identifiers = contact.identifiers
+				existingContact!.setFavorite(contact.favorite, updateServer: false)
+				existingContact!.setAutoAccept(contact.autoAccept, updateServer: false)
 			} else {
 				contacts.append(contact)
 			}
         }
+		//Only update identifiers when just one contact is added. Otherwise, run it after adding all
+		if (updateIdentifiers) {
+			self.updateIdentifiers()
+		}
     }
-    
+	
+	func addContactToServer(contact: Contact, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		if contact.id != nil || contact.identifiers.count > 0 {
+			var url: String
+			if contact.id != nil {
+				url = "contacts/"+contact.id!.description
+			} else {
+				url = "contacts/"+contact.identifiers[0]
+			}
+			contact.serverContact = .Pending
+			self.addContactToList(contact, updateIdentifiers: true)
+			api.request(url, method:"POST", formdata: contact.toDict(), secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+				if(succeeded) {
+					contact.serverContact = .Yes
+					if let userID = data["id"] as? Int {
+						contact.id = userID
+					}
+					self.addContactToList(contact, updateIdentifiers: true)
+					requestCompleted(succeeded: true,error_msg: nil)
+				} else {
+					if let error_msg = data["text"] as? String {
+						requestCompleted(succeeded: false,error_msg: error_msg)
+					} else {
+						requestCompleted(succeeded: false,error_msg: "Unknown error while adding contact")
+					}
+				}
+			}
+		}
+	}
+	
+	func deleteContact(contact:Contact) {
+		var row: Int?
+		for (index,c) in enumerate(contacts) {
+			if c == contact {
+				row = index
+			}
+		}
+		if row != nil {
+			var old_contact = contact
+			contacts.removeAtIndex(row!)
+			self.updateIdentifiers()
+			if contact.id != nil || contact.identifiers.count > 0 {
+				var url: String
+				if contact.id != nil {
+					url = "contacts/"+contact.id!.description
+				} else {
+					url = "contacts/"+contact.identifiers[0]
+				}
+				api.request(url, method:"POST", formdata: ["identifier":""], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+					if(!succeeded) {
+						if let error_msg = data["text"] as? String {
+							println(error_msg)
+						} else {
+							println("Unknown error while removing contact")
+						}
+						
+						//roll back removal
+						self.addContactToList(contact, updateIdentifiers: true)
+					}
+				}
+			}
+		}
+	}
+	
     func clear() {
         contacts = []
         contactIdentifiers = []
