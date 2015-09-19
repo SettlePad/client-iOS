@@ -279,8 +279,9 @@
 		54F9EA391A0831D7009DC930 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0700;
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = SettlePad;
 				TargetAttributes = {
 					54F9EA401A0831D7009DC930 = {
@@ -430,6 +431,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -494,6 +496,7 @@
 				INFOPLIST_FILE = SettlePad/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "SettlePad.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SettlePad;
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "SettlePad/SettlePad-Bridging-Header.h";
@@ -508,6 +511,7 @@
 				INFOPLIST_FILE = SettlePad/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "SettlePad.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SettlePad;
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "SettlePad/SettlePad-Bridging-Header.h";
@@ -531,6 +535,7 @@
 				);
 				INFOPLIST_FILE = SettlePadTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "SettlePad.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SettlePadTests;
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SettlePad.app/SettlePad";
@@ -549,6 +554,7 @@
 				);
 				INFOPLIST_FILE = SettlePadTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "SettlePad.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SettlePadTests;
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SettlePad.app/SettlePad";

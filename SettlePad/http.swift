@@ -127,9 +127,9 @@ class APIController {
 			//println(data)
 			if(!succeeded) {
 				if let error_msg = data["text"] as? String {
-					println(error_msg)
+					print(error_msg)
 				} else {
-					println("Unknown error while logging out")
+					print("Unknown error while logging out")
 				}
 			}
 		}
@@ -149,10 +149,10 @@ class APIController {
 	func request(url : String, method: String, formdata : AnyObject?, secure: Bool, requestCompleted : (succeeded: Bool, data: NSDictionary) -> ()) -> NSURLSessionDataTask? {
 		
 		var proceedRequest = true
-		var server = settingsDictionary!["server"]! as! String
+		let server = settingsDictionary!["server"]! as! String
 
-		var request = NSMutableURLRequest(URL: NSURL(string: server+url)!)
-        var session = NSURLSession.sharedSession()
+		let request = NSMutableURLRequest(URL: NSURL(string: server+url)!)
+        let session = NSURLSession.sharedSession()
 
 		let timestamp = "\(Int(NSDate().timeIntervalSince1970))"
 		request.setValue(timestamp, forHTTPHeaderField: "X-TIME")
@@ -190,69 +190,71 @@ class APIController {
 		
 		
 		if (proceedRequest) {
-			var err: NSError?
-			var task = session.dataTaskWithRequest(request, completionHandler:{(data : NSData!, response : NSURLResponse!, error : NSError!) in
-		
-				
-				//println("Response: \(response)")
-				let strData = NSString(data: data, encoding: NSUTF8StringEncoding)
-				//println("Body: \(strData)")
-				
-				var err: NSError?
-				var json = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &err) as? NSDictionary
-
-				// We try to parse the JSON first.
-				if(err != nil) {
-					//Parsing resulted in an error. Next to that, we'll go for the error from the URL request itself, in the NSURLErrorDomain
-					if(error != nil) {
-						//println(error.localizedFailureReason)
-						//println(error.localizedRecoverySuggestion)
-						
-						//Rediculously, the localizedDescription is uninformative (i.e. The operation couldn’t be completed.). Do we have to test for all error codes :( ?
-						//Also, see http://stackoverflow.com/questions/26741117/different-nserror-localizeddescription-between-ios-7-and-8
-						
-						if (error!.code == -1004) {
-							requestCompleted(succeeded: false, data: ["code":"cannot_connect_to_server", "text":"Cannot connect to server", "function":"local"])
+			//var err: NSError?
+			let task = session.dataTaskWithRequest(request, completionHandler:{(data : NSData?, response : NSURLResponse?, error : NSError?) -> Void in
+				if error != nil {
+					NSLog("Error making request: " + error!.localizedDescription)
+				} else {
+					let strData = NSString(data: data!, encoding: NSUTF8StringEncoding)
+					//println("Body: \(strData)")
+					
+					do {
+						let json = try NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+						// The JSONObjectWithData constructor didn't return an error. But, we should still
+						// check and make sure that json has a value using optional binding.
+						if let parseJSON = json {
+							//Check whether JSON contains an error key that the server sent us
+							if let data = parseJSON["error"] as? NSDictionary {
+								if let code = data["code"] as? String {
+									if code == "unknown_series" {
+										self.clearUser()
+									}
+								} else {
+									print("Server sent back unknown error key")
+									print(data)
+								}
+								
+								requestCompleted(succeeded: false, data: data)
+							} else {
+								let status = (response as! NSHTTPURLResponse).statusCode
+								if (status == 200) {
+									requestCompleted(succeeded: true, data: parseJSON)
+								} else {
+									print("Server gave an error status, but no error key")
+									print(parseJSON)
+									requestCompleted(succeeded: false, data: parseJSON)
+								}
+							}
 						} else {
-							requestCompleted(succeeded: false, data: ["code":"unknown", "text":error!.localizedDescription, "function":"local"])
+							//No error in the json parsing, but still no json value. That's strange
+							print("JSON has no value: \(strData)")
+							requestCompleted(succeeded: false, data: ["code":"json_has_no_value", "text":"Error in parsing request: JSON has no value", "function":"local"])
 						}
-					} else {
-						if strData != nil {
-							requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":"JSON failed to parse: " + (strData! as String), "function":"local"])
+					} catch let jsonError as NSError {
+					//Parsing resulted in an error. Next to that, we'll go for the error from the URL request itself, in the NSURLErrorDomain
+						if(error != nil) {
+							//println(error.localizedFailureReason)
+							//println(error.localizedRecoverySuggestion)
+							
+							//Rediculously, the localizedDescription is uninformative (i.e. The operation couldn’t be completed.). Do we have to test for all error codes :( ?
+							//Also, see http://stackoverflow.com/questions/26741117/different-nserror-localizeddescription-between-ios-7-and-8
+							
+							if (jsonError.code == -1004) {
+								requestCompleted(succeeded: false, data: ["code":"cannot_connect_to_server", "text":"Cannot connect to server", "function":"local"])
+							} else {
+								requestCompleted(succeeded: false, data: ["code":"unknown", "text":jsonError.localizedDescription, "function":"local"])
+							}
 						} else {
-							requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":"JSON failed to parse", "function":"local"])
+							if strData != nil {
+								requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":"JSON failed to parse: " + (strData! as String), "function":"local"])
+							} else {
+								requestCompleted(succeeded: false, data: ["code":"cannot_parse_json", "text":"JSON failed to parse", "function":"local"])
+							}
 						}
 					}
-				} else {
-					// The JSONObjectWithData constructor didn't return an error. But, we should still
-					// check and make sure that json has a value using optional binding.
-					if let parseJSON = json {
-						//Check whether JSON contains an error key that the server sent us
-						if let data = parseJSON["error"] as? NSDictionary {
-							if let code = data["code"] as? String {
-								if code == "unknown_series" {
-									self.clearUser()
-								}
-							} else {
-								println("Server sent back unknown error key")
-								println(data)
-							}
-							
-							requestCompleted(succeeded: false, data: data)
-						} else {
-							let status = (response as! NSHTTPURLResponse).statusCode
-							if (status == 200) {
-								requestCompleted(succeeded: true, data: parseJSON)
-							} else {
-								println("Server gave an error status, but no error key")
-								println(parseJSON)
-								requestCompleted(succeeded: false, data: parseJSON)
-							}
-						}
-					} else {
-						//No error in the json parsing, but still no json value. That's strange
-						println("JSON has no value: \(strData)")
-						requestCompleted(succeeded: false, data: ["code":"json_has_no_value", "text":"Error in parsing request: JSON has no value", "function":"local"])
+					catch
+					{
+						print("Fail: \(error)")
 					}
 				}
 			})

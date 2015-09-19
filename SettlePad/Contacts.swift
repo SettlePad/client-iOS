@@ -124,7 +124,7 @@ class Contacts {
 				contactIdentifiers.append(Identifier(identifierStr: identifierStr,contact: contact))
             }
         }
-		contactIdentifiers.sort({(left: Identifier, right: Identifier) -> Bool in
+		contactIdentifiers.sortInPlace({(left: Identifier, right: Identifier) -> Bool in
 			left.identifierStr.localizedCaseInsensitiveCompare(right.identifierStr) == NSComparisonResult.OrderedDescending})
     }
         
@@ -156,12 +156,12 @@ class Contacts {
         if contact.serverContact == .No {
 			//Local contact
             //Check whether identifier already exists on a contact with an id. If so, only replace friendly name if that is not set. Only add if that is not the case.
-            for index in stride(from: contact.identifiers.count - 1, through: 0, by: -1) {
+            for index in (contact.identifiers.count - 1).stride(through: 0, by: -1) {
                 //Check whether identifier is present already
                 var found = false
 				
                 for c in contacts {
-                    if let i = find(c.identifiers, contact.identifiers[index]) {
+                    if let i = c.identifiers.indexOf(contact.identifiers[index]) {
                         //replace friendly name
 						c.localName = contact.localName
                         found = true
@@ -235,7 +235,7 @@ class Contacts {
 	
 	func deleteContact(contact:Contact) {
 		var row: Int?
-		for (index,c) in enumerate(contacts) {
+		for (index,c) in contacts.enumerate() {
 			if c == contact {
 				row = index
 			}
@@ -254,9 +254,9 @@ class Contacts {
 				api.request(url, method:"POST", formdata: ["identifier":""], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 					if(!succeeded) {
 						if let error_msg = data["text"] as? String {
-							println(error_msg)
+							print(error_msg)
 						} else {
-							println("Unknown error while removing contact")
+							print("Unknown error while removing contact")
 						}
 						
 						//roll back removal

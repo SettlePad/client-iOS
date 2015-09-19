@@ -28,7 +28,7 @@ class NewUOmeAddressBook: UIView {
     
  
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         //fatalError("This class does not support NSCoding")
         super.init(coder: aDecoder)
     }

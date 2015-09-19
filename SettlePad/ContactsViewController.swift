@@ -32,7 +32,7 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 	
 	func reloadContent(error_msg: String?) {
 		if error_msg != nil {
-			displayError(error_msg!, self)
+			displayError(error_msg!, viewController: self)
 		}
         self.tableView.reloadData()		
 	}
@@ -48,7 +48,7 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 	
 	// `UIKit` convenience class for sectioning a table
 	let collation = UILocalizedIndexedCollation.currentCollation()
-		as! UILocalizedIndexedCollation
+		
 	
 	// table sections
 	var sections: [Section] {
@@ -113,7 +113,7 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 		
 		contacts.updateContacts {(succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
-				displayError(error_msg!, self)
+				displayError(error_msg!, viewController: self)
 			}
 			self.reload()
 			self.contactsRefreshControl.endRefreshing()
@@ -177,13 +177,13 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String {
 		// do not display empty `Section`s
 		if !self.sections[section].contacts.isEmpty {
-			return self.collation.sectionTitles[section] as! String
+			return self.collation.sectionTitles[section] 
 		}
 		return "" //Only works correct if table style is plain, otherwise height of the next section header will be too big
 	}
 	
 	/* section index titles displayed to the right of the `UITableView` */
-	override func sectionIndexTitlesForTableView(tableView: UITableView) -> [AnyObject] {
+	override func sectionIndexTitlesForTableView(tableView: UITableView) -> [String] {
 		return self.collation.sectionIndexTitles
 	}
 	
@@ -197,7 +197,7 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 
 		if segue.identifier == "existing_contact" {
 			//make sure that the segue is going to secondViewController
-			let selectedIndex : NSIndexPath = self.tableView.indexPathForSelectedRow()!
+			let selectedIndex : NSIndexPath = self.tableView.indexPathForSelectedRow!
 			let destVC = segue.destinationViewController as! ContactViewController
 			destVC.contact = self.sections[selectedIndex.section].contacts[selectedIndex.row]
 			destVC.delegate = self

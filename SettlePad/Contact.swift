@@ -26,9 +26,9 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 			api.request(url, method:"POST", formdata: ["friendly_name":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
-						println(error_msg)
+						print(error_msg)
 					} else {
-						println("Unknown error while setting friendly name")
+						print("Unknown error while setting friendly name")
 					}
 					self.friendlyName = oldValue
 				}
@@ -63,9 +63,9 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 			api.request(url, method:"POST", formdata: ["auto_accept":newValue.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
-						println(error_msg)
+						print(error_msg)
 					} else {
-						println("Unknown error while setting auto accept")
+						print("Unknown error while setting auto accept")
 					}
 					self.autoAccept = oldValue
 				}
@@ -88,9 +88,9 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 			api.request(url, method:"POST", formdata: ["favorite":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
-						println(error_msg)
+						print(error_msg)
 					} else {
-						println("Unknown error while setting favorite")
+						print("Unknown error while setting favorite")
 					}
 					self.favorite = oldValue
 				}
@@ -113,9 +113,9 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 			api.request(url, method:"POST", formdata: ["identifier":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
-						println(error_msg)
+						print(error_msg)
 					} else {
-						println("Unknown error while changing identifier")
+						print("Unknown error while changing identifier")
 					}
 					self.identifiers = oldValue
 				}
@@ -195,7 +195,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 				if let currency = Currency(rawValue: currencyString) {
 					limits.append(Limit(currency: currency, limit: limitDouble))
 				} else {
-					println("Unknown currency: "+currencyString)
+					print("Unknown currency: "+currencyString)
 				}
 			}
 		}
@@ -203,7 +203,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	
 	func addLimit(currency: Currency, limit: Double) {
 		var row: Int?
-		for (index,limit) in enumerate(limits) {
+		for (index,limit) in limits.enumerate() {
 			if limit.currency == currency {
 				row = index
 			}
@@ -225,13 +225,13 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		api.request("contacts/"+id!.description, method:"POST", formdata: ["limits":limitDict], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 			if(!succeeded) {
 				if let error_msg = data["text"] as? String {
-					println(error_msg)
+					print(error_msg)
 				} else {
-					println("Unknown error while adding limit")
+					print("Unknown error while adding limit")
 				}
 				//roll back addition
 				
-				for (index,limit) in enumerate(self.limits) {
+				for (index,limit) in self.limits.enumerate() {
 					if limit.currency == currency {
 						row = index
 					}
@@ -251,14 +251,14 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	
 	func removeLimit(currency: Currency, updateServer: Bool) {
 		var row: Int?
-		for (index,limit) in enumerate(limits) {
+		for (index,limit) in limits.enumerate() {
 			if limit.currency == currency {
 				row = index
 			}
 		}
 		
 		if row != nil {
-			var old_limit = limits[row!]
+			let old_limit = limits[row!]
 			limits.removeAtIndex(row!)
 
 			if updateServer && serverContact == .Yes {
@@ -269,9 +269,9 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 				api.request("contacts/"+id!.description, method:"POST", formdata: ["limits":limitDict], secure:true)  { (succeeded: Bool, data: NSDictionary) -> () in
 					if(!succeeded) {
 						if let error_msg = data["text"] as? String {
-							println(error_msg)
+							print(error_msg)
 						} else {
-							println("Unknown error while removing limit")
+							print("Unknown error while removing limit")
 						}
 
 						//roll back removal

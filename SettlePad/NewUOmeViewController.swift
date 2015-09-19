@@ -224,14 +224,14 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         }
 		
 		//Sort currencies
-		sortedCurrencies = Currency.allValues.sorted({(left: Currency, right: Currency) -> Bool in left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
+		sortedCurrencies = Currency.allValues.sort({(left: Currency, right: Currency) -> Bool in left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
 		
 		//Link currency picker to delegate and datasource functions below
 		formCurrency.modInputView.dataSource = self
 		formCurrency.modInputView.delegate = self
 		
 		//Set currency picker to user's default currency
-		let row: Int? = find(sortedCurrencies,user!.defaultCurrency)
+		let row: Int? = sortedCurrencies.indexOf(user!.defaultCurrency)
 		if row != nil {
 			formCurrency.modInputView.selectRow(row!, inComponent: 0, animated: false)
 			selectedCurrency = user!.defaultCurrency
@@ -340,7 +340,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             return cell
         } else {
             //show contacts
-            let cell = tableView.dequeueReusableCellWithIdentifier("ContactCell", forIndexPath: indexPath) as! UITableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier("ContactCell", forIndexPath: indexPath) 
             
             // Configure the cell...
             let contactIdentifier = matchedContactIdentifiers[indexPath.row]
@@ -366,9 +366,9 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         //function required to have editable rows
     }
     
-    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]?  {
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]?  {
         //return []
-        var deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Delete" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
+        let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Delete" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
             self.deleteTransaction(indexPath.row)
         })
         deleteAction.backgroundColor = Colors.danger.textToUIColor()
@@ -502,7 +502,7 @@ class NewUOmeFooterView: UIView {
 	self.init(frame:CGRectMake(0, 0, 320, 44)) //By default, make a rect of 320x44
 	}*/
 	
-	required init(coder aDecoder: NSCoder) {
+	required init?(coder aDecoder: NSCoder) {
 		fatalError("This class does not support NSCoding")
 	}
 	

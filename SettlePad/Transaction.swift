@@ -65,16 +65,16 @@ class Transaction {
             case 3:
                 status = .CanceledOrRejected
             default:
-                println("Unknown status parameter")
+                print("Unknown status parameter")
                 status = .Processed
             }
         } else {
             status = .Processed
-            println("Failed to get status parameter")
+            print("Failed to get status parameter")
         }
         
         if let time_sentString = fromDict["time_sent"] as? String {
-            var dateFormatter = NSDateFormatter()
+            let dateFormatter = NSDateFormatter()
             dateFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
             dateFormatter.timeZone = NSTimeZone.localTimeZone()
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
@@ -82,15 +82,15 @@ class Transaction {
                 time_sent = parsed
             } else {
                 time_sent = NSDate()
-                println("Failed to parse time_sent parameter")
+                print("Failed to parse time_sent parameter")
             }
         } else {
             time_sent = NSDate()
-            println("Failed to get time_sent parameter")
+            print("Failed to get time_sent parameter")
         }
 
         if let time_updatedString = fromDict["time_updated"] as? String {
-            var dateFormatter = NSDateFormatter()
+            let dateFormatter = NSDateFormatter()
             dateFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
             dateFormatter.timeZone = NSTimeZone.localTimeZone()
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
@@ -98,11 +98,11 @@ class Transaction {
                 time_updated = parsed
             } else {
                 time_updated = NSDate()
-                println("Failed to parse time_updated parameter")
+                print("Failed to parse time_updated parameter")
             }
         } else {
             time_updated = NSDate()
-            println("Failed to get time_updated parameter")
+            print("Failed to get time_updated parameter")
         }
 		
 		if let
@@ -118,7 +118,7 @@ class Transaction {
 			}
 		} else {
 			counterpart = nil
-            println("Failed to get counterpart")
+            print("Failed to get counterpart")
         }
 
         
@@ -130,21 +130,21 @@ class Transaction {
             }
         } else {
             is_sender = false
-            println("Failed to get is_sender parameter")
+            print("Failed to get is_sender parameter")
         }
         
         if let parsed = fromDict["transaction_id"] as? Int {
             transaction_id = parsed
         } else {
             transaction_id = nil
-            println("Failed to get transaction_id parameter")
+            print("Failed to get transaction_id parameter")
         }
         
         if let parsed = fromDict["description"] as? String {
             description = parsed
         } else {
             description = ""
-            println("Failed to get description parameter")
+            print("Failed to get description parameter")
         }
         
         if let parsed = fromDict["currency"] as? String {
@@ -152,18 +152,18 @@ class Transaction {
 				currency = parsedCurrency
 			} else {
 				currency = Currency.EUR
-				println("Unknown currency parameter")
+				print("Unknown currency parameter")
 			}
         } else {
 			currency = Currency.EUR
-			println("Failed to get currency parameter")
+			print("Failed to get currency parameter")
         }
         
         if let parsed = fromDict["amount"] as? Double {
             amount = parsed
         } else {
             amount = 0
-            println("Failed to get amount parameter")
+            print("Failed to get amount parameter")
         }
         
         if let parsed = fromDict["reduced"] as? Int {
@@ -174,7 +174,7 @@ class Transaction {
             }
         } else {
             reduced = false
-            println("Failed to get reduced parameter")
+            print("Failed to get reduced parameter")
         }
     }
     

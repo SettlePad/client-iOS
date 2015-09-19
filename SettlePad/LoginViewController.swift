@@ -168,7 +168,7 @@ class LoginViewController: UIViewController {
 			//Update user name, default currency and identifiers
 			user!.updateSettings() { (succeeded: Bool, error_msg: String?) -> () in
 				if !succeeded {
-					println(error_msg!)
+					print(error_msg!)
 				}
 			}
         }
@@ -199,13 +199,13 @@ class LoginViewController: UIViewController {
     func enter_app() {
         dispatch_async(dispatch_get_main_queue()) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController") as! UIViewController
+            let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController") 
             self.presentViewController(vc, animated: false, completion: nil)
         }
 		
 		// Register for Push Notitications, if running iOS 8
 		//if UIApplication.sharedApplication().respondsToSelector("registerUserNotificationSettings:") {
-		let types:UIUserNotificationType = (.Alert | .Badge | .Sound)
+		let types:UIUserNotificationType = ([.Alert, .Badge, .Sound])
 		let settings:UIUserNotificationSettings = UIUserNotificationSettings(forTypes: types, categories: nil)
 		
 		UIApplication.sharedApplication().registerUserNotificationSettings(settings)

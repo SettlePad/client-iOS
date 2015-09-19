@@ -64,13 +64,13 @@ class Balances {
 											self.balances.append(Balance(contact: contact, currency: currency, balance: balance, unprocessed: unprocessed))
 										}
 									} else {
-										println("Unknown currency parsing balance: " + currencyKey)
+										print("Unknown currency parsing balance: " + currencyKey)
 									}
 								}
 							}
 						}
 					} else {
-						println("no connections")
+						print("no connections")
 					}
 				
 					if let summaryDict = dataDict["summary"] as? Dictionary <String, Dictionary <String, AnyObject> > {
@@ -84,12 +84,12 @@ class Balances {
 									self.currenciesSummary.append(CurrencySummary(currency: currency, get: get, owe: owe))
 								}
 							} else {
-								println("Cannot parse summary for: "+currencyKey)
+								print("Cannot parse summary for: "+currencyKey)
 								
 							}
 						}
 					} else {
-						println("Cannot parse summary")
+						print("Cannot parse summary")
 					}
 					
 				} else {
@@ -101,7 +101,7 @@ class Balances {
 					self.sortedCurrencies.append(currencySummary.currency)
 				}
 				
-				self.sortedCurrencies.sort({(left: Currency, right: Currency) -> Bool in
+				self.sortedCurrencies.sortInPlace({(left: Currency, right: Currency) -> Bool in
 					left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
 				
 				requestCompleted(succeeded: true,error_msg: nil)

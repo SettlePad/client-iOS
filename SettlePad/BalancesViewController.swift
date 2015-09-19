@@ -28,11 +28,11 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 	func transactionsPostCompleted(controller:NewUOmeViewController, error_msg: String?) {
 		//Goto login screen
 		if error_msg != nil {
-			displayError(error_msg!, self)
+			displayError(error_msg!, viewController: self)
 			if (user == nil) {
 				dispatch_async(dispatch_get_main_queue()) {
 					let storyboard = UIStoryboard(name: "Main", bundle: nil)
-					let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
+					let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") 
 					self.presentViewController(vc, animated: false, completion: nil)
 				}
 			} else {
@@ -69,7 +69,7 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 	func refreshBalances() {
 		balances.updateBalances() {(succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
-				displayError(error_msg!, self)	
+				displayError(error_msg!, viewController: self)	
 			}
 			self.footer.no_results = (balances.sortedCurrencies.count == 0)
 			dispatch_async(dispatch_get_main_queue(), {
@@ -163,7 +163,7 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 	
 	
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Balance", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Balance", forIndexPath: indexPath) 
 		let balance = balances.getBalancesForCurrency(balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
 
 		// Configure the cell...
@@ -245,7 +245,7 @@ class BalancesFooterView: UIView {
 	self.init(frame:CGRectMake(0, 0, 320, 44)) //By default, make a rect of 320x44
 	}*/
 	
-	required init(coder aDecoder: NSCoder) {
+	required init?(coder aDecoder: NSCoder) {
 		fatalError("This class does not support NSCoding")
 	}
 	

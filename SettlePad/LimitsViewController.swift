@@ -48,14 +48,14 @@ class LimitsViewController: UIViewController,UITableViewDelegate, UITableViewDat
 		self.tableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
 		
 		//Sort currencies
-		sortedCurrencies = Currency.allValues.sorted({(left: Currency, right: Currency) -> Bool in left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
+		sortedCurrencies = Currency.allValues.sort({(left: Currency, right: Currency) -> Bool in left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
 		
 		//Link currency picker to delegate and datasource functions below
 		formCurrency.modInputView.dataSource = self
 		formCurrency.modInputView.delegate = self
 		
 		//Set currency picker to user's default currency
-		let row: Int? = find(sortedCurrencies,user!.defaultCurrency)
+		let row: Int? = sortedCurrencies.indexOf(user!.defaultCurrency)
 		if row != nil {
 			formCurrency.modInputView.selectRow(row!, inComponent: 0, animated: false)
 			selectedCurrency = user!.defaultCurrency
@@ -118,7 +118,7 @@ class LimitsViewController: UIViewController,UITableViewDelegate, UITableViewDat
 	}
 	
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCellWithIdentifier("Limit", forIndexPath: indexPath) as! UITableViewCell
+		let cell = tableView.dequeueReusableCellWithIdentifier("Limit", forIndexPath: indexPath) 
 		
 		// Configure the cell...
 		cell.textLabel?.text = contact.limits[indexPath.row].currency.rawValue

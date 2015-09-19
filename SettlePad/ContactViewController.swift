@@ -112,7 +112,7 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
 		} else if indexPath.section == 1 {
 			//identifier(s)
 			if contact.id != nil {
-				let cell = tableView.dequeueReusableCellWithIdentifier("EmailFixed", forIndexPath: indexPath) as! UITableViewCell
+				let cell = tableView.dequeueReusableCellWithIdentifier("EmailFixed", forIndexPath: indexPath) 
 				cell.textLabel?.text = contact.identifiers[indexPath.row]
 				return cell
 			} else {
@@ -130,7 +130,7 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
 		} else if indexPath.section == 3 {
 			//Auto acceptance
 			if indexPath.row == 0 {
-				let cell = tableView.dequeueReusableCellWithIdentifier("Autoacceptance", forIndexPath: indexPath) as! UITableViewCell
+				let cell = tableView.dequeueReusableCellWithIdentifier("Autoacceptance", forIndexPath: indexPath) 
 				if contact.autoAccept == .Manual {
 					cell.detailTextLabel?.text = "None"
 				} else if contact.autoAccept ==  .UpToDefinedLimit {
@@ -141,12 +141,12 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
 				}
 				return cell
 			} else {
-				let cell = tableView.dequeueReusableCellWithIdentifier("Limits", forIndexPath: indexPath) as! UITableViewCell
+				let cell = tableView.dequeueReusableCellWithIdentifier("Limits", forIndexPath: indexPath) 
 				cell.detailTextLabel?.text = contact.limits.count.description
 				return cell
 			}
 		} else {
-			let cell = tableView.dequeueReusableCellWithIdentifier("Delete", forIndexPath: indexPath) as! UITableViewCell
+			let cell = tableView.dequeueReusableCellWithIdentifier("Delete", forIndexPath: indexPath) 
 			return cell
 		}
 		

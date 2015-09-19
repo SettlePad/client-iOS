@@ -59,10 +59,10 @@ class TransactionsCell: UITableViewCell {
         
         //Time
         //See http://stackoverflow.com/questions/24577087/comparing-nsdates-without-time-component
-        let today = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate()))
-        let weekAgo = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: NSDate(timeIntervalSinceNow: -60*60*24*6)))
+        let today = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components([.Year, .Month, .Day], fromDate: NSDate()))
+        let weekAgo = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components([.Year, .Month, .Day], fromDate: NSDate(timeIntervalSinceNow: -60*60*24*6)))
         
-        var labeldateFormatter = NSDateFormatter()
+        let labeldateFormatter = NSDateFormatter()
         if (transaction.time_sent.compare(today!) != NSComparisonResult.OrderedAscending) {
             //Today, display time
             //http://makeapppie.com/tag/date-to-string-in-swift/
@@ -76,7 +76,7 @@ class TransactionsCell: UITableViewCell {
             labeldateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
             labeldateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
         }
-        var dateString = labeldateFormatter.stringFromDate(transaction.time_sent)
+        let dateString = labeldateFormatter.stringFromDate(transaction.time_sent)
         if (transaction.is_sender == false) {
             timeLabel.text = "Received: "+dateString
         } else {
@@ -151,15 +151,15 @@ class TransactionsCell: UITableViewCell {
             
             
             //all labels strikethrough
-            var attributedcounterpartText = NSMutableAttributedString(string: counterpartLabel.text!)
+            let attributedcounterpartText = NSMutableAttributedString(string: counterpartLabel.text!)
             attributedcounterpartText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedcounterpartText.length))
             counterpartLabel.attributedText = attributedcounterpartText
             
-            var attributedamountText = NSMutableAttributedString(string: amountLabel.text!)
+            let attributedamountText = NSMutableAttributedString(string: amountLabel.text!)
             attributedamountText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedamountText.length))
             amountLabel.attributedText = attributedamountText
             
-            var attributeddescriptionText = NSMutableAttributedString(string: descriptionLabel.text!)
+            let attributeddescriptionText = NSMutableAttributedString(string: descriptionLabel.text!)
             attributeddescriptionText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributeddescriptionText.length))
             descriptionLabel.attributedText = attributeddescriptionText
             
@@ -169,7 +169,7 @@ class TransactionsCell: UITableViewCell {
             statusLabel.attributedText = attributedstatusText
             */
             
-            var attributedtimeText = NSMutableAttributedString(string: timeLabel.text!)
+            let attributedtimeText = NSMutableAttributedString(string: timeLabel.text!)
             attributedtimeText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedtimeText.length))
             timeLabel.attributedText = attributedtimeText
         }
