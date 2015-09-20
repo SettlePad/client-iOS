@@ -147,8 +147,6 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 	override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
 		let headerView = view as! UITableViewHeaderFooterView
 		let currency = balances.sortedCurrencies[section]
-		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
-
 		
 		if let currencySummary =  balances.getSummaryForCurrency(currency) {
 			if currencySummary.balance < 0 {

@@ -10,21 +10,16 @@ import Foundation
 import UIKit
 
 func JSONStringify(jsonObj: AnyObject) -> String {
-    var e: NSError?
     let jsonData: NSData?
 	do {
 		jsonData = try NSJSONSerialization.dataWithJSONObject(
 				jsonObj,
 				options: NSJSONWritingOptions(rawValue: 0))
-	} catch var error as NSError {
-		e = error
-		jsonData = nil
+		return NSString(data: jsonData!, encoding: NSUTF8StringEncoding)! as String
+	//} catch let error as NSError {
+	} catch {
+		return ""
 	}
-    if (e != nil) {
-        return ""
-    } else {
-        return NSString(data: jsonData!, encoding: NSUTF8StringEncoding)! as String
-    }
 }
 
 extension Double {
@@ -455,7 +450,6 @@ enum Currency: String {
 		case YER: return "Yemeni Rial"
 		case ZMW: return "New Zambian Kwacha"
 		case ZWL: return "Zimbabwe Dollar"
-		default: return "unknown"
 		}
 	}
 	

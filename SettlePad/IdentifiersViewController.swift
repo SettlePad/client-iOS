@@ -332,7 +332,7 @@ class IdentifiersViewController: UITableViewController {
         let firstPasswordTextField = alertController.textFields![1] 
         let secondPasswordTextField = alertController.textFields![2] 
         
-        (alertController.actions[1] as! UIAlertAction).enabled = (
+        alertController.actions[1].enabled = (
             emailTextField.text!.isEmail() &&
             firstPasswordTextField.text != "" &&
             firstPasswordTextField.text == secondPasswordTextField.text

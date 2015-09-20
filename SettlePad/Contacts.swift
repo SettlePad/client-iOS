@@ -10,9 +10,9 @@ import Foundation
 import AddressBook
 
 class Contacts {
-	//Save contacts in CoreData
-	
     private(set) var contacts = [Contact]()
+	//private var localContacts = [Contact]()
+
 	private var contactsUpdating: Bool = false
 	
     var serverContacts : [Contact] {
@@ -161,7 +161,7 @@ class Contacts {
                 var found = false
 				
                 for c in contacts {
-                    if let i = c.identifiers.indexOf(contact.identifiers[index]) {
+                    if let _ = c.identifiers.indexOf(contact.identifiers[index]) {
                         //replace friendly name
 						c.localName = contact.localName
                         found = true
@@ -241,7 +241,6 @@ class Contacts {
 			}
 		}
 		if row != nil {
-			var old_contact = contact
 			contacts.removeAtIndex(row!)
 			self.updateIdentifiers()
 			if contact.id != nil || contact.identifiers.count > 0 {

@@ -29,7 +29,7 @@ class LimitsViewController: UIViewController,UITableViewDelegate, UITableViewDat
 	
 	@IBAction func add(sender: AnyObject) {
         if validateForm(false, finalCheck: true) {
-            var limitAmount = formAmount.text!.toDouble()!
+            let limitAmount = formAmount.text!.toDouble()!
 			contact.addLimit(selectedCurrency, limit: limitAmount)
             
             //Clean out the form, set focus on recipient
@@ -79,7 +79,7 @@ class LimitsViewController: UIViewController,UITableViewDelegate, UITableViewDat
 		formTo.layer.borderColor = Colors.danger.textToUIColor().CGColor
 		*/
 		
-		if let parsed = formAmount.text!.toDouble() {
+		if formAmount.text!.toDouble() != nil {
 			formAmount.backgroundColor = nil
 			formAmount.textColor = nil
 		} else {
@@ -184,7 +184,7 @@ class LimitsViewController: UIViewController,UITableViewDelegate, UITableViewDat
 		return sortedCurrencies.count;
 	}
 	
-	func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String
+	func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String?
 	{
 		return sortedCurrencies[row].toLongName()
 	}

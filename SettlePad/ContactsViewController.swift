@@ -59,7 +59,7 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 		
 		// create empty sections
 		var sections = [Section]()
-		for i in 0..<self.collation.sectionIndexTitles.count {
+		for _ in 0..<self.collation.sectionIndexTitles.count {
 			sections.append(Section())
 		}
 		
