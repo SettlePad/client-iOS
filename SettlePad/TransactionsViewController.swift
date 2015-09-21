@@ -129,7 +129,6 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
             cell.markup(transaction)
         }
 		cell.layoutIfNeeded() //to get right layout given dynamic height
-		//TODO: fix errors on conflicting constraints
         return cell
     }
     

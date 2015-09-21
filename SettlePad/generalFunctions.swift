@@ -84,13 +84,6 @@ enum AutoAccept: Int {
 	case Auto = 2
 }
 
-//Server presence
-enum ServerPresence: Int {
-	case No = 0
-	case Pending = 1
-	case Yes = 2
-}
-
 class PickerButton: UIButton {
 	var modInputView =  UIPickerView()
 	var modAccessoryView = UIToolbar()

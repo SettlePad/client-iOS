@@ -39,14 +39,12 @@ class Transactions {
         var formdataArray : [[String:AnyObject]] = []
         for newTransaction in newTransactions {
             newTransaction.status = .Posted
-			if let identifier = newTransaction.identifier {
-				formdataArray.append([
-					"recipient":identifier,
-					"description":newTransaction.description,
-					"amount":newTransaction.amount,
-					"currency":newTransaction.currency.rawValue
-				])
-			}
+			formdataArray.append([
+				"recipient":newTransaction.identifierStr,
+				"description":newTransaction.description,
+				"amount":newTransaction.amount,
+				"currency":newTransaction.currency.rawValue
+			])
         }
 		
 		if (formdataArray.count > 0) {

@@ -165,7 +165,12 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 		let balance = balances.getBalancesForCurrency(balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
 
 		// Configure the cell...
-		cell.textLabel?.text = balance.contact.resultingName
+		let identifier: Identifier? = contacts.getIdentifier(balance.identifierStr)
+		if(identifier != nil) {
+			cell.textLabel?.text = identifier!.resultingName
+		} else {
+			cell.textLabel?.text = balance.name
+		}
 		
 		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
 		cell.detailTextLabel?.text = balance.currency.rawValue + " " + balance.balance.format(doubleFormat)

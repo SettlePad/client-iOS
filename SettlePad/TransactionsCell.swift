@@ -45,16 +45,13 @@ class TransactionsCell: UITableViewCell {
         }
         
         //Counterpart
-		if let counterpart = transaction.counterpart {
-			counterpartLabel.text = counterpart.name
-		} else if let identifier = transaction.identifier {
-			counterpartLabel.text = identifier
+		let identifier: Identifier? = contacts.getIdentifier(transaction.identifierStr)
+		if(identifier != nil) {
+			counterpartLabel.text = identifier!.resultingName
 		} else {
-			//When hit, transactions were loaded before contacts
-			counterpartLabel.text =  "Unknown"
-			contacts.updateContacts{(succeeded: Bool, error_msg: String?) -> () in }
+			counterpartLabel.text = transaction.name
 		}
-        counterpartLabel.textColor = UIColor.blackColor()
+		counterpartLabel.textColor = UIColor.blackColor()
 
         
         //Time

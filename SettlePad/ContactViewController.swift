@@ -82,7 +82,7 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
 			return 1
 		} else if section == 1 {
 			//Identifier(s)
-			if contact.id != nil {
+			if contact.registered {
 				return contact.identifiers.count //number of email addresses
 			} else {
 				return 1
@@ -111,7 +111,7 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
 			return cell
 		} else if indexPath.section == 1 {
 			//identifier(s)
-			if contact.id != nil {
+			if contact.registered {
 				let cell = tableView.dequeueReusableCellWithIdentifier("EmailFixed", forIndexPath: indexPath) 
 				cell.textLabel?.text = contact.identifiers[indexPath.row]
 				return cell
@@ -125,7 +125,6 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
 			let cell = tableView.dequeueReusableCellWithIdentifier("Status", forIndexPath: indexPath) as! ContactDefaulterCell
 			cell.markup(contact)
 			cell.layoutIfNeeded() //to get right layout given dynamic height
-			//TODO: fix errors on conflicting constraints
 			return cell
 		} else if indexPath.section == 3 {
 			//Auto acceptance
@@ -205,7 +204,7 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
     
     @IBAction func saveContact(sender: AnyObject) {
 		self.tableView.endEditing(false) //When editing a textbox when the button is pressed, we first want to process the changes of the textbox, before processing the button press
-		contacts.addContactToServer(contact) { (succeeded: Bool, error_msg: String?) -> () in
+		contacts.addContact(contact, updateServer: true) { (succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
 				self.delegate.reloadContent(error_msg!)
 			} else {
@@ -217,7 +216,6 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
     }
 	
     @IBAction func deleteContact(sender: AnyObject) {
-		//TODO: add unlink procedure to contact
 		//show Action sheet
 		let actionSheetController: UIAlertController = UIAlertController(title: "Are you sure you want to delete this connection?", message: "New memos from this contract are treated as if received from a stranger.", preferredStyle: .Alert)
 		
@@ -302,8 +300,9 @@ class ContactEmailInputCell: UITableViewCell {
 
 		if validateInput() {
 			contact?.updateServerIdentifier(emailText.text!)
+			//TODO: add closure to updateServerIdentifier and do reloading of delegate when closure is completed, so that change in registered is reflected
+			
 			delegate.reloadContent()
-			//TODO: add link procedure to contact with in closure, update of text field
 		}
     }
 	override func awakeFromNib() {

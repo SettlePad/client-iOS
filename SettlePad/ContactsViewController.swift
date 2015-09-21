@@ -16,7 +16,7 @@ protocol ContactsViewControllerDelegate {
 class ContactsViewController: UITableViewController, ContactsViewControllerDelegate {
 	//TODO: with refreshControl spinning and no connection to server, all section heads are screwed up
 
-	var serverContacts: [Contact] = contacts.serverContacts
+	var serverContacts: [Contact] = contacts.contacts
 	
     @IBOutlet var searchBar: UISearchBar!
 
@@ -128,10 +128,10 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 	func reload() {
 		//Filter contacts based on search query
 		if searchBar.text == "" {
-			serverContacts = contacts.serverContacts
+			serverContacts = contacts.contacts
 		} else {
 			let needle = searchBar.text
-			serverContacts = contacts.serverContacts.filter{$0.resultingName.lowercaseString.rangeOfString(needle!.lowercaseString) != nil}
+			serverContacts = contacts.contacts.filter{$0.resultingName.lowercaseString.rangeOfString(needle!.lowercaseString) != nil}
 		}
 		
 		dispatch_async(dispatch_get_main_queue(), {
@@ -204,8 +204,7 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 		} else if segue.identifier == "new_contact" {
 			let navigationController = segue.destinationViewController as! UINavigationController
 			let destVC = navigationController.viewControllers[0] as! ContactViewController
-			let newContact = Contact(id: nil, name: "", friendlyName: "", localName: nil, favorite: true, autoAccept: .Manual, identifiers: [], serverContact: .Pending)
-			destVC.contact = newContact
+			destVC.contact = Contact(name: "", friendlyName: "", registered: false, favorite: true, autoAccept: .Manual, identifiers: [], propagatedToServer: false)
 			destVC.delegate = self
 		}
     }
@@ -254,9 +253,7 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 	}
 }
 
-class ContactCell: UITableViewCell {
-	//TODO: move into viewcontrollers
-	
+class ContactCell: UITableViewCell {	
 	@IBOutlet var nameLabel: UILabel!
     @IBOutlet var spinner: UIActivityIndicatorView!
 	@IBOutlet var statusImage: UIImageView!
@@ -281,7 +278,7 @@ class ContactCell: UITableViewCell {
 			statusImage.hidden = false
 		}
 		
-		if contact.serverContact == .Pending {
+		if contact.propagatedToServer == false {
 			spinner.hidden = false
 			spinner.startAnimating()
 		} else {

@@ -11,8 +11,8 @@ import Foundation
 class Transaction {	
     var time_sent: NSDate
     var time_updated: NSDate
-    var counterpart: Contact? //If linked to a contact
-	var identifier: String? //If to be send, this contains an email address
+	var identifierStr: String
+	var name: String
     var is_sender: Bool
     var transaction_id: Int?
     var description: String
@@ -105,23 +105,21 @@ class Transaction {
             print("Failed to get time_updated parameter")
         }
 		
-		if let
-			counterpartID = fromDict["counterpart_id"] as? Int,
-			counterpartName = fromDict["counterpart_name"] as? String
-		{
-			if let contact = contacts.getContactByID(counterpartID) {
-				counterpart = contact
-			} else {
-				let contact = Contact(id: counterpartID, name: counterpartName, friendlyName: "", localName: nil, favorite: false, autoAccept: .Manual, identifiers: [], serverContact: .No) //TODO: there should be an identifier here
-				contacts.addContactToList(contact, updateIdentifiers: true)
-				counterpart = contact
-			}
+		if let counterpartName = fromDict["counterpart_name"] as? String {
+			name = counterpartName
 		} else {
-			counterpart = nil
-            print("Failed to get counterpart")
+			name = ""
+            print("Failed to get counterpart name")
         }
 
-        
+		
+		if let counterpartIdentifier = fromDict["counterpart_primary_identifier"] as? String {
+			identifierStr = counterpartIdentifier
+		} else {
+			identifierStr = ""
+			print("Failed to get counterpart identifier")
+		}
+		
         if let parsed = fromDict["is_sender"] as? Int {
             if (parsed == 1) {
                 is_sender = true
@@ -178,11 +176,11 @@ class Transaction {
         }
     }
     
-	init(counterpart: Contact?, identifier: String, description: String, currency: Currency, amount: Double) {
+	init(name: String, identifier: String, description: String, currency: Currency, amount: Double) {
         time_sent = NSDate()
         time_updated = NSDate()
-        self.counterpart = counterpart
-		self.identifier = identifier
+        self.name = name
+		self.identifierStr = identifier
         is_sender = true
         transaction_id = nil
         self.description = description

@@ -131,7 +131,7 @@ class SettingsViewController: UITableViewController {
         currencyLabel.text = user?.defaultCurrency.rawValue
         nameText.text = user?.name
         credentialsLabel.text = user?.userIdentifiers.count.description
-        favoritesLabel.text = contacts.serverContacts.count.description
+        favoritesLabel.text = contacts.contacts.count.description
     }
 	
 	func refreshUserData () {

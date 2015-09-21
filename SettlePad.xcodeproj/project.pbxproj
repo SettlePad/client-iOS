@@ -27,7 +27,6 @@
 		54716AF01AFF75C800F72717 /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54716AEF1AFF75C800F72717 /* Balance.swift */; };
 		54716AF21AFF82E300F72717 /* BalancesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54716AF11AFF82E300F72717 /* BalancesViewController.swift */; };
 		548326401A7E9515004973B7 /* NewUOmeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5483263F1A7E9515004973B7 /* NewUOmeViewController.swift */; };
-		54A925E81B4EFB59005B7E14 /* IdentifierCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A925E71B4EFB59005B7E14 /* IdentifierCell.swift */; };
 		54D4BD071AD0821000AB262B /* Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D4BD061AD0821000AB262B /* Alerts.swift */; };
 		54DF03691A5597020078AE8B /* TransactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DF03681A5597020078AE8B /* TransactionsCell.swift */; };
 		54DF036E1A55A9E20078AE8B /* generalFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DF036D1A55A9E20078AE8B /* generalFunctions.swift */; };
@@ -76,7 +75,6 @@
 		54716AEF1AFF75C800F72717 /* Balance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		54716AF11AFF82E300F72717 /* BalancesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalancesViewController.swift; sourceTree = "<group>"; };
 		5483263F1A7E9515004973B7 /* NewUOmeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = NewUOmeViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		54A925E71B4EFB59005B7E14 /* IdentifierCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IdentifierCell.swift; sourceTree = "<group>"; };
 		54D4BD061AD0821000AB262B /* Alerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alerts.swift; sourceTree = "<group>"; };
 		54DF03681A5597020078AE8B /* TransactionsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionsCell.swift; sourceTree = "<group>"; };
 		54DF036D1A55A9E20078AE8B /* generalFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = generalFunctions.swift; sourceTree = "<group>"; };
@@ -167,7 +165,6 @@
 				54EA13681A9691A500654E84 /* NewUOmeAddressBook.xib */,
 				54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */,
 				54DF03681A5597020078AE8B /* TransactionsCell.swift */,
-				54A925E71B4EFB59005B7E14 /* IdentifierCell.swift */,
 			);
 			name = ViewClasses;
 			sourceTree = "<group>";
@@ -348,7 +345,6 @@
 				542970791A93DAF000641F9F /* Contacts.swift in Sources */,
 				542A4A7F1A5F342700FF865A /* CurrenciesViewController.swift in Sources */,
 				54FFD8871B9B75B900B352B8 /* LimitsViewController.swift in Sources */,
-				54A925E81B4EFB59005B7E14 /* IdentifierCell.swift in Sources */,
 				54F9EA491A0831D7009DC930 /* LoginViewController.swift in Sources */,
 				540165D91A82B4C0009F3405 /* Contact.swift in Sources */,
 				54716AF21AFF82E300F72717 /* BalancesViewController.swift in Sources */,

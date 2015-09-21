@@ -190,10 +190,12 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 
     
     func layoutAddressBookFooter() {
-        addressBookFooter.frame.size.width = newUOmeTableView.frame.width
-        addressBookFooter.detailLabel.preferredMaxLayoutWidth = newUOmeTableView.frame.width - 40 //margin of 20 left and right
+		dispatch_async(dispatch_get_main_queue(), {
+			self.addressBookFooter.frame.size.width = self.newUOmeTableView.frame.width
+			self.addressBookFooter.detailLabel.preferredMaxLayoutWidth = self.newUOmeTableView.frame.width - 40 //margin of 20 left and right
 
-        addressBookFooter.frame.size.height = addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
+			self.addressBookFooter.frame.size.height = self.addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
+		})
     }
     
     @IBAction func formDescriptionEditingChanged(sender: AnyObject) {
@@ -216,9 +218,6 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             dispatch_async(dispatch_get_main_queue(), {
                 self.newUOmeTableView.tableFooterView = self.addressBookFooter
-            })
-            
-            dispatch_async(dispatch_get_main_queue(), {
                 self.newUOmeTableView.reloadData()
             })
         }
@@ -336,7 +335,6 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             // Configure the cell...
             cell.markup(newTransactions[indexPath.row])
 			cell.layoutIfNeeded() //to get right layout given dynamic height
-			//TODO: fix errors on conflicting constraints
             return cell
         } else {
             //show contacts
@@ -344,11 +342,10 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             // Configure the cell...
             let contactIdentifier = matchedContactIdentifiers[indexPath.row]
-			cell.textLabel?.text = contactIdentifier.contact.resultingName
+			cell.textLabel?.text = contactIdentifier.resultingName
 
             cell.detailTextLabel?.text =  contactIdentifier.identifierStr
 			cell.layoutIfNeeded() //to get right layout given dynamic height
-			//TODO: fix errors on conflicting constraints
 			return cell
         }
     }
@@ -429,9 +426,17 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             } else {
                 amount = -1*formAmount.text!.toDouble()!
             }
-            
+			
+			let matchedIdentifier: Identifier? = contacts.getIdentifier(formTo.text!)
+
+			var name: String
+			if matchedIdentifier != nil {
+				name = matchedIdentifier!.resultingName
+			} else {
+				name = formTo.text!
+			}
             let transaction = Transaction(
-				counterpart: contacts.getContactByIdentifier(formTo.text!),
+				name: name,
 				identifier: formTo.text!,
                 description: formDescription.text!,
                 currency: selectedCurrency,
@@ -457,9 +462,9 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     }
     
     func getMatchedContactIdentifiers(needle: String){
-        matchedContactIdentifiers.removeAll()
+		matchedContactIdentifiers.removeAll()
         for contactIdentifier in contacts.contactIdentifiers {
-            if (contactIdentifier.identifierStr.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact.name.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact.friendlyName.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
+            if (contactIdentifier.identifierStr.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact?.name.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact?.friendlyName.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.localName?.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
                 matchedContactIdentifiers.append(contactIdentifier)
             }
         }

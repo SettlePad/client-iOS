@@ -9,21 +9,14 @@
 import Foundation
 
 class Contact: NSObject { //required for sections in viewcontroller with collation
-    var id: Int?
     var name: String //The name, as set by the contact itself (from the server)
-	var localName: String? //The name, as set in the address book of the user
 	private(set) var friendlyName: String //The name, as set by the user (from the server)
+	var registered: Bool
 	
 	func setFriendlyName (newValue: String, updateServer: Bool) {
 		let oldValue = friendlyName
-		if (id != nil || identifiers.count > 0) && newValue != friendlyName && updateServer && serverContact == .Yes {
-			var url: String
-			if id != nil {
-				url = "contacts/"+id!.description
-			} else {
-				url = "contacts/"+identifiers[0]
-			}
-			api.request(url, method:"POST", formdata: ["friendly_name":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		if identifiers.count > 0 && newValue != friendlyName && updateServer && propagatedToServer == true {
+			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["friendly_name":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
 						print(error_msg)
@@ -41,8 +34,6 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		get {
 			if friendlyName != "" {
 				return friendlyName
-			} else if localName != nil {
-				return localName!
 			} else {
 				return name
 			}
@@ -53,14 +44,8 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	
 	func setAutoAccept(newValue: AutoAccept, updateServer: Bool) {
 		let oldValue = autoAccept
-		if (id != nil || identifiers.count > 0) && newValue != autoAccept && updateServer && serverContact == .Yes {
-			var url: String
-			if id != nil {
-				url = "contacts/"+id!.description
-			} else {
-				url = "contacts/"+identifiers[0]
-			}
-			api.request(url, method:"POST", formdata: ["auto_accept":newValue.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		if identifiers.count > 0 && newValue != autoAccept && updateServer && propagatedToServer == true {
+			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["auto_accept":newValue.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
 						print(error_msg)
@@ -78,14 +63,8 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 
 	func setFavorite (newValue: Bool, updateServer: Bool) {
 		let oldValue = favorite
-		if (id != nil || identifiers.count > 0) && newValue != favorite && updateServer && serverContact == .Yes {
-			var url: String
-			if id != nil {
-				url = "contacts/"+id!.description
-			} else {
-				url = "contacts/"+identifiers[0]
-			}
-			api.request(url, method:"POST", formdata: ["favorite":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		if identifiers.count > 0 && newValue != favorite && updateServer && propagatedToServer == true {
+			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["favorite":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
 						print(error_msg)
@@ -103,14 +82,8 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	
 	func updateServerIdentifier(newValue: String) {
 		let oldValue = identifiers
-		if newValue.isEmail() && (id != nil || identifiers.count > 0) && serverContact == .Yes {
-			var url: String
-			if id != nil {
-				url = "contacts/"+id!.description
-			} else {
-				url = "contacts/"+identifiers[0]
-			}
-			api.request(url, method:"POST", formdata: ["identifier":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		if newValue.isEmail() && identifiers.count > 0 && propagatedToServer == true {
+			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["identifier":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
 						print(error_msg)
@@ -118,32 +91,29 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 						print("Unknown error while changing identifier")
 					}
 					self.identifiers = oldValue
+				} else {
+					//TODO: check whether contact is now registered
 				}
+				
 			}
 		}
 		identifiers = [newValue]
 	}
 	
 	private(set) var limits = [Limit]()
-    var serverContact: ServerPresence //Contacts that do not come from the server but from the local address book get false. Of those, a subset will have an account as well, but we cannot know without sharing the whole address book with the server. And that we don't do
+    var propagatedToServer: Bool //If false, we are sending it to the server
     
-	init(id: Int? = nil, name: String, friendlyName: String, localName: String?, favorite: Bool, autoAccept: AutoAccept, identifiers: [String], serverContact: ServerPresence) {
-        self.id = id
+	init(name: String, friendlyName: String, registered: Bool, favorite: Bool, autoAccept: AutoAccept, identifiers: [String], propagatedToServer: Bool) {
         self.name = name
         self.friendlyName = friendlyName
+		self.registered = registered
         self.favorite = favorite
 		self.autoAccept = autoAccept
         self.identifiers = identifiers
-        self.serverContact = serverContact
+        self.propagatedToServer = propagatedToServer
     }
     
-    init(fromDict: NSDictionary = [:], serverContact: ServerPresence) {
-        if let parsed = fromDict["id"] as? Int {
-            self.id = parsed
-        } else {
-            self.id = nil
-        }
-        
+    init(fromDict: NSDictionary = [:], propagatedToServer: Bool) {
         if let parsed = fromDict["name"] as? String {
             self.name = parsed
         } else {
@@ -155,7 +125,17 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
         } else {
             self.friendlyName = ""
         }
-        
+		
+		if let parsed = fromDict["registered_user"] as? Int {
+			if (parsed > 0) {
+				self.registered = true
+			} else {
+				self.registered = false
+			}
+		} else {
+			self.registered = false
+		}
+		
         if let parsed = fromDict["favorite"] as? Int {
             if (parsed > 0) {
                 self.favorite = true
@@ -188,7 +168,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
             }
         }
 		
-        self.serverContact = serverContact
+        self.propagatedToServer = propagatedToServer
 		
 		if let contactLimits = fromDict["limits"] as? Dictionary <String, Double> {
 			for (currencyString,limitDouble) in contactLimits {
@@ -222,29 +202,31 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		for singleLimit in limits {
 			limitDict[singleLimit.currency.rawValue] = singleLimit.limit
 		}
-		api.request("contacts/"+id!.description, method:"POST", formdata: ["limits":limitDict], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(!succeeded) {
-				if let error_msg = data["text"] as? String {
-					print(error_msg)
-				} else {
-					print("Unknown error while adding limit")
-				}
-				//roll back addition
-				
-				for (index,limit) in self.limits.enumerate() {
-					if limit.currency == currency {
-						row = index
-					}
-				}
-				
-				if row != nil {
-					if old_limit != nil {
-						self.limits[row!] = old_limit!
+		if identifiers.count > 0 {
+			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["limits":limitDict], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+				if(!succeeded) {
+					if let error_msg = data["text"] as? String {
+						print(error_msg)
 					} else {
-						self.limits.removeAtIndex(row!)
+						print("Unknown error while adding limit")
 					}
-				}
+					//roll back addition
+					
+					for (index,limit) in self.limits.enumerate() {
+						if limit.currency == currency {
+							row = index
+						}
+					}
+					
+					if row != nil {
+						if old_limit != nil {
+							self.limits[row!] = old_limit!
+						} else {
+							self.limits.removeAtIndex(row!)
+						}
+					}
 
+				}
 			}
 		}
 	}
@@ -261,21 +243,23 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 			let old_limit = limits[row!]
 			limits.removeAtIndex(row!)
 
-			if updateServer && serverContact == .Yes {
+			if updateServer && propagatedToServer == true {
 				var limitDict = [String:Double]()
 				for singleLimit in limits {
 					limitDict[singleLimit.currency.rawValue] = singleLimit.limit
 				}
-				api.request("contacts/"+id!.description, method:"POST", formdata: ["limits":limitDict], secure:true)  { (succeeded: Bool, data: NSDictionary) -> () in
-					if(!succeeded) {
-						if let error_msg = data["text"] as? String {
-							print(error_msg)
-						} else {
-							print("Unknown error while removing limit")
-						}
+				if identifiers.count > 0 {
+					api.request("contacts/"+identifiers[0], method:"POST", formdata: ["limits":limitDict], secure:true)  { (succeeded: Bool, data: NSDictionary) -> () in
+						if(!succeeded) {
+							if let error_msg = data["text"] as? String {
+								print(error_msg)
+							} else {
+								print("Unknown error while removing limit")
+							}
 
-						//roll back removal
-						self.limits.append(old_limit)
+							//roll back removal
+							self.limits.append(old_limit)
+						}
 					}
 				}
 			}
