@@ -30,13 +30,12 @@ class Keychain {
             kSecAttrAccount as String : key,
             kSecReturnData as String  : kCFBooleanTrue,
             kSecMatchLimit as String  : kSecMatchLimitOne ]
-        
-        var dataTypeRef :Unmanaged<AnyObject>?
-        
-        let status: OSStatus = SecItemCopyMatching(query, &dataTypeRef)
-        
+		
+		var extractedData: AnyObject?
+		let status = SecItemCopyMatching(query, &extractedData)
+		
         if status == noErr {
-            return (dataTypeRef!.takeRetainedValue() as! NSData)
+            return extractedData as? NSData
         } else {
             return nil
         }

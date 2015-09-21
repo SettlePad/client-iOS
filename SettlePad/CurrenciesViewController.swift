@@ -39,7 +39,7 @@ class CurrenciesViewController: UITableViewController {
     
     // `UIKit` convenience class for sectioning a table
     let collation = UILocalizedIndexedCollation.currentCollation()
-        as! UILocalizedIndexedCollation
+        
     
     // table sections
     var sections: [Section] {
@@ -50,7 +50,7 @@ class CurrenciesViewController: UITableViewController {
 		
         // create empty sections
         var sections = [Section]()
-        for i in 0..<self.collation.sectionIndexTitles.count {
+        for _ in 0..<self.collation.sectionIndexTitles.count {
             sections.append(Section())
         }
 		
@@ -85,8 +85,8 @@ class CurrenciesViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
 
         //Move to selected currency
-        for (sectionindex, section) in enumerate(sections) {
-            for (rowindex, currencyObject) in enumerate(section.currencies) {
+        for (sectionindex, section) in sections.enumerate() {
+            for (rowindex, currencyObject) in section.currencies.enumerate() {
                 if currencyObject.currency == user?.defaultCurrency {
                     selectedIndexPath = NSIndexPath(forRow:rowindex, inSection:sectionindex)
                 }
@@ -122,7 +122,7 @@ class CurrenciesViewController: UITableViewController {
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("CurrencyCell", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("CurrencyCell", forIndexPath: indexPath) 
         
         // Configure the cell...
         let currencyObject = self.sections[indexPath.section].currencies[indexPath.row]
@@ -142,12 +142,12 @@ class CurrenciesViewController: UITableViewController {
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String {
             // do not display empty `Section`s
             if !self.sections[section].currencies.isEmpty {
-                return self.collation.sectionTitles[section] as! String
+                return self.collation.sectionTitles[section] 
             }
             return "" //Only works correct if table style is plain, otherwise height of the next section header will be too big
     }
     /* section index titles displayed to the right of the `UITableView` */
-    override func sectionIndexTitlesForTableView(tableView: UITableView) -> [AnyObject] {
+    override func sectionIndexTitlesForTableView(tableView: UITableView) -> [String] {
             return self.collation.sectionIndexTitles
     }
     

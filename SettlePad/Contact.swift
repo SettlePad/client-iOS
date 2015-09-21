@@ -9,21 +9,19 @@
 import Foundation
 
 class Contact: NSObject { //required for sections in viewcontroller with collation
-    var id: Int?
     var name: String //The name, as set by the contact itself (from the server)
-	var localName: String? //The name, as set in the address book of the user
-	
 	private(set) var friendlyName: String //The name, as set by the user (from the server)
+	var registered: Bool
 	
 	func setFriendlyName (newValue: String, updateServer: Bool) {
 		let oldValue = friendlyName
-		if id != nil && newValue != friendlyName && updateServer {
-			api.request("contacts/"+id!.description, method:"POST", formdata: ["friendly_name":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		if identifiers.count > 0 && newValue != friendlyName && updateServer && propagatedToServer == true {
+			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["friendly_name":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
-						println(error_msg)
+						print(error_msg)
 					} else {
-						println("Unknown error while setting friendly name")
+						print("Unknown error while setting friendly name")
 					}
 					self.friendlyName = oldValue
 				}
@@ -36,8 +34,6 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		get {
 			if friendlyName != "" {
 				return friendlyName
-			} else if localName != nil {
-				return localName!
 			} else {
 				return name
 			}
@@ -48,13 +44,13 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	
 	func setAutoAccept(newValue: AutoAccept, updateServer: Bool) {
 		let oldValue = autoAccept
-		if id != nil && newValue != autoAccept && updateServer {
-			api.request("contacts/"+id!.description, method:"POST", formdata: ["auto_accept":newValue.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		if identifiers.count > 0 && newValue != autoAccept && updateServer && propagatedToServer == true {
+			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["auto_accept":newValue.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
-						println(error_msg)
+						print(error_msg)
 					} else {
-						println("Unknown error while setting auto accept")
+						print("Unknown error while setting auto accept")
 					}
 					self.autoAccept = oldValue
 				}
@@ -67,13 +63,13 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 
 	func setFavorite (newValue: Bool, updateServer: Bool) {
 		let oldValue = favorite
-		if id != nil && newValue != favorite && updateServer {
-			api.request("contacts/"+id!.description, method:"POST", formdata: ["favorite":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		if identifiers.count > 0 && newValue != favorite && updateServer && propagatedToServer == true {
+			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["favorite":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
-						println(error_msg)
+						print(error_msg)
 					} else {
-						println("Unknown error while setting favorite")
+						print("Unknown error while setting favorite")
 					}
 					self.favorite = oldValue
 				}
@@ -83,26 +79,41 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
     }
 	
     var identifiers = [String]()
-    private(set) var limits = [Limit]()
-    var registered: Bool //Contacts that do not come from the server but from the local address book get false. Of those, a subset will have an account as well, but we cannot know without sharing the whole address book with the server. And that we don't do
+	
+	func updateServerIdentifier(newValue: String) {
+		let oldValue = identifiers
+		if newValue.isEmail() && identifiers.count > 0 && propagatedToServer == true {
+			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["identifier":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+				if(!succeeded) {
+					if let error_msg = data["text"] as? String {
+						print(error_msg)
+					} else {
+						print("Unknown error while changing identifier")
+					}
+					self.identifiers = oldValue
+				} else {
+					//TODO: check whether contact is now registered
+				}
+				
+			}
+		}
+		identifiers = [newValue]
+	}
+	
+	private(set) var limits = [Limit]()
+    var propagatedToServer: Bool //If false, we are sending it to the server
     
-	init(id: Int? = nil, name: String, friendlyName: String, localName: String?, favorite: Bool, autoAccept: AutoAccept, identifiers: [String], registered: Bool) {
-        self.id = id
+	init(name: String, friendlyName: String, registered: Bool, favorite: Bool, autoAccept: AutoAccept, identifiers: [String], propagatedToServer: Bool) {
         self.name = name
         self.friendlyName = friendlyName
+		self.registered = registered
         self.favorite = favorite
 		self.autoAccept = autoAccept
         self.identifiers = identifiers
-        self.registered = registered
+        self.propagatedToServer = propagatedToServer
     }
     
-    init(fromDict: NSDictionary = [:], registered: Bool) {
-        if let parsed = fromDict["id"] as? Int {
-            self.id = parsed
-        } else {
-            self.id = nil
-        }
-        
+    init(fromDict: NSDictionary = [:], propagatedToServer: Bool) {
         if let parsed = fromDict["name"] as? String {
             self.name = parsed
         } else {
@@ -114,7 +125,17 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
         } else {
             self.friendlyName = ""
         }
-        
+		
+		if let parsed = fromDict["registered_user"] as? Int {
+			if (parsed > 0) {
+				self.registered = true
+			} else {
+				self.registered = false
+			}
+		} else {
+			self.registered = false
+		}
+		
         if let parsed = fromDict["favorite"] as? Int {
             if (parsed > 0) {
                 self.favorite = true
@@ -146,13 +167,23 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
                 }
             }
         }
-        
-        self.registered = registered
+		
+        self.propagatedToServer = propagatedToServer
+		
+		if let contactLimits = fromDict["limits"] as? Dictionary <String, Double> {
+			for (currencyString,limitDouble) in contactLimits {
+				if let currency = Currency(rawValue: currencyString) {
+					limits.append(Limit(currency: currency, limit: limitDouble))
+				} else {
+					print("Unknown currency: "+currencyString)
+				}
+			}
+		}
     }
 	
-	func addLimit(currency: Currency, limit: Double, updateServer: Bool) {
+	func addLimit(currency: Currency, limit: Double) {
 		var row: Int?
-		for (index,limit) in enumerate(limits) {
+		for (index,limit) in limits.enumerate() {
 			if limit.currency == currency {
 				row = index
 			}
@@ -167,18 +198,21 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 			limits[row!] = Limit(currency: currency, limit: limit)
 		}
 		
-		if updateServer {
-
-			api.request("autolimits/"+id!.description+"/"+currency.rawValue, method:"POST", formdata: ["auto_limit":limit], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		var limitDict = [String:Double]()
+		for singleLimit in limits {
+			limitDict[singleLimit.currency.rawValue] = singleLimit.limit
+		}
+		if identifiers.count > 0 {
+			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["limits":limitDict], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
-						println(error_msg)
+						print(error_msg)
 					} else {
-						println("Unknown error while adding limit")
+						print("Unknown error while adding limit")
 					}
 					//roll back addition
 					
-					for (index,limit) in enumerate(self.limits) {
+					for (index,limit) in self.limits.enumerate() {
 						if limit.currency == currency {
 							row = index
 						}
@@ -194,38 +228,60 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 
 				}
 			}
-
 		}
 	}
 	
 	func removeLimit(currency: Currency, updateServer: Bool) {
 		var row: Int?
-		for (index,limit) in enumerate(limits) {
+		for (index,limit) in limits.enumerate() {
 			if limit.currency == currency {
 				row = index
 			}
 		}
 		
 		if row != nil {
-			var old_limit = limits[row!]
+			let old_limit = limits[row!]
 			limits.removeAtIndex(row!)
 
-			if updateServer {
-				api.request("autolimits/"+id!.description+"/"+currency.rawValue, method:"POST", formdata: ["auto_limit":0.0], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-					if(!succeeded) {
-						if let error_msg = data["text"] as? String {
-							println(error_msg)
-						} else {
-							println("Unknown error while removing limit")
-						}
+			if updateServer && propagatedToServer == true {
+				var limitDict = [String:Double]()
+				for singleLimit in limits {
+					limitDict[singleLimit.currency.rawValue] = singleLimit.limit
+				}
+				if identifiers.count > 0 {
+					api.request("contacts/"+identifiers[0], method:"POST", formdata: ["limits":limitDict], secure:true)  { (succeeded: Bool, data: NSDictionary) -> () in
+						if(!succeeded) {
+							if let error_msg = data["text"] as? String {
+								print(error_msg)
+							} else {
+								print("Unknown error while removing limit")
+							}
 
-						//roll back removal
-						self.limits.append(old_limit)
+							//roll back removal
+							self.limits.append(old_limit)
+						}
 					}
 				}
 			}
 		}
-
+	}
+	
+	func deleteContact() {
+		contacts.deleteContact(self)
+	}
+	
+	func toDict() -> [String:AnyObject] {
+		var limitDict = [String:Double]()
+		for singleLimit in limits {
+			limitDict[singleLimit.currency.rawValue] = singleLimit.limit
+		}
+		
+		return [
+			"favorite" : self.favorite,
+			"auto_accept" : self.autoAccept.rawValue,
+			"friendly_name" : self.friendlyName,
+			"limits" : limitDict
+		]
 	}
 }
 

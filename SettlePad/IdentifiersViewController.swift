@@ -79,10 +79,10 @@ class IdentifiersViewController: UITableViewController {
         } */
     }
     
-    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]?  {
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]?  {
         let identifier = user!.userIdentifiers[indexPath.row]
         
-        var deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Delete" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
+        let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Delete" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
             self.deleteIdentifier(identifier, tableView: tableView, indexPath: indexPath)
         })
         
@@ -109,14 +109,14 @@ class IdentifiersViewController: UITableViewController {
             tableView.setEditing(false, animated: true)
             user!.deleteIdentifier(identifier) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
-                    displayError(error_msg!,self)
+                    displayError(error_msg!,viewController: self)
                 }
 				if user != nil {
 					if user!.userIdentifiers.count == 0 {
 						api.clearUser() //No need to logout on the server, that is already done with removing the last identifier
 						dispatch_async(dispatch_get_main_queue()) {
 							let storyboard = UIStoryboard(name: "Main", bundle: nil)
-							let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
+							let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") 
 							self.presentViewController(vc, animated: false, completion: nil)
 						}
 					} else {
@@ -193,7 +193,7 @@ class IdentifiersViewController: UITableViewController {
 			let resendCodeAction: UIAlertAction = UIAlertAction(title: "Resend verification code", style: .Default) { action -> Void in
 				user!.resendToken(identifier) { (succeeded: Bool, error_msg: String?) -> () in
 					if !succeeded {
-						displayError(error_msg!,self)
+						displayError(error_msg!,viewController: self)
 					}
 				}
 			}
@@ -208,7 +208,7 @@ class IdentifiersViewController: UITableViewController {
 
 		//We need to provide a popover sourceView when using it on iPad
 		actionSheetController.popoverPresentationController?.sourceView = cell?.contentView
-		actionSheetController.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Up | UIPopoverArrowDirection.Down
+		actionSheetController.popoverPresentationController?.permittedArrowDirections = [UIPopoverArrowDirection.Up, UIPopoverArrowDirection.Down]
 		actionSheetController.popoverPresentationController?.sourceRect = CGRectMake(cell!.frame.width / 2, cell!.frame.height,0,0)
 
 		//Present the AlertController
@@ -222,10 +222,10 @@ class IdentifiersViewController: UITableViewController {
         let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in }
         
         let changeAction = UIAlertAction(title: "Change", style: .Default) { (action) in
-            let firstPasswordTextField = alertController.textFields![0] as! UITextField
-            user!.changePassword(identifier, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+            let firstPasswordTextField = alertController.textFields![0] 
+            user!.changePassword(identifier, password: firstPasswordTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
-                    displayError(error_msg!,self)
+                    displayError(error_msg!,viewController: self)
                 }
             }
         }
@@ -257,10 +257,10 @@ class IdentifiersViewController: UITableViewController {
         while !(resp is UIAlertController) { resp = resp.nextResponder()! }
         let alertController = resp as! UIAlertController
         
-        let firstPasswordTextField = alertController.textFields![0] as! UITextField
-        let secondPasswordTextField = alertController.textFields![1] as! UITextField
+        let firstPasswordTextField = alertController.textFields![0] 
+        let secondPasswordTextField = alertController.textFields![1] 
         
-        (alertController.actions[1] as! UIAlertAction).enabled = (
+        (alertController.actions[1] ).enabled = (
                 firstPasswordTextField.text != "" &&
                 firstPasswordTextField.text == secondPasswordTextField.text
         )
@@ -276,12 +276,12 @@ class IdentifiersViewController: UITableViewController {
         }
         
         let addAction = UIAlertAction(title: "Add", style: .Default) { (action) in
-            let emailTextField = alertController.textFields![0] as! UITextField
-            let firstPasswordTextField = alertController.textFields![1] as! UITextField
+            let emailTextField = alertController.textFields![0] 
+            let firstPasswordTextField = alertController.textFields![1] 
 			
-            user!.addIdentifier(emailTextField.text, password: firstPasswordTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+            user!.addIdentifier(emailTextField.text!, password: firstPasswordTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
-                    displayError(error_msg!,self)
+					displayError(error_msg!,viewController: self)
 				}
 				dispatch_async(dispatch_get_main_queue(), {
 					self.tableView.reloadData()
@@ -328,12 +328,12 @@ class IdentifiersViewController: UITableViewController {
         while !(resp is UIAlertController) { resp = resp.nextResponder()! }
         let alertController = resp as! UIAlertController
         
-        let emailTextField = alertController.textFields![0] as! UITextField
-        let firstPasswordTextField = alertController.textFields![1] as! UITextField
-        let secondPasswordTextField = alertController.textFields![2] as! UITextField
+        let emailTextField = alertController.textFields![0] 
+        let firstPasswordTextField = alertController.textFields![1] 
+        let secondPasswordTextField = alertController.textFields![2] 
         
-        (alertController.actions[1] as! UIAlertAction).enabled = (
-            emailTextField.text.isEmail() &&
+        alertController.actions[1].enabled = (
+            emailTextField.text!.isEmail() &&
             firstPasswordTextField.text != "" &&
             firstPasswordTextField.text == secondPasswordTextField.text
         )
@@ -341,19 +341,19 @@ class IdentifiersViewController: UITableViewController {
     
     func validationCodeForm(identifier: UserIdentifier) {
         //show validation code form
-		displayValidationForm(identifier.identifier, self, {},
-			{
+		displayValidationForm(identifier.identifier, viewController: self, verificationCanceled: {},
+			verificationStarted: {
 				//verificationStarted
 				identifier.pending = true
 				dispatch_async(dispatch_get_main_queue(), {
 					self.tableView.reloadData()
 				})
 			},
-			{(succeeded, error_msg) -> () in
+			verificationCompleted: {(succeeded, error_msg) -> () in
 				//verificationCompleted
 				identifier.pending = false
 				if !succeeded {
-					displayError(error_msg!,self)
+					displayError(error_msg!,viewController: self)
 				} else {
 					identifier.verified = true
 				}
@@ -363,4 +363,41 @@ class IdentifiersViewController: UITableViewController {
 			}
 		)
 	}
+}
+
+class IdentifierCell: UITableViewCell {	
+	@IBOutlet var identifierLabel: UILabel!
+	@IBOutlet var verificationLabel: UILabel!
+	@IBOutlet var processingSpinner: UIActivityIndicatorView!
+	
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		// Initialization code
+	}
+	
+	override func setSelected(selected: Bool, animated: Bool) {
+		super.setSelected(selected, animated: animated)
+		
+		// Configure the view for the selected state
+	}
+	
+	func markup(identifier: UserIdentifier){
+		identifierLabel.text = identifier.identifier
+		if identifier.pending {
+			processingSpinner.hidden = false
+			verificationLabel.hidden = true
+			processingSpinner.startAnimating()
+		} else {
+			processingSpinner.hidden = true
+			verificationLabel.hidden = false
+			if identifier.verified {
+				verificationLabel.text = "verified"
+				verificationLabel.textColor = Colors.success.textToUIColor()
+			} else {
+				verificationLabel.text = "not verified"
+				verificationLabel.textColor = Colors.danger.textToUIColor()
+			}
+		}
+	}
+	
 }

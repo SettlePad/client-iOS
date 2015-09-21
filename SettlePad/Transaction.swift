@@ -11,8 +11,8 @@ import Foundation
 class Transaction {	
     var time_sent: NSDate
     var time_updated: NSDate
-    var counterpart: Contact? //If linked to a contact
-	var identifier: String? //If to be send, this contains an email address
+	var identifierStr: String
+	var name: String
     var is_sender: Bool
     var transaction_id: Int?
     var description: String
@@ -65,16 +65,16 @@ class Transaction {
             case 3:
                 status = .CanceledOrRejected
             default:
-                println("Unknown status parameter")
+                print("Unknown status parameter")
                 status = .Processed
             }
         } else {
             status = .Processed
-            println("Failed to get status parameter")
+            print("Failed to get status parameter")
         }
         
         if let time_sentString = fromDict["time_sent"] as? String {
-            var dateFormatter = NSDateFormatter()
+            let dateFormatter = NSDateFormatter()
             dateFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
             dateFormatter.timeZone = NSTimeZone.localTimeZone()
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
@@ -82,15 +82,15 @@ class Transaction {
                 time_sent = parsed
             } else {
                 time_sent = NSDate()
-                println("Failed to parse time_sent parameter")
+                print("Failed to parse time_sent parameter")
             }
         } else {
             time_sent = NSDate()
-            println("Failed to get time_sent parameter")
+            print("Failed to get time_sent parameter")
         }
 
         if let time_updatedString = fromDict["time_updated"] as? String {
-            var dateFormatter = NSDateFormatter()
+            let dateFormatter = NSDateFormatter()
             dateFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
             dateFormatter.timeZone = NSTimeZone.localTimeZone()
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
@@ -98,37 +98,28 @@ class Transaction {
                 time_updated = parsed
             } else {
                 time_updated = NSDate()
-                println("Failed to parse time_updated parameter")
+                print("Failed to parse time_updated parameter")
             }
         } else {
             time_updated = NSDate()
-            println("Failed to get time_updated parameter")
+            print("Failed to get time_updated parameter")
         }
 		
-		if let
-			counterpartID = fromDict["counterpart_id"] as? Int,
-			counterpartName = fromDict["counterpart_name"] as? String,
-			registeredInt = fromDict["recipient_registered"] as? Int
-		{
-			if let contact = contacts.getContactByID(counterpartID) {
-				counterpart = contact
-			} else {
-				var recipientRegistered: Bool
-				if (registeredInt == 1) {
-					recipientRegistered = true
-				} else {
-					recipientRegistered = false
-				}
-				let contact = Contact(id: counterpartID, name: counterpartName, friendlyName: "", localName: nil, favorite: false, autoAccept: .Manual, identifiers: [], registered: recipientRegistered)
-				contacts.addContact(contact)
-				counterpart = contact
-			}
+		if let counterpartName = fromDict["counterpart_name"] as? String {
+			name = counterpartName
 		} else {
-			counterpart = nil
-            println("Failed to get counterpart")
+			name = ""
+            print("Failed to get counterpart name")
         }
 
-        
+		
+		if let counterpartIdentifier = fromDict["counterpart_primary_identifier"] as? String {
+			identifierStr = counterpartIdentifier
+		} else {
+			identifierStr = ""
+			print("Failed to get counterpart identifier")
+		}
+		
         if let parsed = fromDict["is_sender"] as? Int {
             if (parsed == 1) {
                 is_sender = true
@@ -137,21 +128,21 @@ class Transaction {
             }
         } else {
             is_sender = false
-            println("Failed to get is_sender parameter")
+            print("Failed to get is_sender parameter")
         }
         
         if let parsed = fromDict["transaction_id"] as? Int {
             transaction_id = parsed
         } else {
             transaction_id = nil
-            println("Failed to get transaction_id parameter")
+            print("Failed to get transaction_id parameter")
         }
         
         if let parsed = fromDict["description"] as? String {
             description = parsed
         } else {
             description = ""
-            println("Failed to get description parameter")
+            print("Failed to get description parameter")
         }
         
         if let parsed = fromDict["currency"] as? String {
@@ -159,18 +150,18 @@ class Transaction {
 				currency = parsedCurrency
 			} else {
 				currency = Currency.EUR
-				println("Unknown currency parameter")
+				print("Unknown currency parameter")
 			}
         } else {
 			currency = Currency.EUR
-			println("Failed to get currency parameter")
+			print("Failed to get currency parameter")
         }
         
         if let parsed = fromDict["amount"] as? Double {
             amount = parsed
         } else {
             amount = 0
-            println("Failed to get amount parameter")
+            print("Failed to get amount parameter")
         }
         
         if let parsed = fromDict["reduced"] as? Int {
@@ -181,15 +172,15 @@ class Transaction {
             }
         } else {
             reduced = false
-            println("Failed to get reduced parameter")
+            print("Failed to get reduced parameter")
         }
     }
     
-	init(counterpart: Contact?, identifier: String, description: String, currency: Currency, amount: Double) {
+	init(name: String, identifier: String, description: String, currency: Currency, amount: Double) {
         time_sent = NSDate()
         time_updated = NSDate()
-        self.counterpart = counterpart
-		self.identifier = identifier
+        self.name = name
+		self.identifierStr = identifier
         is_sender = true
         transaction_id = nil
         self.description = description

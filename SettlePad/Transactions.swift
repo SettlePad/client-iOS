@@ -26,12 +26,12 @@ class Transactions {
     
     func clear() {
         transactions = []
-        var nr_of_results = 20
-        var search = ""
-        var newestID = 0
-        var oldestID = 0
-        var lastUpdate = 0
-        var end_reached = false
+        nr_of_results = 20
+        search = ""
+        newestID = 0
+        oldestID = 0
+        lastUpdate = 0
+        end_reached = false
     }
     
     func post(newTransactions: [Transaction], requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
@@ -39,21 +39,19 @@ class Transactions {
         var formdataArray : [[String:AnyObject]] = []
         for newTransaction in newTransactions {
             newTransaction.status = .Posted
-			if let identifier = newTransaction.identifier {
-				formdataArray.append([
-					"recipient":identifier,
-					"description":newTransaction.description,
-					"amount":newTransaction.amount,
-					"currency":newTransaction.currency.rawValue
-				])
-			}
+			formdataArray.append([
+				"recipient":newTransaction.identifierStr,
+				"description":newTransaction.description,
+				"amount":newTransaction.amount,
+				"currency":newTransaction.currency.rawValue
+			])
         }
 		
 		if (formdataArray.count > 0) {
-			transactions.splice(newTransactions, atIndex: 0)
+			transactions.insertContentsOf(newTransactions, at: 0)
 			
 			//Do post. When returned succesfully, replace status with what comes back
-			var url = "memo/send/"
+			let url = "memo/send/"
 			api.request(url, method: "POST", formdata: formdataArray, secure: true){ (succeeded: Bool, data: NSDictionary) -> () in
 				if(succeeded) {
 					requestCompleted(succeeded: true,error_msg: nil)
@@ -77,7 +75,7 @@ class Transactions {
         
         
         self.search = search.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet())!
-        var url = "transactions/initial/"+String(nr_of_results)+"/"+self.search
+        let url = "transactions/initial/"+String(nr_of_results)+"/"+self.search
         self.transactions = [] //already clear out before reponse
         self.end_reached = false
         getInternal(url, oneAtATime: true){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
@@ -87,10 +85,10 @@ class Transactions {
                     self.updateParams(dataDict!) //Update request parameters
                     for transactionObj in transactions {
                         if let transactionDict = transactionObj as? NSDictionary {
-                            var transaction = Transaction(fromDict: transactionDict)
+                            let transaction = Transaction(fromDict: transactionDict)
                             self.transactions.append(transaction) //Add in rear
                         } else {
-                            println("Cannot parse transaction as dictionary")
+                            print("Cannot parse transaction as dictionary")
                         }
                     }
                 } else {
@@ -105,7 +103,7 @@ class Transactions {
     }
     
     func getMore(requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
-        var url = "transactions/older/\(oldestID)/"+String(nr_of_results)+"/"+search
+        let url = "transactions/older/\(oldestID)/"+String(nr_of_results)+"/"+search
         if self.end_reached {
             requestCompleted(succeeded: false,transactions: self.transactions,error_msg: "End reached")
         } else if  transactions.count  == 0 {
@@ -117,11 +115,11 @@ class Transactions {
                         self.updateParams(dataDict!) //Update request parameters
                         for transactionObj in transactions {
                             if let transactionDict = transactionObj as? NSDictionary {
-                                var transaction = Transaction(fromDict: transactionDict)
+                                let transaction = Transaction(fromDict: transactionDict)
                                 self.transactions.append(transaction) //Add in rear
 								//TODO: add bool that checks whether we are already receiving something, otherwise we'll get the same response multiple times
                             } else {
-                                println("Cannot parse transaction as dictionary")
+                                print("Cannot parse transaction as dictionary")
                             }
                         }
                     } else {
@@ -135,7 +133,7 @@ class Transactions {
     }
     
     func getUpdate(requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
-        var url = "transactions/changes/\(oldestID)/\(newestID)/\(lastUpdate)"+"/"+String(nr_of_results)+"/"+search
+        let url = "transactions/changes/\(oldestID)/\(newestID)/\(lastUpdate)"+"/"+String(nr_of_results)+"/"+search
 		
         getInternal(url, oneAtATime: true){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
             if (succeeded) {
@@ -143,18 +141,18 @@ class Transactions {
 
                     //create dictionary of id (of transaction) to index (in array)
                     var transactionKeyDict = [Int:Int]()
-                    for (i, transaction) in enumerate(self.transactions) {
+                    for (i, transaction) in self.transactions.enumerate() {
                         transactionKeyDict[transaction.transaction_id!] = i //Can be unwrapped safely, as no draft transactions are created here
                     }
 
                     //Loop over updated transactions
                     for transactionObj in updatedTransactionsArray {
                         if let transactionDict = transactionObj as? NSDictionary {
-                            var transaction = Transaction(fromDict: transactionDict)
+                            let transaction = Transaction(fromDict: transactionDict)
                             if let indexInt = transactionKeyDict[transaction.transaction_id!] { //Can be unwrapped safely, as no draft transactions are created here
                                 self.transactions[indexInt] = transaction //Replace
                             } else {
-                                println("Cannot find transaction in local list")
+                                print("Cannot find transaction in local list")
                             }
                         }
                     }
@@ -165,13 +163,13 @@ class Transactions {
                 if let newerTransactionsArray = dataDict!["newer"]!["transactions"] as? NSMutableArray {
                     
                     //Loop over new transactions
-                    for (i, transactionObj) in enumerate(newerTransactionsArray) {
+                    for (i, transactionObj) in newerTransactionsArray.enumerate() {
                         //append
                         if let transactionDict = transactionObj as? NSDictionary {
-                            var transaction = Transaction(fromDict: transactionDict)
+                            let transaction = Transaction(fromDict: transactionDict)
                             self.transactions.insert(transaction,atIndex: i)
                         } else {
-                            println("Cannot parse transaction as dictionary")
+                            print("Cannot parse transaction as dictionary")
                         }
                     }
                     
@@ -185,7 +183,7 @@ class Transactions {
     }
     
 	private func getInternal(url: String, oneAtATime: Bool, requestCompleted : (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> ()) {
-        var requestDate = NSDate()
+        let requestDate = NSDate()
         //println("Transaction request: "+url)
 		if oneAtATime && blockingRequestActive {
 			requestCompleted(succeeded: false,dataDict: nil, error_msg: "") //another blocking request is already pending
@@ -251,7 +249,7 @@ class Transactions {
     }
     
     func changeTransaction(action: String, transaction: Transaction, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-        var url = "transactions/"+action+"/\(transaction.transaction_id!)/"
+        let url = "transactions/"+action+"/\(transaction.transaction_id!)/"
         api.request(url, method: "POST", formdata: [:], secure: true){ (succeeded: Bool, data: NSDictionary) -> () in
             if(succeeded) {
                 requestCompleted(succeeded: true,error_msg: nil)

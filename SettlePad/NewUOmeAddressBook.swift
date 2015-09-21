@@ -11,6 +11,7 @@
 import UIKit
 
 class NewUOmeAddressBook: UIView {
+	
     typealias footerUpdatedDelegate = (NewUOmeAddressBook) -> ()
     var footerUpdated: footerUpdatedDelegate?
     
@@ -27,7 +28,7 @@ class NewUOmeAddressBook: UIView {
     
  
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         //fatalError("This class does not support NSCoding")
         super.init(coder: aDecoder)
     }
@@ -36,19 +37,21 @@ class NewUOmeAddressBook: UIView {
         super.awakeFromNib()
 
         //Determine address book status
-        switch contacts.localStatus{
-            case .Authorized:
-                self.requestAddressBookAccessButton.removeFromSuperview()
-                self.detailLabel.removeFromSuperview()
-            case .Denied:
-                self.requestAddressBookAccessButton.removeFromSuperview()
-                self.detailLabel.text = "You denied access to your local address book, which is why we can only show contacts you've already exchanged UOmes with. You can allow access to your address book in the iOS settings (Privacy, Contacts)."
-            case .NotDetermined:
-                self.detailLabel.text = "We will not upload any personal data from your contacts to its servers. The technical details: a salted hash of the email addresses and phone numbers of your contacts will at some point in the future created and stored at the servers, to be able to tell you who of your contacts is using our service."
-            case .Restricted:
-                self.requestAddressBookAccessButton.removeFromSuperview()
-                self.detailLabel.text = "We cannot access your contacts, possibly due to restrictions such as parental controls."
-        }
+		dispatch_async(dispatch_get_main_queue(), { () -> Void in
+			switch contacts.localStatus{
+				case .Authorized:
+					self.requestAddressBookAccessButton.removeFromSuperview()
+					self.detailLabel.removeFromSuperview()
+				case .Denied:
+					self.requestAddressBookAccessButton.removeFromSuperview()
+					self.detailLabel.text = "You denied access to your local address book, which is why we can only show contacts you've already exchanged UOmes with. You can allow access to your address book in the iOS settings (Privacy, Contacts)."
+				case .NotDetermined:
+					self.detailLabel.text = "We will not upload any personal data from your contacts to its servers. The technical details: a salted hash of the email addresses and phone numbers of your contacts will at some point in the future created and stored at the servers, to be able to tell you who of your contacts is using our service."
+				case .Restricted:
+					self.requestAddressBookAccessButton.removeFromSuperview()
+					self.detailLabel.text = "We cannot access your contacts, possibly due to restrictions such as parental controls."
+			}
+		})
     }
     
     /*

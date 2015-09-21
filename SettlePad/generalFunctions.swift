@@ -10,16 +10,16 @@ import Foundation
 import UIKit
 
 func JSONStringify(jsonObj: AnyObject) -> String {
-    var e: NSError?
-    let jsonData = NSJSONSerialization.dataWithJSONObject(
-        jsonObj,
-        options: NSJSONWritingOptions(0),
-        error: &e)
-    if (e != nil) {
-        return ""
-    } else {
-        return NSString(data: jsonData!, encoding: NSUTF8StringEncoding)! as String
-    }
+    let jsonData: NSData?
+	do {
+		jsonData = try NSJSONSerialization.dataWithJSONObject(
+				jsonObj,
+				options: NSJSONWritingOptions(rawValue: 0))
+		return NSString(data: jsonData!, encoding: NSUTF8StringEncoding)! as String
+	//} catch let error as NSError {
+	} catch {
+		return ""
+	}
 }
 
 extension Double {
@@ -34,9 +34,17 @@ extension String {
     }
 
     func isEmail() -> Bool {
-        let regex = NSRegularExpression(pattern: "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", options: .CaseInsensitive, error: nil)
-        return regex?.firstMatchInString(self, options: nil, range: NSMakeRange(0, count(self))) != nil
+        let regex = try? NSRegularExpression(pattern: "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", options: .CaseInsensitive)
+        return regex?.firstMatchInString(self, options: [], range: NSMakeRange(0, self.characters.count)) != nil
     }
+}
+
+extension UIViewController {
+	func isModal() -> Bool {
+		return (self.presentingViewController?.presentedViewController == self
+			|| (self.navigationController != nil && self.navigationController?.presentingViewController?.presentedViewController == self.navigationController)
+			|| self.tabBarController?.presentingViewController is UITabBarController)
+	}
 }
 
 //Define colors
@@ -81,7 +89,7 @@ class PickerButton: UIButton {
 	var modAccessoryView = UIToolbar()
 
 
-	required init(coder aDecoder: NSCoder) {
+	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
 
 		modAccessoryView.barStyle = UIBarStyle.Default
@@ -90,8 +98,8 @@ class PickerButton: UIButton {
 		modAccessoryView.sizeToFit()
 		
 		//var cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.Plain, target: nil, action: "donePicker")
-		var spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
-		var doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Done, target: nil, action: "donePicker")
+		let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+		let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Done, target: nil, action: "donePicker")
 		
 		modAccessoryView.setItems([spaceButton, spaceButton, doneButton], animated: false)
 		modAccessoryView.userInteractionEnabled = true
@@ -435,7 +443,6 @@ enum Currency: String {
 		case YER: return "Yemeni Rial"
 		case ZMW: return "New Zambian Kwacha"
 		case ZWL: return "Zimbabwe Dollar"
-		default: return "unknown"
 		}
 	}
 	

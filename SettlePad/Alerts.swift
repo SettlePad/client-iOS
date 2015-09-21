@@ -13,7 +13,7 @@ func displayError(errorMessage: String, viewController: UIViewController) {
 	let OKAction = UIAlertAction(title: "OK", style: .Default) { action -> Void in
 		if (user == nil && viewController.restorationIdentifier != "LoginController") {
 			let storyboard = UIStoryboard(name: "Main", bundle: nil)
-			let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
+			let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") 
 			dispatch_async(dispatch_get_main_queue(), { () -> Void in
 				viewController.presentViewController(vc, animated: false, completion: nil)
 			})
@@ -38,8 +38,8 @@ func displayValidationForm(identifierStr: String, viewController: UIViewControll
 	
 	let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
 		verificationStarted()
-		let validationTextField = alertController.textFields![0] as! UITextField
-		api.verifyIdentifier(identifierStr, token: validationTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+		let validationTextField = alertController.textFields![0] 
+		api.verifyIdentifier(identifierStr, token: validationTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
 				verificationCompleted(succeeded: false, error_msg: error_msg!)
 			} else {
@@ -75,10 +75,10 @@ func displayIncorrectPasswordForm(identifierStr: String, viewController: UIViewC
 			if !succeeded {
 				verificationCompleted(succeeded: false, error_msg: error_msg!)
 			} else {
-				displayResetPasswordForm(identifierStr, viewController, {() -> () in
+				displayResetPasswordForm(identifierStr, viewController: viewController, verificationCanceled: {() -> () in
 					//When canceled
 					verificationCanceled()
-				},{() -> () in
+				},verificationStarted: {() -> () in
 					//verification started
 					verificationStarted()
 				}) { (succeeded, error_msg) -> () in
@@ -89,10 +89,10 @@ func displayIncorrectPasswordForm(identifierStr: String, viewController: UIViewC
 	}
 	
 	let resetAction = UIAlertAction(title: "Change with received token", style: .Default) { (action) in
-		displayResetPasswordForm(identifierStr, viewController, {() -> () in
+		displayResetPasswordForm(identifierStr, viewController: viewController, verificationCanceled: {() -> () in
 			//When canceled
 			verificationCanceled()
-		},{() -> () in
+		},verificationStarted: {() -> () in
 			//verification started
 			verificationStarted()
 		}) { (succeeded, error_msg) -> () in
@@ -119,9 +119,9 @@ func displayResetPasswordForm(identifierStr: String, viewController: UIViewContr
 	
 	let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
 		verificationStarted()
-		let passwordTextField = alertController.textFields![0] as! UITextField
-		let tokenTextField = alertController.textFields![1] as! UITextField
-		api.resetPassword(identifierStr, passwordStr: passwordTextField.text, tokenStr: tokenTextField.text) { (succeeded: Bool, error_msg: String?) -> () in
+		let passwordTextField = alertController.textFields![0] 
+		let tokenTextField = alertController.textFields![1] 
+		api.resetPassword(identifierStr, passwordStr: passwordTextField.text!, tokenStr: tokenTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
 				verificationCompleted(succeeded: false, error_msg: error_msg!)
 			} else {

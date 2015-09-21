@@ -23,7 +23,7 @@ class UserIdentifier : NSObject, NSCoding {
     
     
     //All below required for saving to and loading from NSUserDefaults
-    required init(coder decoder: NSCoder) {
+    required init?(coder decoder: NSCoder) {
 		if let identifier = decoder.decodeObjectForKey("identifier") as? String {
 			self.identifier = identifier
 		} else {

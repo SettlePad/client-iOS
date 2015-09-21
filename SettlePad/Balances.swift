@@ -21,9 +21,9 @@ class Balances {
 		return balances.filter { $0.currency == currency}
 	}
 	
-	func getBalancesForContact(contact: Contact)->[Balance] {
+	/*func getBalancesForContact(contact: Contact)->[Balance] {
 		return balances.filter { $0.contact == contact}
-	}
+	}*/
 
 	func getSummaryForCurrency(currency: Currency)->CurrencySummary? {
 		let returnArray = currenciesSummary.filter { $0.currency == currency}
@@ -49,28 +49,21 @@ class Balances {
 						for (currencyKey,balances) in connectionsDict {
 							for details in balances {
 								if let
-									contactID = details["connection_id"] as? Int,
-									contactName = details["connection_name"] as? String,
+									contactIdentifier = details["primary_identifier"] as? String,
+									contactName = details["name"] as? String,
 									balance = details["balance"] as? Double,
 									unprocessed = details["unprocessed"] as? Bool
 								{
 									if let currency = Currency(rawValue: currencyKey) {
-										if let contact = contacts.getContactByID(contactID) {
-											self.balances.append(Balance(contact: contact, currency: currency, balance: balance, unprocessed: unprocessed))
-										} else {
-											//This ID does not exist yet, create it
-											let contact = Contact(id: contactID, name: contactName, friendlyName: "", localName: nil, favorite: false, autoAccept: .Manual, identifiers: [], registered: false)
-											contacts.addContact(contact)
-											self.balances.append(Balance(contact: contact, currency: currency, balance: balance, unprocessed: unprocessed))
-										}
+										self.balances.append(Balance(identifierStr: contactIdentifier, name: contactName, currency: currency, balance: balance, unprocessed: unprocessed))
 									} else {
-										println("Unknown currency parsing balance: " + currencyKey)
+										print("Unknown currency parsing balance: " + currencyKey)
 									}
 								}
 							}
 						}
 					} else {
-						println("no connections")
+						print("no connections")
 					}
 				
 					if let summaryDict = dataDict["summary"] as? Dictionary <String, Dictionary <String, AnyObject> > {
@@ -84,12 +77,12 @@ class Balances {
 									self.currenciesSummary.append(CurrencySummary(currency: currency, get: get, owe: owe))
 								}
 							} else {
-								println("Cannot parse summary for: "+currencyKey)
+								print("Cannot parse summary for: "+currencyKey)
 								
 							}
 						}
 					} else {
-						println("Cannot parse summary")
+						print("Cannot parse summary")
 					}
 					
 				} else {
@@ -101,7 +94,7 @@ class Balances {
 					self.sortedCurrencies.append(currencySummary.currency)
 				}
 				
-				self.sortedCurrencies.sort({(left: Currency, right: Currency) -> Bool in
+				self.sortedCurrencies.sortInPlace({(left: Currency, right: Currency) -> Bool in
 					left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
 				
 				requestCompleted(succeeded: true,error_msg: nil)

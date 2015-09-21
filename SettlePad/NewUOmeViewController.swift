@@ -30,7 +30,6 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         if state == .Overview {
 			//TODO: save draft memo's so that they remain after the app is terminated (via Transactions class, in CoreData, see http://www.raywenderlich.com/85578/first-core-data-app-using-swift)
 			self.dismissViewControllerAnimated(true, completion: nil)
-			
         } else {
             formTo.text = ""
             switchState(.Overview)
@@ -113,7 +112,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         
         //If not-empty, show suggestions
         if formTo.text != "" {
-            getMatchedContactIdentifiers(formTo.text)
+            getMatchedContactIdentifiers(formTo.text!)
             switchState(.NewUOme)
         } else {
             switchState(.Overview)
@@ -191,10 +190,12 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 
     
     func layoutAddressBookFooter() {
-        addressBookFooter.frame.size.width = newUOmeTableView.frame.width
-        addressBookFooter.detailLabel.preferredMaxLayoutWidth = newUOmeTableView.frame.width - 40 //margin of 20 left and right
+		dispatch_async(dispatch_get_main_queue(), {
+			self.addressBookFooter.frame.size.width = self.newUOmeTableView.frame.width
+			self.addressBookFooter.detailLabel.preferredMaxLayoutWidth = self.newUOmeTableView.frame.width - 40 //margin of 20 left and right
 
-        addressBookFooter.frame.size.height = addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
+			self.addressBookFooter.frame.size.height = self.addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
+		})
     }
     
     @IBAction func formDescriptionEditingChanged(sender: AnyObject) {
@@ -209,8 +210,6 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        //newUOmeTableView.rowHeight = UITableViewAutomaticDimension
-        
         switchState(.Overview)
         
         addressBookFooter.footerUpdated = {(sender) in
@@ -219,22 +218,19 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             dispatch_async(dispatch_get_main_queue(), {
                 self.newUOmeTableView.tableFooterView = self.addressBookFooter
-            })
-            
-            dispatch_async(dispatch_get_main_queue(), {
                 self.newUOmeTableView.reloadData()
             })
         }
 		
 		//Sort currencies
-		sortedCurrencies = Currency.allValues.sorted({(left: Currency, right: Currency) -> Bool in left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
+		sortedCurrencies = Currency.allValues.sort({(left: Currency, right: Currency) -> Bool in left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
 		
 		//Link currency picker to delegate and datasource functions below
 		formCurrency.modInputView.dataSource = self
 		formCurrency.modInputView.delegate = self
 		
 		//Set currency picker to user's default currency
-		let row: Int? = find(sortedCurrencies,user!.defaultCurrency)
+		let row: Int? = sortedCurrencies.indexOf(user!.defaultCurrency)
 		if row != nil {
 			formCurrency.modInputView.selectRow(row!, inComponent: 0, animated: false)
 			selectedCurrency = user!.defaultCurrency
@@ -258,7 +254,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             formTo.layer.borderColor = Colors.danger.textToUIColor().CGColor
         */
         
-        if formTo.text.isEmail() {
+        if formTo.text!.isEmail() {
             formTo.backgroundColor = nil
             formTo.textColor = nil
         } else {
@@ -289,7 +285,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             }
         }
         
-        if let parsed = formAmount.text.toDouble() {
+        if formAmount.text!.toDouble() != nil {
             formAmount.backgroundColor = nil
             formAmount.textColor = nil
         } else {
@@ -338,17 +334,19 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             // Configure the cell...
             cell.markup(newTransactions[indexPath.row])
+			cell.layoutIfNeeded() //to get right layout given dynamic height
             return cell
         } else {
             //show contacts
-            let cell = tableView.dequeueReusableCellWithIdentifier("ContactCell", forIndexPath: indexPath) as! UITableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier("ContactCell", forIndexPath: indexPath) 
             
             // Configure the cell...
             let contactIdentifier = matchedContactIdentifiers[indexPath.row]
-			cell.textLabel?.text = contactIdentifier.contact.resultingName
+			cell.textLabel?.text = contactIdentifier.resultingName
 
             cell.detailTextLabel?.text =  contactIdentifier.identifierStr
-            return cell
+			cell.layoutIfNeeded() //to get right layout given dynamic height
+			return cell
         }
     }
 
@@ -365,9 +363,9 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         //function required to have editable rows
     }
     
-    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]?  {
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]?  {
         //return []
-        var deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Delete" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
+        let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Delete" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
             self.deleteTransaction(indexPath.row)
         })
         deleteAction.backgroundColor = Colors.danger.textToUIColor()
@@ -395,8 +393,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        //Required to have dynamic row height
-        newUOmeTableView.estimatedRowHeight = 70
+		//Set cell height to dynamic. Note that it also requires a cell.layoutIfNeeded in cellForRowAtIndexPath!
+		newUOmeTableView.estimatedRowHeight = 70
         newUOmeTableView.rowHeight = UITableViewAutomaticDimension
     }
     
@@ -424,15 +422,23 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         if validateForm(false, finalCheck: true) {
             var amount: Double
             if (formType.selectedSegmentIndex == 0) {
-                amount = formAmount.text.toDouble()!
+                amount = formAmount.text!.toDouble()!
             } else {
-                amount = -1*formAmount.text.toDouble()!
+                amount = -1*formAmount.text!.toDouble()!
             }
-            
-            var transaction = Transaction(
-				counterpart: contacts.getContactByIdentifier(formTo.text),
-				identifier: formTo.text,
-                description: formDescription.text,
+			
+			let matchedIdentifier: Identifier? = contacts.getIdentifier(formTo.text!)
+
+			var name: String
+			if matchedIdentifier != nil {
+				name = matchedIdentifier!.resultingName
+			} else {
+				name = formTo.text!
+			}
+            let transaction = Transaction(
+				name: name,
+				identifier: formTo.text!,
+                description: formDescription.text!,
                 currency: selectedCurrency,
                 amount: amount
             )
@@ -456,9 +462,9 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     }
     
     func getMatchedContactIdentifiers(needle: String){
-        matchedContactIdentifiers.removeAll()
+		matchedContactIdentifiers.removeAll()
         for contactIdentifier in contacts.contactIdentifiers {
-            if (contactIdentifier.identifierStr.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact.name.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact.friendlyName.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
+            if (contactIdentifier.identifierStr.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact?.name.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact?.friendlyName.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.localName?.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
                 matchedContactIdentifiers.append(contactIdentifier)
             }
         }
@@ -475,7 +481,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 		return sortedCurrencies.count;
 	}
 	
-	func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String
+	func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String?
 	{
 		return sortedCurrencies[row].toLongName()
 	}
@@ -501,7 +507,7 @@ class NewUOmeFooterView: UIView {
 	self.init(frame:CGRectMake(0, 0, 320, 44)) //By default, make a rect of 320x44
 	}*/
 	
-	required init(coder aDecoder: NSCoder) {
+	required init?(coder aDecoder: NSCoder) {
 		fatalError("This class does not support NSCoding")
 	}
 	

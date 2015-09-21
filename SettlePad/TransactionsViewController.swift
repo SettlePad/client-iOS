@@ -32,11 +32,11 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 	func transactionsPostCompleted(controller:NewUOmeViewController, error_msg: String?) {
 		//Goto login screen
 		if error_msg != nil {
-			displayError(error_msg!, self)
+			displayError(error_msg!, viewController: self)
 			if (user == nil) {
 				dispatch_async(dispatch_get_main_queue()) {
 					let storyboard = UIStoryboard(name: "Main", bundle: nil)
-					let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") as! UIViewController
+					let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") 
 					self.presentViewController(vc, animated: false, completion: nil)
 				}
 			} else {
@@ -63,7 +63,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
         transactions.clear()
-        reload_transactions(loading: true) //want to show spinner
+        reload_transactions(true) //want to show spinner
         
         transactions.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
 			dispatch_async(dispatch_get_main_queue(), {
@@ -71,7 +71,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 				self.reload_transactions()
 			})
 			if (!succeeded) {
-                displayError(error_msg!, self)
+                displayError(error_msg!, viewController: self)
             }
         }
 
@@ -98,7 +98,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		
-		//Set cell height to dynamic
+		//Set cell height to dynamic. Note that it also requires a cell.layoutIfNeeded in cellForRowAtIndexPath!
 		transactionsTableView.rowHeight = UITableViewAutomaticDimension
 		transactionsTableView.estimatedRowHeight = 40
 	}
@@ -128,7 +128,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         if let transaction = transactions.getTransaction(indexPath.row)  {
             cell.markup(transaction)
         }
-        
+		cell.layoutIfNeeded() //to get right layout given dynamic height
         return cell
     }
     
@@ -164,10 +164,10 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     }
     
     
-    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]?  {
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]?  {
         if let transaction = transactions.getTransaction(indexPath.row)  {
             if transaction.can_be_canceled {
-                var cancelAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Cancel" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
+                let cancelAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Cancel" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
                         self.changeTransaction("cancel", transaction: transaction)
                 })
                 cancelAction.backgroundColor = Colors.gray.textToUIColor()
@@ -175,12 +175,12 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 
             } else if transaction.can_be_accepted {
                 //mutually exclusive with can_be_canceled, which can happen if user is sender. This can only happen if user is recipient
-                var acceptAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Accept" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
+                let acceptAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Accept" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
                     self.changeTransaction("accept", transaction: transaction)
                 })
                 acceptAction.backgroundColor = Colors.success.textToUIColor()
                 
-                var rejectAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Reject" , handler: { (action:UITableViewRowAction!, indexPath:NSIndexPath!) -> Void in
+                let rejectAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Reject" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
                     self.changeTransaction("reject", transaction: transaction)
                 })
                 rejectAction.backgroundColor = Colors.danger.backgroundToUIColor()
@@ -189,7 +189,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
                 return nil
             }
         } else {
-            println("not set?")
+            print("not set?")
             return []
         }
     }
@@ -201,7 +201,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 				self.refreshTransactions()
 			})
 			if (!succeeded) {
-                displayError(error_msg!, self)
+                displayError(error_msg!, viewController: self)
             }
         }
     }
@@ -260,17 +260,17 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         //println("searched")
         
         //get new results
-        transactions.get(searchBar.text){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+        transactions.get(searchBar.text!){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
 			dispatch_async(dispatch_get_main_queue(), {
 				//so it is run now, instead of at the end of code execution
 				self.reload_transactions()
 			})
 			if (!succeeded) {
-                displayError(error_msg!, self)
+                displayError(error_msg!, viewController: self)
             }
         }
         
-        reload_transactions(loading: true) //want to show spinner
+        reload_transactions(true) //want to show spinner
     }
     
     func searchBarCancelButtonClicked( searchBar: UISearchBar!)
@@ -287,11 +287,11 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 				self.reload_transactions()
 			})
 			if (!succeeded) {
-                displayError(error_msg!, self)
+                displayError(error_msg!, viewController: self)
             }
         }
         
-        reload_transactions(loading: true) //want to show spinner
+        reload_transactions(true) //want to show spinner
     }
     
     func refreshTransactions() {        
@@ -301,7 +301,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 				self.reload_transactions()
 			})
 			if (!succeeded) {
-                displayError(error_msg!, self)
+                displayError(error_msg!, viewController: self)
             }
 
         }
@@ -327,7 +327,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 						self.reload_transactions()
 					})
 					if (!succeeded && error_msg! != "") {
-						displayError(error_msg!, self)
+						displayError(error_msg!, viewController: self)
                     }
                 }
             }
@@ -370,7 +370,7 @@ class TransactionsFooterView: UIView {
 	self.init(frame:CGRectMake(0, 0, 320, 44)) //By default, make a rect of 320x44
 	}*/
 	
-	required init(coder aDecoder: NSCoder) {
+	required init?(coder aDecoder: NSCoder) {
 		fatalError("This class does not support NSCoding")
 	}
 	

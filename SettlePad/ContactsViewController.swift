@@ -8,10 +8,15 @@
 
 import UIKit
 
-class ContactsViewController: UITableViewController {
+protocol ContactsViewControllerDelegate {
+	func reloadContent(error_msg: String?)
+}
+
+
+class ContactsViewController: UITableViewController, ContactsViewControllerDelegate {
 	//TODO: with refreshControl spinning and no connection to server, all section heads are screwed up
 
-	var registeredContacts: [Contact] = contacts.registeredContacts
+	var serverContacts: [Contact] = contacts.contacts
 	
     @IBOutlet var searchBar: UISearchBar!
 
@@ -25,6 +30,13 @@ class ContactsViewController: UITableViewController {
         self.tableView.reloadData()
     }
 	
+	func reloadContent(error_msg: String?) {
+		if error_msg != nil {
+			displayError(error_msg!, viewController: self)
+		}
+        self.tableView.reloadData()		
+	}
+	
 	// custom type to represent table sections
 	class Section {
 		var contacts: [Contact] = []
@@ -36,7 +48,7 @@ class ContactsViewController: UITableViewController {
 	
 	// `UIKit` convenience class for sectioning a table
 	let collation = UILocalizedIndexedCollation.currentCollation()
-		as! UILocalizedIndexedCollation
+		
 	
 	// table sections
 	var sections: [Section] {
@@ -47,13 +59,13 @@ class ContactsViewController: UITableViewController {
 		
 		// create empty sections
 		var sections = [Section]()
-		for i in 0..<self.collation.sectionIndexTitles.count {
+		for _ in 0..<self.collation.sectionIndexTitles.count {
 			sections.append(Section())
 		}
 		
 		
 		// put each currency in a section
-		for contact in registeredContacts {
+		for contact in serverContacts {
 			let section = self.collation.sectionForObject(contact, collationStringSelector: "resultingName")
 			sections[section].addContact(contact)
 		}
@@ -101,7 +113,7 @@ class ContactsViewController: UITableViewController {
 		
 		contacts.updateContacts {(succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
-				displayError(error_msg!, self)
+				displayError(error_msg!, viewController: self)
 			}
 			self.reload()
 			self.contactsRefreshControl.endRefreshing()
@@ -116,10 +128,10 @@ class ContactsViewController: UITableViewController {
 	func reload() {
 		//Filter contacts based on search query
 		if searchBar.text == "" {
-			registeredContacts = contacts.registeredContacts
+			serverContacts = contacts.contacts
 		} else {
 			let needle = searchBar.text
-			registeredContacts = contacts.registeredContacts.filter{$0.resultingName.lowercaseString.rangeOfString(needle.lowercaseString) != nil}
+			serverContacts = contacts.contacts.filter{$0.resultingName.lowercaseString.rangeOfString(needle!.lowercaseString) != nil}
 		}
 		
 		dispatch_async(dispatch_get_main_queue(), {
@@ -165,13 +177,13 @@ class ContactsViewController: UITableViewController {
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String {
 		// do not display empty `Section`s
 		if !self.sections[section].contacts.isEmpty {
-			return self.collation.sectionTitles[section] as! String
+			return self.collation.sectionTitles[section] 
 		}
 		return "" //Only works correct if table style is plain, otherwise height of the next section header will be too big
 	}
 	
 	/* section index titles displayed to the right of the `UITableView` */
-	override func sectionIndexTitlesForTableView(tableView: UITableView) -> [AnyObject] {
+	override func sectionIndexTitlesForTableView(tableView: UITableView) -> [String] {
 		return self.collation.sectionIndexTitles
 	}
 	
@@ -183,11 +195,17 @@ class ContactsViewController: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 
 
-		if segue.identifier == "contact" {
+		if segue.identifier == "existing_contact" {
 			//make sure that the segue is going to secondViewController
-			let selectedIndex : NSIndexPath = self.tableView.indexPathForSelectedRow()!
+			let selectedIndex : NSIndexPath = self.tableView.indexPathForSelectedRow!
 			let destVC = segue.destinationViewController as! ContactViewController
 			destVC.contact = self.sections[selectedIndex.section].contacts[selectedIndex.row]
+			destVC.delegate = self
+		} else if segue.identifier == "new_contact" {
+			let navigationController = segue.destinationViewController as! UINavigationController
+			let destVC = navigationController.viewControllers[0] as! ContactViewController
+			destVC.contact = Contact(name: "", friendlyName: "", registered: false, favorite: true, autoAccept: .Manual, identifiers: [], propagatedToServer: false)
+			destVC.delegate = self
 		}
     }
 
@@ -233,6 +251,44 @@ class ContactsViewController: UITableViewController {
 		
 		reload()
 	}
+}
+
+class ContactCell: UITableViewCell {	
+	@IBOutlet var nameLabel: UILabel!
+    @IBOutlet var spinner: UIActivityIndicatorView!
+	@IBOutlet var statusImage: UIImageView!
+	
+	//var contact: Contact?
+	
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		// Initialization code
+	}
+	
+	override func setSelected(selected: Bool, animated: Bool) {
+		super.setSelected(selected, animated: animated)
+		
+		// Configure the view for the selected state
+	}
+	
+	func markup(contact: Contact){
+		if contact.favorite {
+			statusImage.hidden = true
+		} else {
+			statusImage.hidden = false
+		}
+		
+		if contact.propagatedToServer == false {
+			spinner.hidden = false
+			spinner.startAnimating()
+		} else {
+			spinner.hidden = true
+		}
+		
+		nameLabel.text = contact.resultingName
+	}
+	
+	
 }
 
 

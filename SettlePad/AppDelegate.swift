@@ -25,16 +25,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	func application( application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData ) {
 		
 
-		var characterSet: NSCharacterSet = NSCharacterSet( charactersInString: "<>" )
+		let characterSet: NSCharacterSet = NSCharacterSet( charactersInString: "<>" )
 		
-		var deviceTokenString: String = ( deviceToken.description as NSString )
+		let deviceTokenString: String = ( deviceToken.description as NSString )
 			.stringByTrimmingCharactersInSet( characterSet )
 			.stringByReplacingOccurrencesOfString( " ", withString: "" ) as String
 		
 		if user != nil {
 			api.registerAPNToken(deviceTokenString) { (succeeded: Bool, error_msg: String?) -> () in
 				if !succeeded {
-					println("Error while registering device token: "+error_msg!)
+					print("Error while registering device token: "+error_msg!)
 				}
 			}
 		}
@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	
 	func application( application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError ) {
 		
-		println( error.localizedDescription )
+		print( error.localizedDescription )
 	}
 
 
@@ -73,7 +73,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	func setBadgeNumber(number: Int) {
 		if UIDevice.currentDevice().systemVersion.compare("8.0",
 			options: NSStringCompareOptions.NumericSearch) != NSComparisonResult.OrderedAscending {
-				if UIApplication.sharedApplication().currentUserNotificationSettings().types & UIUserNotificationType.Badge != nil {
+				if UIApplication.sharedApplication().currentUserNotificationSettings()!.types.intersect(UIUserNotificationType.Badge) != [] {
 					UIApplication.sharedApplication().applicationIconBadgeNumber = number
 				//} else {
 				//	println("No permission to set badge number")

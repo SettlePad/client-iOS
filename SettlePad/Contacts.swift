@@ -10,155 +10,98 @@ import Foundation
 import AddressBook
 
 class Contacts {
-	//Save contacts in CoreData
-	
-    private(set) var contacts = [Contact]()
+	private(set) var contacts = [Contact]()
+	private(set) var contactIdentifiers = [Identifier]() //Identifier, Contact
+
 	private var contactsUpdating: Bool = false
 	
-    var registeredContacts : [Contact] {
-        get {
-            return contacts.filter { $0.registered}
-        }
-    }
     var favoriteContacts : [Contact] {
         get {
             return contacts.filter { $0.favorite}
         }
     }
 
-
-    var contactIdentifiers = [Identifier]() //Identifier, Contact
-	
-    var localStatus: ABAuthorizationStatus {
-        get {
-            return ABAddressBookGetAuthorizationStatus()
-        }
-    }
-	
-	func getContactByID(id: Int)->Contact? {
-		let returnArray = contacts.filter { $0.id == id}
+	func getIdentifier(identifierStr: String)->Identifier? {
+		let returnArray = contactIdentifiers.filter {$0.identifierStr == identifierStr}
 		return returnArray.first
 	}
-
-	func getContactByIdentifier(identifierStr: String)->Contact? {
-		let returnArray = contactIdentifiers.filter {$0.identifierStr == identifierStr}
-		return returnArray.first?.contact
+	
+	var localStatus: ABAuthorizationStatus {
+		get {
+			return ABAddressBookGetAuthorizationStatus()
+		}
 	}
 	
+    
     func updateContacts(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		//From the server
+		//Update server contacts
+		
 		if contactsUpdating == false {
-			contactsUpdating = true
-			updateServerContacts() {(succeeded: Bool, error_msg: String?) -> () in
-				//From the local address book, once the server contacts have loaded
-				if (ABAddressBookGetAuthorizationStatus() == .Authorized) {
-					if let addressBook: ABAddressBookRef = self.createAddressBook() {
-						self.updateLocalContacts(addressBook)
+		contactsUpdating = true
+			api.request("contacts", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+				if(!succeeded) {
+					if let error_msg = data["text"] as? String {
+						requestCompleted(succeeded: false,error_msg: error_msg)
+					} else {
+						requestCompleted(succeeded: false,error_msg: "Unknown error while refreshing contacts")
 					}
+				} else {
+					self.contacts = []
+					if let contactsArray = data["data"] as? [Dictionary <String, AnyObject>] {
+						for contactDict in contactsArray {
+							self.contacts.append(Contact(fromDict: contactDict, propagatedToServer: true))
+						}
+					}
+					self.updateIdentifiers()
+					requestCompleted(succeeded: true,error_msg: nil)
 				}
-
-				self.updateIdentifiers()
 				self.contactsUpdating = false
-				requestCompleted(succeeded: succeeded, error_msg: error_msg)
 			}
 		} else {
 			requestCompleted(succeeded: false, error_msg: "Already refreshing")
 		}
     }
-    
-    private func updateServerContacts(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-        api.request("contacts", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-            if(!succeeded) {
-                if let error_msg = data["text"] as? String {
-					requestCompleted(succeeded: false,error_msg: error_msg)
-				} else {
-					requestCompleted(succeeded: false,error_msg: "Unknown error while refreshing contacts")
-                }
-            } else {
 
-                self.contacts = []
-                if let contacts = data["data"] as? Dictionary <String, Dictionary <String, AnyObject> > {
-                    for (keyString,contactDict) in contacts {
-                        //if let contactDict = contactObj as? NSDictionary {
-                            self.addContact(Contact(fromDict: contactDict, registered: true))
-                        //} else {
-                            //println("Cannot parse contact as dictionary")
-                        //}
-                    }
-                } else {
-                    //no contacts, which is fine
-                }
-				requestCompleted(succeeded: true,error_msg: nil)
-			}
-
-        }
-    }
-    
-    private func updateLocalContacts(addressBook: ABAddressBookRef) {
-        if let people = ABAddressBookCopyArrayOfAllPeople(addressBook)?.takeRetainedValue() as? [ABRecord] {
-            for person in people {
-                var emails = [String]()
-				
-				let emailMVR: ABMultiValueRef = ABRecordCopyValue(person, kABPersonEmailProperty).takeRetainedValue()
-				for (var i = 0; i < ABMultiValueGetCount(emailMVR); i++) {
-					if let email = ABMultiValueCopyValueAtIndex(emailMVR, i)?.takeRetainedValue() as? String {
-						if email.isEmail() {
-							emails.append(email)
-						}
-					}
-				}
-				
-				if let name = ABRecordCopyCompositeName(person)?.takeRetainedValue() as? String {
-					addContact(Contact(id: nil, name: name, friendlyName: "", localName: name, favorite: false, autoAccept: .Manual, identifiers: emails, registered: false))
-				}
-            }
-        }
-    }
-	
-	func updateAutoLimits(requestCompleted : () -> ()) {
-		api.request("autolimits", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(!succeeded) {
-				if let error_msg = data["text"] as? String {
-					println(error_msg)
-				} else {
-					println("Unknown error while refreshing autolimits")
-				}
-			} else {
-				if let contactsLimits = data["data"] as? Dictionary <String, Dictionary <String, Double> > {
-					for (contactID,contactLimits) in contactsLimits {
-						for (currencyString,limitDouble) in contactLimits {
-							if let currency = Currency(rawValue: currencyString) {
-								if let contactIDInt = contactID.toInt() {
-									if let contact = self.getContactByID(contactIDInt) {
-										contact.addLimit(currency, limit: limitDouble, updateServer: false)
-									} else {
-										println("Contact with ID not found: "+contactID)
-									}
-								} else {
-									println("Contact ID no Int: "+contactID)
-								}
-							} else {
-								println("Unknown currency: "+currencyString)
-							}
-						}
-					}
-				//} else {
-					//println("Cannot parse limit as dictionary, might be that there are no limits")
-				}
-			}
-			requestCompleted()
-		}
-	}
-	
+		
     private func updateIdentifiers() {
-        //update sorted list of identifiers
+        //Add server contacts
         contactIdentifiers.removeAll()
         for contact in contacts {
             for identifierStr in contact.identifiers {
 				contactIdentifiers.append(Identifier(identifierStr: identifierStr,contact: contact))
             }
         }
-		contactIdentifiers.sort({(left: Identifier, right: Identifier) -> Bool in
+		
+		//Add local address book
+		if (self.localStatus == .Authorized) {
+			if let addressBook: ABAddressBookRef = createAddressBook() {
+				//if let people = ABAddressBookCopyArrayOfAllPeople(addressBook)?.takeRetainedValue() as? [ABRecord] {
+				if let people =  ABAddressBookCopyArrayOfAllPeople(addressBook)?.takeRetainedValue()  as NSArray? as? [ABRecordRef] {
+					for person in people {
+						var localName: String? = nil
+						if let name = ABRecordCopyCompositeName(person)?.takeRetainedValue() as? String {
+							localName = name
+						}
+						
+						let emailMVR: ABMultiValueRef = ABRecordCopyValue(person, kABPersonEmailProperty).takeRetainedValue()
+						for (var i = 0; i < ABMultiValueGetCount(emailMVR); i++) {
+							if let email = ABMultiValueCopyValueAtIndex(emailMVR, i)?.takeRetainedValue() as? String {
+								if email.isEmail() {
+									if let existingIdentifier = getIdentifier(email) {
+										existingIdentifier.localName = localName
+									} else {
+										contactIdentifiers.append(Identifier(identifierStr: email,localName: localName))
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		//Sort
+		contactIdentifiers.sortInPlace({(left: Identifier, right: Identifier) -> Bool in
 			left.identifierStr.localizedCaseInsensitiveCompare(right.identifierStr) == NSComparisonResult.OrderedDescending})
     }
         
@@ -175,7 +118,6 @@ class Contacts {
                 ABAddressBookRequestAccessWithCompletion(addressBook,
                     {(granted: Bool, error: CFError!) in
                         if granted {
-                            self.updateLocalContacts(addressBook)
 							self.updateIdentifiers()
                         }
                         requestCompleted(succeeded: granted)
@@ -183,47 +125,60 @@ class Contacts {
             }
         }
     }
-    
-    func addContact(contact: Contact) {
-        if contact.id == nil {
-			//Local contact
-            //Check whether identifier already exists on a contact with an id. If so, only replace friendly name if that is not set. Only add if that is not the case.
-            for index in stride(from: contact.identifiers.count - 1, through: 0, by: -1) {
-                //Check whether identifier is present already
-                var found = false
-                for c in contacts {
-                    if let i = find(c.identifiers, contact.identifiers[index]) {
-                        //replace friendly name
-						c.localName = contact.localName
-                        found = true
-                    }
-                }
-                if found {
-                    //remove identifier from contact
-                    contact.identifiers.removeAtIndex(index)
-                }
-            }
-            if contact.identifiers.count > 0 {
-                //If there's anything left..
-                contacts.append(contact)
-            }
-        } else {
-			//data must come directly from server
-			if let existingContact = self.getContactByID(contact.id!) {
-				//update
-				existingContact.name = contact.name
-				if contact.friendlyName != "" {
-					existingContact.setFriendlyName(contact.friendlyName, updateServer: false)
-				}
-				existingContact.identifiers = contact.identifiers
-				existingContact.setFavorite(contact.favorite, updateServer: false)
-				existingContact.setAutoAccept(contact.autoAccept, updateServer: false)
-			} else {
+	
+	
+	func addContact(contact: Contact, updateServer: Bool, requestCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
+		if (updateServer) {
+			if contact.identifiers.count > 0 {
+				contact.propagatedToServer = false
 				contacts.append(contact)
+				api.request("contacts/"+contact.identifiers[0], method:"POST", formdata: contact.toDict(), secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+					if(succeeded) {
+						contact.propagatedToServer = true
+						requestCompleted(succeeded: true,error_msg: nil)
+					} else {
+						if let error_msg = data["text"] as? String {
+							requestCompleted(succeeded: false,error_msg: error_msg)
+						} else {
+							requestCompleted(succeeded: false,error_msg: "Unknown error while adding contact")
+						}
+					}
+				}
 			}
-        }
-    }
-    
+		} else {
+			contacts.append(contact)
+		}
+		self.updateIdentifiers()
+	}
+	
+	func deleteContact(contact:Contact) {
+		var row: Int?
+		for (index,c) in contacts.enumerate() {
+			if c == contact {
+				row = index
+			}
+		}
+		if row != nil {
+			contacts.removeAtIndex(row!)
+			self.updateIdentifiers()
+			if contact.identifiers.count > 0 {
+				api.request("contacts/"+contact.identifiers[0], method:"POST", formdata: ["identifier":""], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+					if(!succeeded) {
+						if let error_msg = data["text"] as? String {
+							print(error_msg)
+						} else {
+							print("Unknown error while removing contact")
+						}
+						
+						//roll back removal
+						self.contacts.append(contact)
+						self.updateIdentifiers()
+					}
+				}
+			}
+		}
+	}
+	
     func clear() {
         contacts = []
         contactIdentifiers = []
@@ -233,10 +188,36 @@ class Contacts {
 
 class Identifier {
 	var identifierStr: String
-	var contact: Contact
+	var contact: Contact?
+	var localName: String?
+	
+	var resultingName: String {
+		get {
+			var returnStr: String? = nil
+			if localName != nil {
+				returnStr = localName!
+			}
+			if contact != nil {
+				if contact!.friendlyName != "" {
+					returnStr = contact!.friendlyName
+				}
+				if returnStr == nil {
+					returnStr = contact?.name
+				}
+			}
+			if returnStr == nil {
+				returnStr = identifierStr
+			}
+			return returnStr!
+		}
+	}
 	
 	init (identifierStr: String, contact: Contact) {
 		self.identifierStr = identifierStr
 		self.contact = contact
+	}
+	init (identifierStr: String, localName: String?) {
+		self.identifierStr = identifierStr
+		self.localName = localName
 	}
 }

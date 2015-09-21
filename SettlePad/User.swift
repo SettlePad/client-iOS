@@ -21,9 +21,9 @@ class User {
             api.request("settings", method:"POST", formdata: ["name":name], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
                 if(!succeeded) {
                     if let error_msg = data["text"] as? String {
-                        println(error_msg)
+                        print(error_msg)
                     } else {
-                        println("Unknown error while setting name")
+                        print("Unknown error while setting name")
                     }
                 }
             }
@@ -35,9 +35,9 @@ class User {
             api.request("settings", method:"POST", formdata: ["default_currency":defaultCurrency.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
                 if(!succeeded) {
                     if let error_msg = data["text"] as? String {
-                        println(error_msg)
+                        print(error_msg)
                     } else {
-                        println("Unknown error while setting currency")
+                        print("Unknown error while setting currency")
                     }
                 }
             }
@@ -58,10 +58,10 @@ class User {
         //Try to load from keychain and NSUserDefaults
         
         if let keychainObj = Keychain.load("user_id") {
-            if keychainObj.stringValue.toInt() == nil {
+            if Int(keychainObj.stringValue) == nil {
                 return nil
             } else {
-                self.id = keychainObj.stringValue.toInt()
+                self.id = Int(keychainObj.stringValue)
             }
         } else {
             return nil
@@ -147,7 +147,7 @@ class User {
 		
         if let arrayVal = credentials["identifiers"] as? [[String:AnyObject]] {
             if arrayVal.count == 0 {
-                println("Empty identifier array")
+                print("Empty identifier array")
                 return nil
             }
             
@@ -156,7 +156,7 @@ class User {
                 if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool {
 					self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false))
                 } else {
-                    println("Cannot load identifier")
+                    print("Cannot load identifier")
                     return nil
                 }
             }
@@ -198,7 +198,7 @@ class User {
 		self.userIdentifiers.append(UserIdentifier(identifier: email, source: "email", verified: false, pending: true))
         api.request("identifiers/new", method:"POST", formdata: ["identifier":email,"password":password,"type":"email"], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             if(succeeded) {
-				for index in stride(from: self.userIdentifiers.count - 1, through: 0, by: -1) {
+				for index in (self.userIdentifiers.count - 1).stride(through: 0, by: -1) {
 					if self.userIdentifiers[index].identifier == email {
 						self.userIdentifiers[index].pending = false
 					}
@@ -206,7 +206,7 @@ class User {
                 self.save()
                 requestCompleted(succeeded: true,error_msg: nil)
             } else {
-				for index in stride(from: self.userIdentifiers.count - 1, through: 0, by: -1) {
+				for index in (self.userIdentifiers.count - 1).stride(through: 0, by: -1) {
 					if self.userIdentifiers[index].identifier == email {
 						self.userIdentifiers.removeAtIndex(index)
 					}
@@ -221,7 +221,7 @@ class User {
     }
     
     func deleteIdentifier(identifier:UserIdentifier, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		for index in stride(from: self.userIdentifiers.count - 1, through: 0, by: -1) {
+		for index in (self.userIdentifiers.count - 1).stride(through: 0, by: -1) {
 			if self.userIdentifiers[index].identifier == identifier.identifier {
 				self.userIdentifiers.removeAtIndex(index)
 			}
@@ -290,37 +290,37 @@ class User {
 					if let strVal = dataDict["user_name"] as? String {
 						self.name = strVal
 					} else {
-						println("Inparsable user name")
+						print("Inparsable user name")
 					}
 					
 					if let strVal = dataDict["default_currency"] as? String {
 						if let currency = Currency(rawValue: strVal) {
 							self.defaultCurrency = currency
 						} else {
-							println("Currency not on list")
+							print("Currency not on list")
 						}
 					} else {
-						println("Inparsable currency")
+						print("Inparsable currency")
 					}
 					
 					if let arrayVal = dataDict["identifiers"] as? [[String:AnyObject]] {
 						self.userIdentifiers = []
 						if arrayVal.count == 0 {
-							println("Empty identifier array")
+							print("Empty identifier array")
 						}
 						
 						for parsableIdentifier in arrayVal {
 							if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool {
 								self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false))
 							} else {
-								println("Cannot load identifier")
+								print("Cannot load identifier")
 							}
 						}
 					}
 					
 					self.save()
 				} else {
-					println("Cannot parse return as dictionary")
+					print("Cannot parse return as dictionary")
 				}
 				
 				requestCompleted(succeeded: true,error_msg: nil)
