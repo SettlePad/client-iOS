@@ -13,12 +13,14 @@ class UserIdentifier : NSObject, NSCoding {
     var source: String
     var verified: Bool
 	var pending: Bool
+	var primary: Bool
 	
-	init(identifier: String, source: String, verified: Bool, pending: Bool) {
+	init(identifier: String, source: String, verified: Bool, pending: Bool, primary: Bool) {
         self.identifier = identifier
         self.source = source
         self.verified = verified
 		self.pending = pending
+		self.primary = primary
     }
     
     
@@ -44,7 +46,11 @@ class UserIdentifier : NSObject, NSCoding {
 		} else {
 			self.pending = false
 		}
-
+		if let primary = decoder.decodeObjectForKey("primary") as? Bool {
+			self.primary = primary
+		} else {
+			self.primary = false
+		}
     }
     
     func encodeWithCoder(coder: NSCoder) {
@@ -52,5 +58,7 @@ class UserIdentifier : NSObject, NSCoding {
         coder.encodeObject(source, forKey: "source")
         coder.encodeObject(verified, forKey: "verified")
         coder.encodeObject(pending, forKey: "pending")
+		coder.encodeObject(primary, forKey: "primary")
+
     }
 }

@@ -80,19 +80,22 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	
     var identifiers = [String]()
 	
-	func updateServerIdentifier(newValue: String) {
+	func updateServerIdentifier(newValue: String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
 		let oldValue = identifiers
-		if newValue.isEmail() && identifiers.count > 0 && propagatedToServer == true {
-			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["identifier":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+		if newValue.isEmail() && oldValue.count > 0 && propagatedToServer == true {
+			api.request("contacts/"+oldValue[0], method:"POST", formdata: ["identifier":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
-						print(error_msg)
+						requestCompleted(succeeded: false, error_msg: error_msg)
 					} else {
-						print("Unknown error while changing identifier")
+						requestCompleted(succeeded: false, error_msg: "Unknown error while changing identifier")
 					}
 					self.identifiers = oldValue
 				} else {
-					//TODO: check whether contact is now registered
+					if let registered = data["data"]?["registered"] as? Bool {
+						self.registered = registered
+					}
+					requestCompleted(succeeded: true, error_msg: nil)
 				}
 				
 			}
@@ -126,15 +129,15 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
             self.friendlyName = ""
         }
 		
-		if let parsed = fromDict["registered_user"] as? Int {
+		var registeredBool = false
+		if let parsed = fromDict["registered"] as? Int {
 			if (parsed > 0) {
-				self.registered = true
+				registeredBool = true
 			} else {
-				self.registered = false
+				registeredBool = false
 			}
-		} else {
-			self.registered = false
 		}
+		self.registered = registeredBool //We are going to use this flag later on in identifiers
 		
         if let parsed = fromDict["favorite"] as? Int {
             if (parsed > 0) {
@@ -160,7 +163,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
             for identifierObj in parsed {
                 if let identifier = identifierObj["identifier"] as? String {
                     if let active = identifierObj["active"] as? Int {
-                        if active == 1 {
+                        if active == 1 || registeredBool == false {
                             self.identifiers.append(identifier)
                         }
                     }

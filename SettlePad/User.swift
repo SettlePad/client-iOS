@@ -153,8 +153,8 @@ class User {
             
             
             for parsableIdentifier in arrayVal {
-                if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool {
-					self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false))
+                if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool, primary = parsableIdentifier["primary"] as? Bool {
+					self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false, primary: primary))
                 } else {
                     print("Cannot load identifier")
                     return nil
@@ -195,7 +195,7 @@ class User {
     }
     
     func addIdentifier(email:String, password:String,requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		self.userIdentifiers.append(UserIdentifier(identifier: email, source: "email", verified: false, pending: true))
+		self.userIdentifiers.append(UserIdentifier(identifier: email, source: "email", verified: false, pending: true, primary: false))
         api.request("identifiers/new", method:"POST", formdata: ["identifier":email,"password":password,"type":"email"], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             if(succeeded) {
 				for index in (self.userIdentifiers.count - 1).stride(through: 0, by: -1) {
@@ -229,6 +229,13 @@ class User {
 		self.save()
 		api.request("identifiers/delete", method:"POST", formdata: ["identifier":identifier.identifier], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
             if(succeeded) {
+				if let primaryIdentifier = data["data"]?["new_primary_identifier"] as? String {
+					for userIdentifier in self.userIdentifiers {
+						if userIdentifier.identifier == primaryIdentifier {
+							userIdentifier.primary = true
+						}
+					}
+				}
                 requestCompleted(succeeded: true,error_msg: nil)
             } else {
                 if let msg = data["text"] as? String {
@@ -259,7 +266,11 @@ class User {
 		api.verifyIdentifier(identifier.identifier, token: token) { (succeeded: Bool, error_msg: String?) -> () in
 			identifier.pending = false
 			if(succeeded) {
-				identifier.verified = true //class is reference type
+				identifier.verified = true
+				for userIdentifier in self.userIdentifiers {
+					userIdentifier.primary = false
+				}
+				identifier.primary = true
 				self.save()
 				requestCompleted(succeeded: true,error_msg: nil)
 			} else {
@@ -282,6 +293,31 @@ class User {
             }
         }
     }
+	
+	func setAsPrimary(identifier:UserIdentifier, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		let oldValue = identifier.primary
+		var oldPrimary: UserIdentifier? = nil
+		for userIdentifier in userIdentifiers {
+			if userIdentifier.primary {
+				oldPrimary = userIdentifier
+			}
+		}
+		oldPrimary?.primary = false
+		identifier.primary = true
+		api.request("identifiers/default", method:"POST", formdata: ["identifier":identifier.identifier], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			if(succeeded) {
+				requestCompleted(succeeded: true,error_msg: nil)
+			} else {
+				identifier.primary = oldValue
+				oldPrimary?.primary = true
+				if let msg = data["text"] as? String {
+					requestCompleted(succeeded: false,error_msg: msg)
+				} else {
+					requestCompleted(succeeded: false,error_msg: "Unknown")
+				}
+			}
+		}
+	}
 
     func updateSettings(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
 		api.request("settings", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
@@ -310,8 +346,8 @@ class User {
 						}
 						
 						for parsableIdentifier in arrayVal {
-							if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool {
-								self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false))
+							if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool, primary = parsableIdentifier["primary"] as? Bool {
+								self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false, primary: primary))
 							} else {
 								print("Cannot load identifier")
 							}

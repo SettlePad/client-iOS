@@ -62,7 +62,7 @@ class LoginViewController: UIViewController {
 				} else {
 					if (code == "not_validated" ) {
 						//Show validation form
-						displayValidationForm(self.txtLoginUser.text!, viewController: self, verificationCanceled: {() -> () in self.spinning(false)},verificationStarted: {}) { (succeeded, error_msg) -> () in
+						displayValidationFormNotLoggedIn(self.txtLoginUser.text!, viewController: self, verificationCanceled: {() -> () in self.spinning(false)},verificationStarted: {}) { (succeeded, error_msg) -> () in
 							
 							self.spinning(false)
 							
@@ -119,7 +119,7 @@ class LoginViewController: UIViewController {
 						})
 							
 						//Show validation form
-						displayValidationForm(self.txtLoginUser.text!, viewController: self, verificationCanceled: {() -> () in self.spinning(false)},verificationStarted: {}) { (succeeded, error_msg) -> () in
+						displayValidationFormNotLoggedIn(self.txtLoginUser.text!, viewController: self, verificationCanceled: {() -> () in self.spinning(false)},verificationStarted: {}) { (succeeded, error_msg) -> () in
 							
 							self.spinning(false)
 							

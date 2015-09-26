@@ -28,7 +28,7 @@ func displayError(errorMessage: String, viewController: UIViewController) {
     })
 }
 
-func displayValidationForm(identifierStr: String, viewController: UIViewController, verificationCanceled: () -> (), verificationStarted: () -> (), verificationCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
+func displayValidationFormNotLoggedIn(identifierStr: String, viewController: UIViewController, verificationCanceled: () -> (), verificationStarted: () -> (), verificationCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
 	
 	let alertController = UIAlertController(title: "Validate " + identifierStr, message: "Enter the token you received in your email", preferredStyle: .Alert)
 	
@@ -52,6 +52,35 @@ func displayValidationForm(identifierStr: String, viewController: UIViewControll
 		textField.placeholder = "Token"
 	}
 	
+	alertController.addAction(cancelAction)
+	alertController.addAction(enterAction)
+	
+	dispatch_async(dispatch_get_main_queue(), { () -> Void in
+		viewController.presentViewController(alertController, animated: true, completion: nil)
+	})
+}
+
+func displayValidationFormLoggedIn(identifier: UserIdentifier, viewController: UIViewController, requestCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
+	
+	let alertController = UIAlertController(title: "Validate " + identifier.identifier, message: "Enter the token you received in your email", preferredStyle: .Alert)
+	
+	let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
+	}
+	
+	let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
+		let validationTextField = alertController.textFields![0]
+		user!.verifyIdentifier(identifier, token: validationTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
+			if !succeeded {
+				requestCompleted(succeeded: false, error_msg: error_msg!)
+			} else {
+				requestCompleted(succeeded: true, error_msg: nil)
+			}
+		}
+	}
+	
+	alertController.addTextFieldWithConfigurationHandler { (textField) in
+		textField.placeholder = "Token"
+	}
 	
 	alertController.addAction(cancelAction)
 	alertController.addAction(enterAction)

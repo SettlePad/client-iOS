@@ -138,6 +138,21 @@ class IdentifiersViewController: UITableViewController {
             // ...
         }
     }
+	
+	func setPrimary(identifier: UserIdentifier) {
+		dispatch_async(dispatch_get_main_queue(), {
+			self.tableView.reloadData()
+		})
+		user!.setAsPrimary(identifier) { (succeeded: Bool, error_msg: String?) -> () in
+			if !succeeded {
+				displayError(error_msg!,viewController: self)
+
+				dispatch_async(dispatch_get_main_queue(), {
+					self.tableView.reloadData()
+				})
+			}
+		}
+	}
     
     /*
     // Override to support rearranging the table view.
@@ -183,7 +198,7 @@ class IdentifiersViewController: UITableViewController {
 		}
 		actionSheetController.addAction(changePasswordAction)
 		
-		if (identifier.verified == false) {
+		if identifier.verified == false {
 			let verifyAction: UIAlertAction = UIAlertAction(title: "Enter verification code", style: .Default) { action -> Void in
 				let identifier = user!.userIdentifiers[indexPath.row]
 				self.validationCodeForm(identifier)
@@ -200,6 +215,14 @@ class IdentifiersViewController: UITableViewController {
 			actionSheetController.addAction(resendCodeAction)
 		}
 	
+		if identifier.primary == false && identifier.verified {
+			let setPrimaryAction: UIAlertAction = UIAlertAction(title: "Set as primary", style: .Default) { action -> Void in
+				let identifier = user!.userIdentifiers[indexPath.row]
+				self.setPrimary(identifier)
+			}
+			actionSheetController.addAction(setPrimaryAction)
+		}
+		
 		let deleteAction: UIAlertAction = UIAlertAction(title: "Delete", style: .Destructive) { action -> Void in
 			let identifier = user!.userIdentifiers[indexPath.row]
 			self.deleteIdentifier (identifier, tableView: tableView, indexPath: indexPath)
@@ -341,31 +364,23 @@ class IdentifiersViewController: UITableViewController {
     
     func validationCodeForm(identifier: UserIdentifier) {
         //show validation code form
-		displayValidationForm(identifier.identifier, viewController: self, verificationCanceled: {},
-			verificationStarted: {
-				//verificationStarted
-				identifier.pending = true
-				dispatch_async(dispatch_get_main_queue(), {
-					self.tableView.reloadData()
-				})
-			},
-			verificationCompleted: {(succeeded, error_msg) -> () in
-				//verificationCompleted
-				identifier.pending = false
+		displayValidationFormLoggedIn(identifier, viewController: self,
+			requestCompleted: {(succeeded, error_msg) -> () in
 				if !succeeded {
 					displayError(error_msg!,viewController: self)
-				} else {
-					identifier.verified = true
 				}
 				dispatch_async(dispatch_get_main_queue(), {
-					self.tableView.reloadData()
+					self.tableView.reloadData() //To show result
 				})
 			}
 		)
+		dispatch_async(dispatch_get_main_queue(), {
+			self.tableView.reloadData() //To show spinner
+		})
 	}
 }
 
-class IdentifierCell: UITableViewCell {	
+class IdentifierCell: UITableViewCell {
 	@IBOutlet var identifierLabel: UILabel!
 	@IBOutlet var verificationLabel: UILabel!
 	@IBOutlet var processingSpinner: UIActivityIndicatorView!
@@ -391,12 +406,17 @@ class IdentifierCell: UITableViewCell {
 			processingSpinner.hidden = true
 			verificationLabel.hidden = false
 			if identifier.verified {
-				verificationLabel.text = "verified"
-				verificationLabel.textColor = Colors.success.textToUIColor()
+				verificationLabel.text = ""
+				//verificationLabel.textColor = Colors.success.textToUIColor()
 			} else {
 				verificationLabel.text = "not verified"
 				verificationLabel.textColor = Colors.danger.textToUIColor()
 			}
+		}
+		if identifier.primary {
+			self.accessoryType = .Checkmark
+		} else {
+			self.accessoryType = .None
 		}
 	}
 	

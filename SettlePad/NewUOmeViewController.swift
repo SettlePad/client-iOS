@@ -28,7 +28,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     
     @IBAction func closeView(sender: AnyObject) {
         if state == .Overview {
-			//TODO: save draft memo's so that they remain after the app is terminated (via Transactions class, in CoreData, see http://www.raywenderlich.com/85578/first-core-data-app-using-swift)
+			//TODO: save draft memos so that they remain after the app is terminated (via Transactions class, in CoreData, see http://www.raywenderlich.com/85578/first-core-data-app-using-swift)
 			self.dismissViewControllerAnimated(true, completion: nil)
         } else {
             formTo.text = ""

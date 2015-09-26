@@ -134,6 +134,9 @@ class Contacts {
 				contacts.append(contact)
 				api.request("contacts/"+contact.identifiers[0], method:"POST", formdata: contact.toDict(), secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 					if(succeeded) {
+						if let registered = data["data"]?["registered"] as? Bool {
+							contact.registered = registered
+						}
 						contact.propagatedToServer = true
 						requestCompleted(succeeded: true,error_msg: nil)
 					} else {

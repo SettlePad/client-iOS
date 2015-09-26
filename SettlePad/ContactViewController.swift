@@ -14,8 +14,10 @@ protocol ContactViewControllerDelegate {
 
 class ContactViewController: UITableViewController, ContactViewControllerDelegate {
 	func reloadContent() {
-		self.title = contact.resultingName
-		self.tableView.reloadData()
+		dispatch_async(dispatch_get_main_queue(), { () -> Void in
+			self.title = self.contact.resultingName
+			self.tableView.reloadData()
+		})
 	}
 	
 	var contact:Contact! = nil
@@ -270,7 +272,7 @@ class ContactNameCell: UITableViewCell {
 	@IBOutlet var nameText: UITextField!
     @IBAction func nameEditingDidEnd(sender: UITextField) {
 		contact?.setFriendlyName(sender.text!, updateServer: true)
-		delegate.reloadContent()
+		//delegate.reloadContent()
     }
 	
 	override func awakeFromNib() {
@@ -297,12 +299,10 @@ class ContactEmailInputCell: UITableViewCell {
 	
     @IBOutlet var emailText: UITextField!
     @IBAction func emailEditingDidEnd(sender: UITextField) {
-
 		if validateInput() {
-			contact?.updateServerIdentifier(emailText.text!)
-			//TODO: add closure to updateServerIdentifier and do reloading of delegate when closure is completed, so that change in registered is reflected
-			
-			delegate.reloadContent()
+			contact?.updateServerIdentifier(emailText.text!) { (succeeded: Bool, error_msg: String?) -> () in
+				self.delegate.reloadContent()
+			}
 		}
     }
 	override func awakeFromNib() {
