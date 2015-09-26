@@ -326,29 +326,50 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Balance" textLabel="o9N-81-EFf" detailTextLabel="KeS-Bg-aFl" style="IBUITableViewCellStyleValue1" id="hPE-46-Nhw">
+                            <tableViewCell contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Balance" id="Ji9-02-dEG" customClass="BalanceCell" customModule="SettlePad" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="49.5" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hPE-46-Nhw" id="Lo4-Az-hT0">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="Ji9-02-dEG" id="1yE-Pw-c8U">
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="o9N-81-EFf">
-                                            <rect key="frame" x="15" y="12" width="31.5" height="19.5"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalCompressionResistancePriority="250" text="Joanna" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uJ9-Jc-rpc">
+                                            <rect key="frame" x="15" y="12" width="53" height="19.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="KeS-Bg-aFl">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Bad" translatesAutoresizingMaskIntoConstraints="NO" id="FaX-px-R2H">
+                                            <rect key="frame" x="73" y="12" width="30" height="20"/>
+                                            <color key="tintColor" red="0.35997647049999998" green="0.35996568200000001" blue="0.35997182129999999" alpha="1" colorSpace="calibratedRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="20" id="Kk2-Ah-hxb"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KdJ-Oo-MnY">
                                             <rect key="frame" x="543.5" y="12" width="41.5" height="19.5"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="FaX-px-R2H" firstAttribute="leading" secondItem="uJ9-Jc-rpc" secondAttribute="trailing" constant="5" id="Q9o-LQ-RcK"/>
+                                        <constraint firstAttribute="centerYWithinMargins" secondItem="uJ9-Jc-rpc" secondAttribute="centerY" id="SIp-Ch-Tv7"/>
+                                        <constraint firstItem="KdJ-Oo-MnY" firstAttribute="centerY" secondItem="1yE-Pw-c8U" secondAttribute="centerY" id="SR2-bS-WTg"/>
+                                        <constraint firstItem="uJ9-Jc-rpc" firstAttribute="leading" secondItem="1yE-Pw-c8U" secondAttribute="leadingMargin" id="dps-cM-vK8"/>
+                                        <constraint firstAttribute="centerY" secondItem="FaX-px-R2H" secondAttribute="centerY" id="hGA-g9-vhY"/>
+                                        <constraint firstItem="KdJ-Oo-MnY" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="FaX-px-R2H" secondAttribute="trailing" id="uUM-lg-Th2"/>
+                                    </constraints>
                                 </tableViewCellContentView>
+                                <constraints>
+                                    <constraint firstAttribute="trailingMargin" secondItem="KdJ-Oo-MnY" secondAttribute="trailing" id="Jjr-tc-uFE"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="amountLabel" destination="KdJ-Oo-MnY" id="ECS-n9-TNe"/>
+                                    <outlet property="nameLabel" destination="uJ9-Jc-rpc" id="8mo-sU-VFg"/>
+                                    <outlet property="statusImage" destination="FaX-px-R2H" id="IDQ-hW-G42"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -1486,8 +1507,8 @@
         <image name="Thermometer" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="hp6-KP-NO4"/>
         <segue reference="S17-zq-Lf5"/>
-        <segue reference="kFu-fK-0IO"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.52549019607843139" green="0.77254901960784317" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

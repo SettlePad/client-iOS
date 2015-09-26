@@ -40,7 +40,7 @@ class Transactions {
         for newTransaction in newTransactions {
             newTransaction.status = .Posted
 			formdataArray.append([
-				"recipient":newTransaction.identifierStr,
+				"recipient":newTransaction.primaryIdentifierStr,
 				"description":newTransaction.description,
 				"amount":newTransaction.amount,
 				"currency":newTransaction.currency.rawValue

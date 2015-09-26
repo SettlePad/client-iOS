@@ -161,30 +161,27 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 	
 	
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Balance", forIndexPath: indexPath) 
-		let balance = balances.getBalancesForCurrency(balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
-
-		// Configure the cell...
-		let identifier: Identifier? = contacts.getIdentifier(balance.identifierStr)
-		if(identifier != nil) {
-			cell.textLabel?.text = identifier!.resultingName
-		} else {
-			cell.textLabel?.text = balance.name
-		}
-		
-		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
-		cell.detailTextLabel?.text = balance.currency.rawValue + " " + balance.balance.format(doubleFormat)
-
-		if balance.balance < 0 {
-			cell.detailTextLabel?.textColor = Colors.gray.textToUIColor()
-		} else {
-			cell.detailTextLabel?.textColor = Colors.success.textToUIColor()
-		}
-
 		//TODO: add indicator for memos that are not yet reduced and call it queued
 		
+		let cell = tableView.dequeueReusableCellWithIdentifier("Balance", forIndexPath: indexPath) as! BalanceCell
 		
-        return cell
+		let balance = balances.getBalancesForCurrency(balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
+		
+		// Configure the cell...
+		var balanceName = balance.name
+		var balanceFavorite = false
+		let identifier: Identifier? = contacts.getIdentifier(balance.identifierStr)
+		if(identifier != nil) {
+			balanceName = identifier!.resultingName
+			if let balanceContact = identifier?.contact {
+				balanceFavorite = balanceContact.favorite
+			}
+		}
+		
+		cell.markup(balanceName, currency: balance.currency, balance: balance.balance, favorite: balanceFavorite)
+		
+		
+		return cell
     }
 	
 
@@ -270,4 +267,45 @@ class BalancesFooterView: UIView {
 			self.addSubview(footerLabel)
 		}
 	}
+}
+
+class BalanceCell: UITableViewCell {
+	@IBOutlet var nameLabel: UILabel!
+	@IBOutlet var amountLabel: UILabel!
+	@IBOutlet var statusImage: UIImageView!
+	
+	//var contact: Contact?
+	
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		// Initialization code
+	}
+	
+	override func setSelected(selected: Bool, animated: Bool) {
+		super.setSelected(selected, animated: animated)
+		
+		// Configure the view for the selected state
+	}
+	
+	func markup(name: String, currency: Currency, balance: Double, favorite: Bool){
+
+		let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
+		amountLabel.text = currency.rawValue + " " + balance.format(doubleFormat)
+		
+		if balance < 0 {
+			amountLabel.textColor = Colors.gray.textToUIColor()
+		} else {
+			amountLabel.textColor = Colors.success.textToUIColor()
+		}
+		
+		if favorite {
+			statusImage.hidden = true
+		} else {
+			statusImage.hidden = false
+		}
+		
+		nameLabel.text = name
+	}
+	
+	
 }
