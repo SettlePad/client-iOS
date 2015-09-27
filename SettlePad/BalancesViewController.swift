@@ -61,10 +61,14 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 		//Hide additional gridlines, and set gray background for footer
 		//self.tableView.tableFooterView = UIView(frame:CGRectZero)
 		
+
+    }
+	
+	override func viewWillAppear(animated: Bool) {
 		//refresh Balances
 		refreshBalances()
 		balancesRefreshControl.beginRefreshing()
-    }
+	}
 	
 	func refreshBalances() {
 		balances.updateBalances() {(succeeded: Bool, error_msg: String?) -> () in
