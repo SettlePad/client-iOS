@@ -51,12 +51,20 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
                 if succeeded == false {
 					self.delegate.transactionsPostCompleted(self, error_msg: error_msg!)
 				} else {
-					self.delegate.transactionsPostCompleted(self, error_msg: nil)
+					contacts.updateContacts {(succeeded: Bool, error_msg: String?) -> () in
+						if !succeeded {
+							self.delegate.transactionsPostCompleted(self, error_msg: error_msg!)
+						} else {
+							self.delegate.transactionsPostCompleted(self, error_msg: nil)
+						}
+					}
 				}
 
             }
             
             //Close viewcontroller
+
+			
             delegate.transactionsPosted(self)
             self.dismissViewControllerAnimated(true, completion: nil)
 
