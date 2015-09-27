@@ -122,7 +122,7 @@ class Transaction {
 		}
 		
 		
-		if let counterpartUsedIdentifier = fromDict["counterpart_user_identifier"] as? String {
+		if let counterpartUsedIdentifier = fromDict["counterpart_used_identifier"] as? String {
 			usedIdentifierStr = counterpartUsedIdentifier
 		} else {
 			usedIdentifierStr = ""
