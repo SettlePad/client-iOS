@@ -41,7 +41,7 @@ class TransactionsCell: UITableViewCell {
             amountLabel.text = "- " + transaction.currency.rawValue + " \(printamount.format(doubleFormat))"
         } else {
             amountLabel.textColor = Colors.success.textToUIColor()
-            amountLabel.text = "+ " + transaction.currency.rawValue + " \(transaction.amount.format(doubleFormat))"
+            amountLabel.text = transaction.currency.rawValue + " \(transaction.amount.format(doubleFormat))"
         }
         
         //Counterpart
