@@ -117,12 +117,6 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
     }
     
     init(fromDict: NSDictionary = [:], propagatedToServer: Bool) {
-        if let parsed = fromDict["name"] as? String {
-            self.name = parsed
-        } else {
-            self.name = "Unknown"
-        }
-        
         if let parsed = fromDict["friendly_name"] as? String {
             self.friendlyName = parsed
         } else {
@@ -159,17 +153,26 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 			self.autoAccept = .Manual
 		}
 		
+		var random_identifier:String  = ""
         if let parsed = fromDict["identifiers"] as? Array <Dictionary <String, AnyObject> > {
             for identifierObj in parsed {
                 if let identifier = identifierObj["identifier"] as? String {
                     if let active = identifierObj["active"] as? Int {
                         if active == 1 || registeredBool == false {
+							random_identifier = identifier
                             self.identifiers.append(identifier)
                         }
                     }
                 }
             }
         }
+		
+		if let parsed = fromDict["name"] as? String {
+			self.name = parsed
+		} else {
+			self.name = random_identifier
+		}
+		
 		
         self.propagatedToServer = propagatedToServer
 		
