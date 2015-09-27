@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
+class BalancesViewController: UITableViewController, NewUOmeModalDelegate, ContactsViewControllerDelegate {
 	var balancesRefreshControl:UIRefreshControl!
 	var footer = BalancesFooterView(frame: CGRectMake(0, 0, 320, 44))
 	
@@ -23,6 +23,14 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 	func transactionsPosted(controller:NewUOmeViewController) {
 		controller.dismissViewControllerAnimated(true, completion: nil)
 		//do not reload until post completed
+	}
+	
+	func reloadContent(error_msg: String?) {
+		//When coming from ContactViewController
+		if error_msg != nil {
+			displayError(error_msg!, viewController: self)
+		}
+		self.tableView.reloadData()
 	}
 	
 	func transactionsPostCompleted(controller:NewUOmeViewController, error_msg: String?) {
@@ -188,6 +196,33 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
 		return cell
     }
 	
+	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+		tableView.deselectRowAtIndexPath(indexPath, animated: true)
+		
+		//Go to contact view if available, otherwise ask to create a new contact
+		let balance = balances.getBalancesForCurrency(balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
+		let identifier: Identifier? = contacts.getIdentifier(balance.identifierStr)
+
+		dispatch_async(dispatch_get_main_queue()) {
+			let storyboard = UIStoryboard(name: "Main", bundle: nil)
+			let navigationController = storyboard.instantiateViewControllerWithIdentifier("ContactNavigationController") as! UINavigationController
+			let destVC = navigationController.viewControllers[0] as! ContactViewController
+			if let balanceContact = identifier?.contact {
+				//Go to balanceContact
+				destVC.contact = balanceContact
+				destVC.delegate = self
+				destVC.modalForEditing = true //So display close instead of save and cancel
+			} else {
+				//Create a new contact
+				destVC.contact = Contact(name: balance.name, friendlyName: "", registered: true, favorite: true, autoAccept: AutoAccept.Manual, identifiers: [balance.identifierStr], propagatedToServer: false)
+			}
+			destVC.delegate = self
+
+			self.presentViewController(navigationController, animated: true, completion: nil)
+		}
+	}
+	
+	
 
     /*
     // Override to support conditional editing of the table view.
@@ -221,16 +256,6 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate {
     override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the item to be re-orderable.
         return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
     }
     */
 

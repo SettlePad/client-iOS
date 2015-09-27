@@ -205,7 +205,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		for singleLimit in limits {
 			limitDict[singleLimit.currency.rawValue] = singleLimit.limit
 		}
-		if identifiers.count > 0 {
+		if identifiers.count > 0 && propagatedToServer == true {
 			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["limits":limitDict], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
 				if(!succeeded) {
 					if let error_msg = data["text"] as? String {
@@ -251,7 +251,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 				for singleLimit in limits {
 					limitDict[singleLimit.currency.rawValue] = singleLimit.limit
 				}
-				if identifiers.count > 0 {
+				if identifiers.count > 0  && propagatedToServer == true {
 					api.request("contacts/"+identifiers[0], method:"POST", formdata: ["limits":limitDict], secure:true)  { (succeeded: Bool, data: NSDictionary) -> () in
 						if(!succeeded) {
 							if let error_msg = data["text"] as? String {

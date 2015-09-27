@@ -197,10 +197,10 @@ class LoginViewController: UIViewController {
     }
     
     func enter_app() {
-        dispatch_async(dispatch_get_main_queue()) {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController") 
-            self.presentViewController(vc, animated: false, completion: nil)
+		dispatch_async(dispatch_get_main_queue()) {
+			let storyboard = UIStoryboard(name: "Main", bundle: nil)
+			let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController")
+			self.presentViewController(vc, animated: false, completion: nil)
         }
 		
 		// Register for Push Notitications, if running iOS 8

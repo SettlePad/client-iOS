@@ -21,11 +21,23 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
 	}
 	
 	var contact:Contact! = nil
+	var modalForEditing = false //If set to true and self.isModal(), save button will be hidden and cancel will be named closed
+	
+	var forEditing: Bool {
+		get {
+			if self.isModal() && !modalForEditing {
+				return false
+			} else {
+				return true
+			}
+		}
+	}
 	
 	var delegate:ContactsViewControllerDelegate! = nil
 
     @IBOutlet var saveBarButton: UIBarButtonItem! //Should only be used on modal presentation
     @IBOutlet var cancelBarButton: UIBarButtonItem! //Should only be used on modal presentation
+    @IBOutlet var fixedEmailGestureRecognizer: UITapGestureRecognizer!
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -37,6 +49,11 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
 			//Pushed from contact list, so use back button instead of configured "Save" and "Cancel"
 			self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem
 			self.navigationItem.rightBarButtonItem = nil
+		} else if modalForEditing {
+			cancelBarButton.title = "Close"
+			self.navigationItem.rightBarButtonItem = nil
+		} else {
+			fixedEmailGestureRecognizer.enabled = false //When adding a contact, the deleteContact function should not be triggered when pressing the email address
 		}
     }
 
@@ -59,7 +76,12 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Return the number of sections.
-        return 5
+		if (forEditing) {
+			return 5 //Including delete
+		} else {
+			return 4 //No delete button
+		}
+
     }
 	
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -228,7 +250,11 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
 		
 		let deleteAction: UIAlertAction = UIAlertAction(title: "Delete", style: .Destructive) { action -> Void in
 			self.contact.deleteContact()
-			self.navigationController?.popViewControllerAnimated(true)
+			if (self.isModal()) {
+				self.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+			} else {
+				self.navigationController?.popViewControllerAnimated(true)
+			}
 		}
 		actionSheetController.addAction(deleteAction)
 		
