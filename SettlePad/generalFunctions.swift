@@ -120,9 +120,6 @@ class PickerButton: UIButton {
 	}
 }
 
-
-
-
 enum Currency: String {
 	case AFN = "AFN"
 	case ALL = "ALL"

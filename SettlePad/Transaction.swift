@@ -11,7 +11,7 @@ import Foundation
 class Transaction {	
     var time_sent: NSDate
     var time_updated: NSDate
-	var primaryIdentifierStr: String //Primary identifier of counterpart
+	var primaryIdentifierStr: String? //Primary identifier of counterpart
 	var usedIdentifierStr: String  //Identifier of counterpart used in transaction
 	var name: String
     var is_sender: Bool
@@ -113,12 +113,10 @@ class Transaction {
             print("Failed to get counterpart name")
         }
 
-		
 		if let counterpartIdentifier = fromDict["counterpart_primary_identifier"] as? String {
 			primaryIdentifierStr = counterpartIdentifier
 		} else {
-			primaryIdentifierStr = ""
-			print("Failed to get counterpart primary identifier")
+			primaryIdentifierStr = nil
 		}
 		
 		

@@ -212,9 +212,6 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 	
     func searchBarShouldBeginEditing(searchBar: UISearchBar!) -> Bool // return NO to not become first responder
     {
-        //contactsTableView.clear()
-        //reload_transactions(searching: true) //want to show search instructions
-        
         return true
     }
     

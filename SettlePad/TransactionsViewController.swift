@@ -15,7 +15,7 @@
 
 import UIKit
 
-class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {	
+class TransactionsViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, NewUOmeModalDelegate {	
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showUOmeSegueFromTransactions" {
             let navigationController = segue.destinationViewController as! UINavigationController
@@ -26,7 +26,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     
     func transactionsPosted(controller:NewUOmeViewController) {
         controller.dismissViewControllerAnimated(true, completion: nil)
-        self.reload_transactions()
+        self.refreshTable()
     }
     
 	func transactionsPostCompleted(controller:NewUOmeViewController, error_msg: String?) {
@@ -50,6 +50,8 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     @IBOutlet var transactionsTableView: UITableView!
     @IBOutlet var transactionsSearchBar: UISearchBar!
 	
+    @IBOutlet var transationsGroupSegmentedControl: UISegmentedControl!
+    
     var transactionsRefreshControl:UIRefreshControl!
     var footer = TransactionsFooterView(frame: CGRectMake(0, 0, 320, 44))
  
@@ -63,12 +65,12 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
         transactions.clear()
-        reload_transactions(true) //want to show spinner
+        refreshTable(true) //want to show spinner
         
-        transactions.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+		transactions.get(.Open, search: ""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
 			dispatch_async(dispatch_get_main_queue(), {
 				//so it is run now, instead of at the end of code execution
-				self.reload_transactions()
+				self.refreshTable()
 			})
 			if (!succeeded) {
                 displayError(error_msg!, viewController: self)
@@ -76,16 +78,14 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         }
 
         /*
-        //To hide empty separators (not needed as footer is already implemented by reload_transactions()
+        //To hide empty separators (not needed as footer is already implemented by refreshTable()
         transactionsTableView.tableFooterView = UIView(frame:CGRectZero)
         transactionsTableView.tableFooterView = self.footer
         */
 
         //Set table background to specific color
         //transactionsTableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
-        
-        //To hide searchbar
-        transactionsTableView.setContentOffset(CGPointMake(0, transactionsSearchBar.frame.size.height), animated: false)
+		
         
         //Add pull to refresh
             self.transactionsRefreshControl = UIRefreshControl()
@@ -101,6 +101,9 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 		//Set cell height to dynamic. Note that it also requires a cell.layoutIfNeeded in cellForRowAtIndexPath!
 		transactionsTableView.rowHeight = UITableViewAutomaticDimension
 		transactionsTableView.estimatedRowHeight = 40
+		
+		//To hide searchbar
+		transactionsTableView.setContentOffset(CGPointMake(0, transactionsSearchBar.frame.size.height), animated: false)
 	}
 
     override func didReceiveMemoryWarning() {
@@ -110,18 +113,18 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+	func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Return the number of sections.
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Return the number of rows in the section.
         return transactions.getTransactions().count
     }
 
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = transactionsTableView.dequeueReusableCellWithIdentifier("TransactionCell", forIndexPath: indexPath) as! TransactionsCell
         
         // Configure the cell...
@@ -135,7 +138,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 
     
     // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+	func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the specified item to be editable.
         //Editable or not
         if let transaction = transactions.getTransaction(indexPath.row)  {
@@ -154,7 +157,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
 
     
     // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+	func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         /*if editingStyle == .Delete {
             // Delete the row from the data source
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
@@ -164,7 +167,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     }
     
     
-    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]?  {
+	func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]?  {
         if let transaction = transactions.getTransaction(indexPath.row)  {
             if transaction.can_be_canceled {
                 let cancelAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Cancel" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
@@ -193,7 +196,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
             return []
         }
     }
-    
+	
     func changeTransaction(action:String, transaction:Transaction){
         transactions.changeTransaction(action,transaction: transaction) { (succeeded: Bool, error_msg: String?) -> () in
 			dispatch_async(dispatch_get_main_queue(), {
@@ -235,7 +238,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
     func searchBarShouldBeginEditing(searchBar: UISearchBar!) -> Bool // return NO to not become first responder
     {
         transactions.clear()
-        reload_transactions(searching: true) //want to show search instructions
+        refreshTable(searching: true) //want to show search instructions
         
         return true
     }
@@ -255,50 +258,46 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         //println("search typed")
     }
     
-    func searchBarSearchButtonClicked( searchBar: UISearchBar!)
+    func searchBarSearchButtonClicked(searchBar: UISearchBar!)
     {
-        //println("searched")
-        
         //get new results
-        transactions.get(searchBar.text!){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-			dispatch_async(dispatch_get_main_queue(), {
-				//so it is run now, instead of at the end of code execution
-				self.reload_transactions()
-			})
-			if (!succeeded) {
-                displayError(error_msg!, viewController: self)
-            }
-        }
-        
-        reload_transactions(true) //want to show spinner
+        newRequest()
     }
     
-    func searchBarCancelButtonClicked( searchBar: UISearchBar!)
+    func searchBarCancelButtonClicked(searchBar: UISearchBar!)
     {
         //To hide searchbar
         searchBar.text = ""
         searchBar.resignFirstResponder()
 		
 		self.transactionsTableView.setContentOffset(CGPointMake(0, transactionsSearchBar.frame.size.height), animated: false)
-        
-        transactions.get(""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
+		
+        newRequest()
+    }
+	
+	func newRequest() {
+		var searchVal = ""
+		if transactionsSearchBar.text != nil {
+			searchVal = transactionsSearchBar.text!
+		}
+
+		transactions.get(getGroupType(),search: searchVal){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
 			dispatch_async(dispatch_get_main_queue(), {
 				//so it is run now, instead of at the end of code execution
-				self.reload_transactions()
+				self.refreshTable()
 			})
 			if (!succeeded) {
-                displayError(error_msg!, viewController: self)
-            }
-        }
-        
-        reload_transactions(true) //want to show spinner
-    }
-    
-    func refreshTransactions() {        
+				displayError(error_msg!, viewController: self)
+			}
+		}
+		refreshTable(true) //want to show spinner
+	}
+	
+    func refreshTransactions() {
         transactions.getUpdate(){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
 			dispatch_async(dispatch_get_main_queue(), {
 				//so it is run now, instead of at the end of code execution
-				self.reload_transactions()
+				self.refreshTable()
 			})
 			if (!succeeded) {
                 displayError(error_msg!, viewController: self)
@@ -307,13 +306,30 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         }
     }
     
+    @IBAction func transactionsGroupValueChanged(sender: UISegmentedControl) {
+		newRequest()
+    }
+	
+	func getGroupType() -> TransactionsStatusGroup {
+		if transationsGroupSegmentedControl.selectedSegmentIndex == 0 {
+			return .Open
+		} else if transationsGroupSegmentedControl.selectedSegmentIndex == 1 {
+			return .Processed
+		} else if transationsGroupSegmentedControl.selectedSegmentIndex == 2 {
+			return .Canceled
+		} else {
+			return .All
+		}
+			
+	}
+	
     @IBAction func viewTapped(sender : AnyObject) {
         //To hide the keyboard, when needed
         self.view.endEditing(true)
     }
     
     //To do infinite scrolling
-    override func scrollViewDidScroll(scrollView: UIScrollView) {
+	func scrollViewDidScroll(scrollView: UIScrollView) {
         //println("scroll")
 
         if (!transactions.end_reached) {
@@ -324,7 +340,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
                 transactions.getMore(){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
 					dispatch_async(dispatch_get_main_queue(), {
 						//so it is run now, instead of at the end of code execution
-						self.reload_transactions()
+						self.refreshTable()
 					})
 					if (!succeeded && error_msg! != "") {
 						displayError(error_msg!, viewController: self)
@@ -334,7 +350,7 @@ class TransactionsViewController: UITableViewController, NewUOmeModalDelegate {
         }
     }
     
-    private func reload_transactions(loading: Bool = false, searching: Bool = false) {
+    private func refreshTable(loading: Bool = false, searching: Bool = false) {
         self.transactionsTableView!.reloadData()
 
         /*for transaction in transactions! { // loop through data items

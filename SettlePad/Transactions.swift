@@ -10,11 +10,12 @@ import Foundation
 
 class Transactions {
     var transactions = [Transaction]()
-    var nr_of_results = 20
-    var search = ""
-    var newestID = 0
-    var oldestID = 0
-    var lastUpdate = 0
+    private var nr_of_results = 20
+    private var search = ""
+	private var group: TransactionsStatusGroup = .Open
+    private var newestID = 0
+    private var oldestID = 0
+    private var lastUpdate = 0
     var end_reached = false
     
     var lastRequest = NSDate(timeIntervalSinceNow: -24*60*60) //Only newer requests for getInternal will be succesfully completed. By default somewhere in the past (now one day)
@@ -28,6 +29,7 @@ class Transactions {
         transactions = []
         nr_of_results = 20
         search = ""
+		group = .Open
         newestID = 0
         oldestID = 0
         lastUpdate = 0
@@ -40,7 +42,7 @@ class Transactions {
         for newTransaction in newTransactions {
             newTransaction.status = .Posted
 			formdataArray.append([
-				"recipient":newTransaction.primaryIdentifierStr,
+				"recipient":newTransaction.usedIdentifierStr,
 				"description":newTransaction.description,
 				"amount":newTransaction.amount,
 				"currency":newTransaction.currency.rawValue
@@ -71,11 +73,10 @@ class Transactions {
         //At this point, the transactions array does not contain the new UOme's yet and should be refreshed. We leave this to the view controller (which is triggered by the requestCompleted above)
     }
     
-    func get(search: String, requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
-        
-        
+	func get(group: TransactionsStatusGroup, search: String, requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
+        self.group = group
         self.search = search.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet())!
-        let url = "transactions/initial/"+String(nr_of_results)+"/"+self.search
+        let url = "transactions/initial/"+String(nr_of_results)+"/"+self.group.rawValue+"/"+self.search
         self.transactions = [] //already clear out before reponse
         self.end_reached = false
         getInternal(url, oneAtATime: true){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
@@ -103,7 +104,8 @@ class Transactions {
     }
     
     func getMore(requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
-        let url = "transactions/older/\(oldestID)/"+String(nr_of_results)+"/"+search
+        let url = "transactions/older/\(oldestID)/"+String(nr_of_results)+"/"+self.group.rawValue+"/"+search
+
         if self.end_reached {
             requestCompleted(succeeded: false,transactions: self.transactions,error_msg: "End reached")
         } else if  transactions.count  == 0 {
@@ -133,7 +135,7 @@ class Transactions {
     }
     
     func getUpdate(requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
-        let url = "transactions/changes/\(oldestID)/\(newestID)/\(lastUpdate)"+"/"+String(nr_of_results)+"/"+search
+        let url = "transactions/changes/\(oldestID)/\(newestID)/\(lastUpdate)"+"/"+String(nr_of_results)+"/"+self.group.rawValue+"/"+search
 		
         getInternal(url, oneAtATime: true){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
             if (succeeded) {
@@ -183,8 +185,9 @@ class Transactions {
     }
     
 	private func getInternal(url: String, oneAtATime: Bool, requestCompleted : (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> ()) {
+
         let requestDate = NSDate()
-        //println("Transaction request: "+url)
+
 		if oneAtATime && blockingRequestActive {
 			requestCompleted(succeeded: false,dataDict: nil, error_msg: "") //another blocking request is already pending
 		} else {
@@ -262,4 +265,11 @@ class Transactions {
             }
         }
     }
+}
+
+enum TransactionsStatusGroup: String {
+	case Open = "open"
+	case Processed = "processed"
+	case Canceled = "canceled"
+	case All = "all"
 }

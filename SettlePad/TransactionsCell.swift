@@ -45,9 +45,13 @@ class TransactionsCell: UITableViewCell {
         }
         
         //Counterpart
-		let identifier: Identifier? = contacts.getIdentifier(transaction.primaryIdentifierStr)
-		if(identifier != nil) {
-			counterpartLabel.text = identifier!.resultingName
+		if (transaction.primaryIdentifierStr != nil) {
+			let identifier: Identifier? = contacts.getIdentifier(transaction.primaryIdentifierStr!)
+			if(identifier != nil) {
+				counterpartLabel.text = identifier!.resultingName
+			} else {
+				counterpartLabel.text = transaction.name
+			}
 		} else {
 			counterpartLabel.text = transaction.name
 		}
