@@ -92,7 +92,7 @@ func displayValidationFormLoggedIn(identifier: UserIdentifier, viewController: U
 
 func displayIncorrectPasswordForm(identifierStr: String, viewController: UIViewController, verificationCanceled: () -> (), verificationStarted: () -> (), verificationCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
 	
-	let alertController = UIAlertController(title: "Incorrect password", message: "If you want to reset your password, a link to do so will be sent to your email address. With the token you receive, you can change your password", preferredStyle: .Alert)
+	let alertController = UIAlertController(title: "Incorrect password", message: "Either the account does not exist, or you entered the wrong password. If you are sure the account exists and want to reset your password, a link to do so will be sent to your email address. With the token you receive, you can change your password", preferredStyle: .Alert)
 	
 	let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
 		verificationCanceled()
