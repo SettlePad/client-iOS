@@ -14,8 +14,7 @@ class User {
     var id: Int!
     var series: String!
     var token: String!
-    var userIdentifiers: [UserIdentifier] = [] //array of identifiers (for now, only email addresses)
-    
+    var userIdentifiers: [UserIdentifier] = [] //array of identifiers (for now, only email addresses)	
     var name: String! {
         didSet (oldValue) {
             api.request("settings", method:"POST", formdata: ["name":name], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
@@ -369,5 +368,5 @@ class User {
 			}
 		}
 	}
-    
+
 }

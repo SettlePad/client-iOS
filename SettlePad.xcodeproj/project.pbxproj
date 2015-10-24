@@ -33,6 +33,7 @@
 		54E48ACC1B810CF300667615 /* AcceptMemosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E48ACB1B810CF300667615 /* AcceptMemosViewController.swift */; };
 		54EA13691A9691A500654E84 /* NewUOmeAddressBook.xib in Resources */ = {isa = PBXBuildFile; fileRef = 54EA13681A9691A500654E84 /* NewUOmeAddressBook.xib */; };
 		54EA136B1A96980900654E84 /* NewUOmeAddressBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */; };
+		54EA37D61BDC109E00EFED87 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EA37D51BDC109E00EFED87 /* TabBarController.swift */; settings = {ASSET_TAGS = (); }; };
 		54EA444C1B12546400FF81C0 /* KeyboardLayoutConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EA444B1B12546400FF81C0 /* KeyboardLayoutConstraint.swift */; };
 		54F9EA471A0831D7009DC930 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F9EA461A0831D7009DC930 /* AppDelegate.swift */; };
 		54F9EA491A0831D7009DC930 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F9EA481A0831D7009DC930 /* LoginViewController.swift */; };
@@ -81,6 +82,7 @@
 		54E48ACB1B810CF300667615 /* AcceptMemosViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AcceptMemosViewController.swift; sourceTree = "<group>"; };
 		54EA13681A9691A500654E84 /* NewUOmeAddressBook.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewUOmeAddressBook.xib; sourceTree = "<group>"; };
 		54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = NewUOmeAddressBook.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		54EA37D51BDC109E00EFED87 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		54EA444B1B12546400FF81C0 /* KeyboardLayoutConstraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutConstraint.swift; sourceTree = "<group>"; };
 		54F9EA411A0831D7009DC930 /* SettlePad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SettlePad.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		54F9EA451A0831D7009DC930 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				54716AF11AFF82E300F72717 /* BalancesViewController.swift */,
 				5483263F1A7E9515004973B7 /* NewUOmeViewController.swift */,
 				540B4D611AD17E9600C94C7F /* ContactsViewController.swift */,
+				54EA37D51BDC109E00EFED87 /* TabBarController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -361,6 +364,7 @@
 				540B4D621AD17E9600C94C7F /* ContactsViewController.swift in Sources */,
 				547116D61AC2079600214A06 /* UserIdentifier.swift in Sources */,
 				540C218D1A5C855400E9A29A /* keychain.swift in Sources */,
+				54EA37D61BDC109E00EFED87 /* TabBarController.swift in Sources */,
 				54716AEE1AFF750D00F72717 /* Balances.swift in Sources */,
 				544731C21A3A3C0A0008829C /* http.swift in Sources */,
 				540C21671A5717E400E9A29A /* Transaction.swift in Sources */,

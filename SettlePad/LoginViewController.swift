@@ -13,10 +13,10 @@ var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
 
 var api = APIController()
 var user = User() //If nil, not logged in
-var transactions=Transactions()
-var contacts = Contacts()
-var balances = Balances()
-
+var transactions=Transactions() //TODO: merge into user
+var contacts = Contacts() //TODO: merge into user
+var balances = Balances() //TODO: merge into user
+var badgeCount:Int = 0
 
 class LoginViewController: UIViewController {
 	/*See 
@@ -171,7 +171,17 @@ class LoginViewController: UIViewController {
 					print(error_msg!)
 				}
 			}
-        }
+			
+			transactions.updateStatus({ (succeeded, error_msg) -> () in
+
+			})
+	
+
+		} else {
+			if let appDelegate = UIApplication.sharedApplication().delegate as? AppDelegate {
+				appDelegate.setBadgeNumber(0)
+			}
+		}
     }
     
 	
@@ -199,7 +209,7 @@ class LoginViewController: UIViewController {
     func enter_app() {
 		dispatch_async(dispatch_get_main_queue()) {
 			let storyboard = UIStoryboard(name: "Main", bundle: nil)
-			let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController")
+			let vc = storyboard.instantiateViewControllerWithIdentifier("TabBarController") as! UITabBarController			
 			self.presentViewController(vc, animated: false, completion: nil)
         }
 		

@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
 
-		setBadgeNumber(0)
+		//setBadgeNumber(0)
 		application.cancelAllLocalNotifications()
 		
         return true
@@ -71,15 +71,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 	
 	func setBadgeNumber(number: Int) {
-		if UIDevice.currentDevice().systemVersion.compare("8.0",
-			options: NSStringCompareOptions.NumericSearch) != NSComparisonResult.OrderedAscending {
+		//if UIDevice.currentDevice().systemVersion.compare("8.0", options: NSStringCompareOptions.NumericSearch) != NSComparisonResult.OrderedAscending {
+				//As of 8.0
 				if UIApplication.sharedApplication().currentUserNotificationSettings()!.types.intersect(UIUserNotificationType.Badge) != [] {
 					UIApplication.sharedApplication().applicationIconBadgeNumber = number
 				//} else {
 				//	println("No permission to set badge number")
 				}
-		} else {
+		/*} else {
 			UIApplication.sharedApplication().applicationIconBadgeNumber = number
+		}*/
+	}
+	
+	func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]){
+		//See https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
+		if let aps = userInfo["aps"] as? NSDictionary {
+			if let alert = aps["alert"] as? NSDictionary {
+				if let message = alert["body"] as? NSString {
+					//TODO Do stuff
+					print(message)
+				}
+			} else if let alert = aps["alert"] as? NSString {
+				//TODO Do stuff
+				print(alert)
+			}
 		}
 	}
 

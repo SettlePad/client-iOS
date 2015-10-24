@@ -14,8 +14,6 @@ protocol NewUOmeModalDelegate {
 }
 
 class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, UIPickerViewDelegate, UIPickerViewDataSource   {
-
-	
 	
     let footer = NewUOmeFooterView(frame: CGRectMake(0, 0, 320, 44))
     var addressBookFooter = UINib(nibName: "NewUOmeAddressBook", bundle: nil).instantiateWithOwner(nil, options: nil)[0] as! NewUOmeAddressBook

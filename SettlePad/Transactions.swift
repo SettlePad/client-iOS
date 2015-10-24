@@ -9,6 +9,11 @@
 import Foundation
 
 class Transactions {
+	var countUnreadOpen: Int = 0
+	var countUnreadCanceled: Int = 0
+	var countUnreadProcessed: Int = 0
+	var countOpen: Int = 0
+	
     var transactions = [Transaction]()
     private var nr_of_results = 20
     private var search = ""
@@ -17,7 +22,9 @@ class Transactions {
     private var oldestID = 0
     private var lastUpdate = 0
     var end_reached = false
-    
+	
+	var tabBarDelegate:TabBarDelegate?
+	
     var lastRequest = NSDate(timeIntervalSinceNow: -24*60*60) //Only newer requests for getInternal will be succesfully completed. By default somewhere in the past (now one day)
 	var blockingRequestActive = false
 	
@@ -265,6 +272,45 @@ class Transactions {
             }
         }
     }
+	
+	//TODO: when to call this function?
+	func updateStatus(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+		api.request("status", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
+			if(succeeded) {
+				if let dataDict = data["data"] as? NSDictionary {
+					if let unreadArray = dataDict["unread"] as? [String:Int] {
+						if let unreadOpen = unreadArray["open"] {
+							self.countUnreadOpen = unreadOpen
+						}
+						if let unreadProcessed = unreadArray["processed"] {
+							self.countUnreadProcessed = unreadProcessed
+						}
+						if let unreadCanceled = unreadArray["canceled"] {
+							self.countUnreadCanceled = unreadCanceled
+						}
+					} else {
+						print("Inparsable unread count")
+					}
+					
+					if let openInt = dataDict["open"] as? Int {
+						self.countOpen = openInt
+					}
+
+					badgeCount = self.countUnreadOpen + self.countUnreadProcessed + self.countUnreadCanceled
+
+					self.tabBarDelegate?.updateBadges()
+				}
+				requestCompleted(succeeded: true,error_msg: nil)
+			} else {
+				if let msg = data["text"] as? String {
+					requestCompleted(succeeded: false,error_msg: msg)
+				} else {
+					requestCompleted(succeeded: false,error_msg: "Unknown")
+				}
+			}
+			
+		}
+	}
 }
 
 enum TransactionsStatusGroup: String {

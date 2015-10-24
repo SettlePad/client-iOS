@@ -104,6 +104,8 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 		
 		//To hide searchbar
 		transactionsTableView.setContentOffset(CGPointMake(0, transactionsSearchBar.frame.size.height), animated: false)
+		
+		
 	}
 
     override func didReceiveMemoryWarning() {
