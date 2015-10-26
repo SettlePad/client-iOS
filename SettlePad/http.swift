@@ -14,138 +14,7 @@
 
 import Foundation
 
-class APIController {	
-	func login(username: String, password: String, loginCompleted : (succeeded: Bool, msg: String, code: String) -> ()) {
-		//if logged in already, first log out
-		if user != nil {
-			logout()
-		}
-		
-		request("login", method:"POST", formdata: ["provider":"password", "user":username, "password":password], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(succeeded) {
-				user = User(credentials: data as! Dictionary)
-				if user != nil {
-					contacts.updateContacts { (succeeded: Bool, error_msg: String?) -> () in
-						loginCompleted(succeeded: true, msg: user!.name, code:"")
-					}
-					
-				} else {
-					loginCompleted(succeeded: false, msg: "Cannot initialize user class", code: "")
-				}
-			} else {
-				if let msg = data["text"] as? String, code = data["code"] as? String {
-					loginCompleted(succeeded: false, msg: msg, code: code)
-				} else {
-					loginCompleted(succeeded: false, msg: "Unknown error", code: "unknown")
-				}
-			}
-		}
-	}
-	
-	func register(name: String, username: String, password: String, preferredCurrency: String, completed : (succeeded: Bool, error_msg: String?, userID: Int?) -> ()) {
-		//if logged in already, first log out
-		if user != nil {
-			logout()
-		}
-		
-		request("register/account", method:"POST", formdata: ["type":"email", "name":name, "identifier":username, "password":password, "primary_currency":preferredCurrency], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(succeeded) {
-				if let userID = data["user_id"] as? Int {
-					completed(succeeded: true, error_msg: nil, userID: userID)
-				} else {
-					completed(succeeded: false, error_msg: "Did not get a user ID. Try to log in manually", userID:nil)
-				}
-			} else {
-				if let msg = data["text"] as? String {
-					completed(succeeded: false, error_msg: msg, userID:nil)
-				} else {
-					completed(succeeded: false, error_msg: "Unknown error", userID:nil)
-				}
-			}
-		}
-	}
-	
-	func verifyIdentifier(identifierStr: String, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		request("register/verify", method:"POST", formdata: ["identifier":identifierStr,"token":token], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(succeeded) {
-				requestCompleted(succeeded: true,error_msg: nil)
-			} else {
-				if let msg = data["text"] as? String {
-					requestCompleted(succeeded: false,error_msg: msg)
-				} else {
-					requestCompleted(succeeded: false,error_msg: "Unknown")
-				}
-			}
-		}
-	}
-	
-	func requestPasswordReset(identifierStr: String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		request("register/request_reset_password", method:"POST", formdata: ["identifier":identifierStr], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(succeeded) {
-				requestCompleted(succeeded: true,error_msg: nil)
-			} else {
-				if let msg = data["text"] as? String {
-					requestCompleted(succeeded: false,error_msg: msg)
-				} else {
-					requestCompleted(succeeded: false,error_msg: "Unknown")
-				}
-			}
-		}
-	}
-	
-	func resetPassword(identifierStr: String, passwordStr: String, tokenStr: String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		request("register/reset_password", method:"POST", formdata: ["identifier":identifierStr, "token":tokenStr, "password":passwordStr], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(succeeded) {
-				requestCompleted(succeeded: true,error_msg: nil)
-			} else {
-				if let msg = data["text"] as? String {
-					requestCompleted(succeeded: false,error_msg: msg)
-				} else {
-					requestCompleted(succeeded: false,error_msg: "Unknown")
-				}
-			}
-		}
-	}
-
-	func registerAPNToken(tokenStr: String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		request("apn", method:"POST", formdata: ["token":tokenStr], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(succeeded) {
-				requestCompleted(succeeded: true,error_msg: nil)
-			} else {
-				if let msg = data["text"] as? String {
-					requestCompleted(succeeded: false,error_msg: msg)
-				} else {
-					requestCompleted(succeeded: false,error_msg: "Unknown")
-				}
-			}
-		}
-	}
-	
-	func logout() {
-		//Invalidate session at server
-		request("logout", method:"POST", formdata: [:], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			//println(data)
-			if(!succeeded) {
-				if let error_msg = data["text"] as? String {
-					print(error_msg)
-				} else {
-					print("Unknown error while logging out")
-				}
-			}
-		}
-		self.clearUser() //Do not wait until logout is finished
-	}
-	
-	func clearUser() {
-		if user != nil {
-			user!.wipe()
-			user = nil
-		}
-		
-		transactions.clear()
-		contacts.clear()
-	}
-	
+class APIController {
 	func request(url : String, method: String, formdata : AnyObject?, secure: Bool, requestCompleted : (succeeded: Bool, data: NSDictionary) -> ()) -> NSURLSessionDataTask? {
 		
 		var proceedRequest = true
@@ -172,16 +41,16 @@ class APIController {
 		}
 		
 		if (secure) {
-			if (user != nil) {
-				request.addValue(String(user!.id), forHTTPHeaderField: "X-USER-ID")
-				request.addValue(user!.series, forHTTPHeaderField: "X-SERIES")
+			if (activeUser != nil) {
+				request.addValue(String(activeUser!.id), forHTTPHeaderField: "X-USER-ID")
+				request.addValue(activeUser!.series, forHTTPHeaderField: "X-SERIES")
 
 				//SHA 256 hash of X-SERIES + X-TIME + dataString (only for non-GET), with token as key
-				var toHash = user!.series+timestamp
+				var toHash = activeUser!.series+timestamp
 				if (method != "GET") {
 					toHash += dataString
 				}
-				request.addValue(toHash.hmac(.SHA256, key: user!.token), forHTTPHeaderField: "X-HASH")
+				request.addValue(toHash.hmac(.SHA256, key: activeUser!.token), forHTTPHeaderField: "X-HASH")
 			} else {
 				proceedRequest = false
 				requestCompleted(succeeded: false, data: ["code":"local_login_error", "text":"Cannot perform request, not logged in", "function":"local"])
@@ -207,7 +76,7 @@ class APIController {
 							if let data = parseJSON["error"] as? NSDictionary {
 								if let code = data["code"] as? String {
 									if code == "unknown_series" {
-										self.clearUser()
+										Login.clearUser()
 									}
 								} else {
 									print("Server sent back unknown error key")

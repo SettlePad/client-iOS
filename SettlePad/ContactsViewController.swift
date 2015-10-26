@@ -16,7 +16,7 @@ protocol ContactsViewControllerDelegate {
 class ContactsViewController: UITableViewController, ContactsViewControllerDelegate {
 	//TODO: with refreshControl spinning and no connection to server, all section heads are screwed up
 
-	var serverContacts: [Contact] = contacts.contacts
+	var serverContacts: [Contact] = activeUser!.contacts.contacts
 	
     @IBOutlet var searchBar: UISearchBar!
 
@@ -111,13 +111,18 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 	func refreshContacts() {
 		//limits are not updated now
 		
-		contacts.updateContacts {(succeeded: Bool, error_msg: String?) -> () in
-			if !succeeded {
-				displayError(error_msg!, viewController: self)
+		activeUser!.contacts.updateContacts(
+			{
+				self.reload()
+				self.contactsRefreshControl.endRefreshing()
+			},
+			failure: {error in
+				displayError(error.errorText, viewController: self)
+				self.reload()
+				self.contactsRefreshControl.endRefreshing()
 			}
-			self.reload()
-			self.contactsRefreshControl.endRefreshing()
-		}
+		)
+		
 	}
 
 	override func viewDidAppear(animated: Bool) {
@@ -128,10 +133,10 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 	func reload() {
 		//Filter contacts based on search query
 		if searchBar.text == "" {
-			serverContacts = contacts.contacts
+			serverContacts = activeUser!.contacts.contacts
 		} else {
 			let needle = searchBar.text
-			serverContacts = contacts.contacts.filter{$0.resultingName.lowercaseString.rangeOfString(needle!.lowercaseString) != nil}
+			serverContacts = activeUser!.contacts.contacts.filter{$0.resultingName.lowercaseString.rangeOfString(needle!.lowercaseString) != nil}
 		}
 		
 		dispatch_async(dispatch_get_main_queue(), {
@@ -204,7 +209,7 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 		} else if segue.identifier == "new_contact" {
 			let navigationController = segue.destinationViewController as! UINavigationController
 			let destVC = navigationController.viewControllers[0] as! ContactViewController
-			destVC.contact = Contact(name: "", friendlyName: "", registered: false, favorite: true, autoAccept: .Manual, identifiers: [], propagatedToServer: false)
+			destVC.contact = Contact(name: "", friendlyName: "", registered: false, favorite: true, autoAccept: .Manual, identifiers: [], propagatedToServer: false, user: activeUser!)
 			destVC.delegate = self
 		}
     }

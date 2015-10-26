@@ -20,7 +20,7 @@ class NewUOmeAddressBook: UIView {
     @IBOutlet var detailLabel: UILabel!
     
     @IBAction func giveAccessButton(sender: AnyObject) {
-        contacts.requestLocalAccess(){ succeeded in
+        activeUser!.contacts.requestLocalAccess(){ succeeded in
             self.footerUpdated?(self)
             return //to overcome implicit return, see http://expertland.net/question/p8n2l8193m8218a9c2t50fl71940ebbxz1/detail.html
         }
@@ -38,7 +38,7 @@ class NewUOmeAddressBook: UIView {
 
         //Determine address book status
 		dispatch_async(dispatch_get_main_queue(), { () -> Void in
-			switch contacts.localStatus{
+			switch Contacts.localStatus{
 				case .Authorized:
 					self.requestAddressBookAccessButton.removeFromSuperview()
 					self.detailLabel.removeFromSuperview()

@@ -33,7 +33,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 		//Goto login screen
 		if error_msg != nil {
 			displayError(error_msg!, viewController: self)
-			if (user == nil) {
+			if (activeUser == nil) {
 				dispatch_async(dispatch_get_main_queue()) {
 					let storyboard = UIStoryboard(name: "Main", bundle: nil)
 					let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") 

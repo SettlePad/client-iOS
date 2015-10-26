@@ -228,15 +228,16 @@ class ContactViewController: UITableViewController, ContactViewControllerDelegat
     
     @IBAction func saveContact(sender: AnyObject) {
 		self.tableView.endEditing(false) //When editing a textbox when the button is pressed, we first want to process the changes of the textbox, before processing the button press
-		contacts.addContact(contact, updateServer: true) { (succeeded: Bool, error_msg: String?) -> () in
-			if !succeeded {
-				self.delegate.reloadContent(error_msg!)
-			} else {
+		activeUser!.contacts.addContact(contact, updateServer: true,
+			success: {
 				self.delegate.reloadContent(nil) //Refresh the contact list in the contacts viewController, so that the spinner for the saved contact is gone
+			},
+			failure: {error in
+				self.delegate.reloadContent(error.errorText)
 			}
-		}
+		)
+	
 		self.dismissViewControllerAnimated(true, completion: nil)
-
     }
 	
     @IBAction func deleteContact(sender: AnyObject) {

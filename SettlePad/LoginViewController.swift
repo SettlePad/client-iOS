@@ -11,10 +11,9 @@ import UIKit
 var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"plist")
 var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
 
-var api = APIController() //TODO: make singleton
-var user = User() //If nil, not logged in. Undo make it failable
+var api = APIController() //TODO: remove this
+var activeUser: User? = User.loadFromKeychain()
 var transactions=Transactions() //TODO: merge into user
-var contacts = Contacts() //TODO: merge into user
 var balances = Balances() //TODO: merge into user
 var badgeCount:Int = 0
 
@@ -50,57 +49,72 @@ class LoginViewController: UIViewController {
     
     func doLogin() {
 		if formForRegistration == false {
-			spinning(true)			
-			api.login(txtLoginUser.text!, password: txtLoginPass.text!){ (succeeded: Bool, msg: String, code: String) -> () in
-				self.spinning(false)
-				if(succeeded) {
+			spinning(true)
+			Login.login(txtLoginUser.text!, password: txtLoginPass.text!,
+				success: { user in
+					self.spinning(false)
 					//Go to next screen (in main view)
+					activeUser = user
 					dispatch_async(dispatch_get_main_queue(), { () -> Void in
 						self.txtLoginPass.text = ""
 					})
 					self.enter_app()
-				} else {
-					if (code == "not_validated" ) {
+				},
+				failure: { error in
+					self.spinning(false)
+					if (error.errorCode == "not_validated" ) {
 						//Show validation form
-						displayValidationFormNotLoggedIn(self.txtLoginUser.text!, viewController: self, verificationCanceled: {() -> () in self.spinning(false)},verificationStarted: {}) { (succeeded, error_msg) -> () in
-							
-							self.spinning(false)
-							
-							if !succeeded {
-								displayError(error_msg!,viewController: self)
-							} else {
-								//When validated: log in
-								self.doLogin()
-							}
-						}
-					} else if (code == "incorrect_credentials" ) {
-						//Offer to reset password
-						displayIncorrectPasswordForm(self.txtLoginUser.text!, viewController: self, verificationCanceled: {() -> () in
-							//When canceled
-							self.spinning(false)
-							dispatch_async(dispatch_get_main_queue(), { () -> Void in
-								self.txtLoginPass.text = ""
-							})
-						},verificationStarted: {}) { (succeeded, error_msg) -> () in
-							//When indeed requested password reset
-							if !succeeded {
-								displayError(error_msg!,viewController: self)
-							} else {
-								//When validated: log in
-								dispatch_async(dispatch_get_main_queue(), { () -> Void in
-									self.txtLoginPass.text = error_msg!
+						displayValidationFormNotLoggedIn(self.txtLoginUser.text!, viewController: self, verificationCanceled: {
+								self.spinning(false)
+							},
+							verificationStarted: {
+								self.spinning(true)
+							},
+							verificationCompleted: {succeeded, error_msg in
+								self.spinning(false)
+								if !succeeded {
+									displayError(error_msg!,viewController: self)
+								} else {
+									//When validated: log in
 									self.doLogin()
-								})
+								}
 							}
-						}
+						)
+					} else if (error.errorCode == "incorrect_credentials" ) {
+						//Offer to reset password
+						displayIncorrectPasswordForm(self.txtLoginUser.text!, viewController: self, verificationCanceled: {
+								//When canceled
+								self.spinning(false)
+								dispatch_async(dispatch_get_main_queue(), { () -> Void in
+									self.txtLoginPass.text = ""
+								})
+							},
+							verificationStarted: {
+								self.spinning(true)
+							},
+							verificationCompleted: {succeeded, error_msg in
+								//When indeed requested password reset
+								self.spinning(false)
+								if !succeeded {
+									displayError(error_msg!,viewController: self)
+								} else {
+									//When validated: log in
+									dispatch_async(dispatch_get_main_queue(), { () -> Void in
+										self.txtLoginPass.text = error_msg!
+										self.doLogin()
+									})
+								}
+							}
+						)
 					} else {
 						dispatch_async(dispatch_get_main_queue(), { () -> Void in
 							self.txtLoginPass.text = ""
 						})
-						displayError(msg, viewController: self)
+						displayError(error.errorText, viewController: self)
 					}
 				}
-			}
+			)
+			
 		} else {
 			//check whether email address is valid
 			var preferredCurency: String = "EUR"
@@ -111,13 +125,12 @@ class LoginViewController: UIViewController {
 			if validateRegistrationForm(false, finalCheck: true) {
 				spinning(true)
 				
-				api.register(txtLoginName.text!, username: txtLoginUser.text!, password: txtLoginPass.text!, preferredCurrency: preferredCurency){ (succeeded: Bool, error_msg: String?, userID: Int?) -> () in
-					
-					if(succeeded) {
+				Login.register(txtLoginName.text!, username: txtLoginUser.text!, password: txtLoginPass.text!, preferredCurrency: preferredCurency,
+					success: { userID in
 						dispatch_async(dispatch_get_main_queue(), { () -> Void in
 							self.register(self) //switch back to login view
 						})
-							
+						
 						//Show validation form
 						displayValidationFormNotLoggedIn(self.txtLoginUser.text!, viewController: self, verificationCanceled: {() -> () in self.spinning(false)},verificationStarted: {}) { (succeeded, error_msg) -> () in
 							
@@ -130,12 +143,12 @@ class LoginViewController: UIViewController {
 								self.doLogin()
 							}
 						}
-
-					} else {
+					},
+					failure: { error in
 						self.spinning(false)
-						displayError(error_msg!, viewController: self)
+						displayError(error.errorText, viewController: self)
 					}
-				}
+				)
 			}
         }
     }
@@ -158,19 +171,26 @@ class LoginViewController: UIViewController {
 	
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        if user != nil {
+        if activeUser != nil {
 			spinning(true)
-			contacts.updateContacts{(succeeded: Bool, error_msg: String?) -> () in
-				self.spinning(false)
-				self.enter_app() //load contacts before entering
-			}
+			activeUser!.contacts.updateContacts (
+				{
+					self.spinning(false)
+					self.enter_app() //load contacts before entering
+				},
+				failure: {error in
+					self.spinning(false)
+					self.enter_app() //load contacts before entering
+				}
+			)
 
 			//Update user name, default currency and identifiers
-			user!.updateSettings() { (succeeded: Bool, error_msg: String?) -> () in
-				if !succeeded {
-					print(error_msg!)
+			activeUser!.getSettings(
+				{},
+				failure: {error in
+					print(error.errorText)
 				}
-			}
+			)
 			
 			transactions.updateStatus({ (succeeded, error_msg) -> () in
 

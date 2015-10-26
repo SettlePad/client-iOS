@@ -24,11 +24,11 @@ class SettingsViewController: UITableViewController {
     }
     
     @IBAction func nameEdited(sender: UITextField) {
-        user?.name = sender.text
+        activeUser?.name = sender.text!
     }
     
     @IBAction func logout(sender: AnyObject) {
-        api.logout()
+        activeUser?.logout()
         dispatch_async(dispatch_get_main_queue()) {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") 
@@ -128,25 +128,28 @@ class SettingsViewController: UITableViewController {
     */
     
     func updateLabels () {
-        currencyLabel.text = user?.defaultCurrency.rawValue
-        nameText.text = user?.name
-        credentialsLabel.text = user?.userIdentifiers.count.description
-        favoritesLabel.text = contacts.contacts.count.description
+        currencyLabel.text = activeUser?.defaultCurrency.rawValue
+        nameText.text = activeUser?.name
+        credentialsLabel.text = activeUser?.userIdentifiers.count.description
+        favoritesLabel.text = activeUser!.contacts.contacts.count.description
     }
 	
 	func refreshUserData () {
-		user!.updateSettings() { (succeeded: Bool, error_msg: String?) -> () in
-
-			if (succeeded) {
+		activeUser!.getSettings(
+			{
 				dispatch_async(dispatch_get_main_queue(), {
-					//so it is run now, instead of at the end of code execution
 					self.updateLabels()
 				})
-			} else {
-				displayError(error_msg!, viewController: self)
+				self.settingsRefreshControl.endRefreshing()
+
+			},
+			failure: {error in
+				displayError(error.errorText, viewController: self)
+				self.settingsRefreshControl.endRefreshing()
+
 			}
-			self.settingsRefreshControl.endRefreshing()
-		}
+		)
+
 	}
 
 }

@@ -31,15 +31,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			.stringByTrimmingCharactersInSet( characterSet )
 			.stringByReplacingOccurrencesOfString( " ", withString: "" ) as String
 		
-		if user != nil {
-			api.registerAPNToken(deviceTokenString) { (succeeded: Bool, error_msg: String?) -> () in
-				if !succeeded {
-					print("Error while registering device token: "+error_msg!)
+		if activeUser != nil {
+			activeUser!.registerAPNToken(deviceTokenString,
+				success: {},
+				failure: { error in
+					print("Error while registering device token: "+error.errorText)
 				}
-			}
+			)
 		}
-
-		
 	}
 	
 	func application( application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError ) {

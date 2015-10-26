@@ -7,15 +7,14 @@
 //
 
 import Foundation
-
+import SwiftyJSON
 
 class User {
-    // The exclamation marks in the class variable declarations make sure we can use a failable class initializer, see https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Initialization.html#//apple_ref/doc/uid/TP40014097-CH18-XID_339
-    var id: Int!
-    var series: String!
-    var token: String!
-    var userIdentifiers: [UserIdentifier] = [] //array of identifiers (for now, only email addresses)	
-    var name: String! {
+    var id: Int = 0
+    var series: String = ""
+    var token: String = ""
+    var userIdentifiers: [UserIdentifier] = [] //array of identifiers (for now, only email addresses)
+    var name: String = "" {
         didSet (oldValue) {
             api.request("settings", method:"POST", formdata: ["name":name], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
                 if(!succeeded) {
@@ -29,7 +28,7 @@ class User {
         }
     }
 
-    var defaultCurrency: Currency! {
+    var defaultCurrency: Currency = .EUR {
         didSet {
             api.request("settings", method:"POST", formdata: ["default_currency":defaultCurrency.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
                 if(!succeeded) {
@@ -42,6 +41,8 @@ class User {
             }
         }
     }
+	
+	var contacts = Contacts()
     
     init (id: Int, name: String, series:String, token: String, defaultCurrency: Currency, userIdentifiers: [UserIdentifier]){
         self.id = id
@@ -50,122 +51,50 @@ class User {
         self.token = token
         self.defaultCurrency = defaultCurrency
         self.userIdentifiers = userIdentifiers
-        save()
-    }
-    
-    init?(){
-        //Try to load from keychain and NSUserDefaults
-        
-        if let keychainObj = Keychain.load("user_id") {
-            if Int(keychainObj.stringValue) == nil {
-                return nil
-            } else {
-                self.id = Int(keychainObj.stringValue)
-            }
-        } else {
-            return nil
-        }
-        
-        if let keychainObj = Keychain.load("user_name") {
-            self.name = keychainObj.stringValue
-        } else {
-            return nil
-        }
-        
-        if let keychainObj = Keychain.load("series") {
-            self.series = keychainObj.stringValue
-        } else {
-            return nil
-        }
+		self.contacts.user = self
 
-        if let keychainObj = Keychain.load("token") {
-            self.token = keychainObj.stringValue
-        } else {
-            return nil
-        }
-        
-        let defaults = NSUserDefaults.standardUserDefaults()
-		var found = false
-		if let defaultsStr = defaults.stringForKey("defaultCurrency") {
-			if let currency = Currency(rawValue: defaultsStr) {
-				self.defaultCurrency = currency
-				found = true
-			}
-        }
-		if found == false {
-			return nil
-		}
-        
-        if let data = defaults.objectForKey("userIdentifiers") as? NSData {
-            if let subdata = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? [UserIdentifier] {
-                self.userIdentifiers = subdata
-            } else {
-                return nil
-            }
-        } else {
-            return nil
-        }
+		save()
     }
+
 	
-    init?(credentials: [String: AnyObject]){
+	init(json: JSON){
+		if let id = json["user_id"].int {
+			self.id = id
+		}
 		
-        if let intVal = credentials["user_id"] as? Int {
-            self.id = intVal
-        } else {
-            return nil
-        }
-        
-        if let strVal = credentials["user_name"] as? String {
-            self.name = strVal
-        } else {
-            return nil
-        }
-        
-        if let strVal = credentials["series"] as? String {
-            self.series = strVal
-        } else {
-            return nil
-        }
-        
-        if let strVal = credentials["token"] as? String {
-            self.token = strVal
-        } else {
-            return nil
-        }
+		if let name = json["user_name"].string {
+			self.name = name
+		}
 		
-		var found = false
-		if let strVal = credentials["default_currency"] as? String {
-			if let currency = Currency(rawValue: strVal) {
-				self.defaultCurrency = currency
-				found = true
+		if let series = json["series"].string {
+			self.series = series
+		}
+		
+		if let token = json["token"].string {
+			self.token = token
+		}
+		
+		if let defaultCurrencyRawValue = json["default_currency"].string{
+			if let defaultCurrency = Currency(rawValue: defaultCurrencyRawValue){
+				self.defaultCurrency = defaultCurrency
 			}
 		}
-		if found == false {
-			return nil
+		
+		for (_,subJson):(String, JSON) in json["identifiers"] {
+			if let identifier = subJson["identifier"].string , source = subJson["source"].string, verified = subJson["verified"].bool, primary = subJson["primary"].bool {
+				self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false, primary: primary))
+			} else {
+				print("Cannot load identifier")
+			}
 		}
 		
-        if let arrayVal = credentials["identifiers"] as? [[String:AnyObject]] {
-            if arrayVal.count == 0 {
-                print("Empty identifier array")
-                return nil
-            }
-            
-            
-            for parsableIdentifier in arrayVal {
-                if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool, primary = parsableIdentifier["primary"] as? Bool {
-					self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false, primary: primary))
-                } else {
-                    print("Cannot load identifier")
-                    return nil
-                }
-            }
-        } else {
-            return nil
-        }
-        
-        save()
-    }
+		self.contacts = Contacts()
+		self.contacts.user = self
+		
+		save()
 
+	}
+	
     func save() {
         //Set keychain
         Keychain.save("user_id", data: String(id).dataValue)
@@ -180,7 +109,7 @@ class User {
         defaults.setObject(data, forKey: "userIdentifiers")
     }
     
-    func wipe() {
+    static func wipe() {
         //Wipe keychain
         Keychain.delete("user_id")
         Keychain.delete("token")
@@ -192,7 +121,63 @@ class User {
         defaults.setObject(nil, forKey: "defaultCurrency")
         defaults.setObject(nil, forKey: "userIdentifiers")
     }
-    
+	
+	static func loadFromKeychain() -> User? {
+		var id: Int = 0
+		var name: String = ""
+		var series: String = ""
+		var token: String = ""
+		var userIdentifiers: [UserIdentifier] = []
+		var defaultCurrency: Currency = .EUR
+		
+		if let keychainObj = Keychain.load("user_id") {
+			if let intVal = Int(keychainObj.stringValue) {
+				id = intVal
+			}
+		}
+		
+		if let keychainObj = Keychain.load("user_name") {
+			name = keychainObj.stringValue
+		} else {
+			return nil
+		}
+		
+		if let keychainObj = Keychain.load("series") {
+			series = keychainObj.stringValue
+		} else {
+			return nil
+		}
+		
+		if let keychainObj = Keychain.load("token") {
+			token = keychainObj.stringValue
+		} else {
+			return nil
+		}
+		
+		let defaults = NSUserDefaults.standardUserDefaults()
+		if let defaultsStr = defaults.stringForKey("defaultCurrency") {
+			if let currency = Currency(rawValue: defaultsStr) {
+				defaultCurrency = currency
+			} else {
+				return nil
+			}
+		} else {
+			return nil
+		}
+		
+		if let data = defaults.objectForKey("userIdentifiers") as? NSData {
+			if let subdata = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? [UserIdentifier] {
+				userIdentifiers = subdata
+			} else {
+				return nil
+			}
+		} else {
+			return nil
+		}
+		
+		return User(id: id, name: name, series: series, token: token, defaultCurrency: defaultCurrency, userIdentifiers: userIdentifiers)
+	}
+	
     func addIdentifier(email:String, password:String,requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
 		self.userIdentifiers.append(UserIdentifier(identifier: email, source: "email", verified: false, pending: true, primary: false))
         api.request("identifiers/new", method:"POST", formdata: ["identifier":email,"password":password,"type":"email"], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
@@ -262,9 +247,9 @@ class User {
 	
 	func verifyIdentifier(identifier:UserIdentifier, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
 		identifier.pending = true
-		api.verifyIdentifier(identifier.identifier, token: token) { (succeeded: Bool, error_msg: String?) -> () in
-			identifier.pending = false
-			if(succeeded) {
+		Login.verifyIdentifier(identifier.identifier, token: token,
+			success: {
+				identifier.pending = false
 				identifier.verified = true
 				for userIdentifier in self.userIdentifiers {
 					userIdentifier.primary = false
@@ -272,10 +257,12 @@ class User {
 				identifier.primary = true
 				self.save()
 				requestCompleted(succeeded: true,error_msg: nil)
-			} else {
-				requestCompleted(succeeded: false,error_msg: error_msg!)
+			},
+			failure: { error in
+				identifier.pending = false
+				requestCompleted(succeeded: false, error_msg: error.errorText)
 			}
-		}
+		)
 	}
 
     func changePassword(identifier:UserIdentifier, password:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
@@ -318,55 +305,56 @@ class User {
 		}
 	}
 
-    func updateSettings(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		api.request("settings", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(succeeded) {
-				if let dataDict = data["data"] as? NSDictionary {
-					if let strVal = dataDict["user_name"] as? String {
-						self.name = strVal
-					} else {
-						print("Inparsable user name")
-					}
-					
-					if let strVal = dataDict["default_currency"] as? String {
-						if let currency = Currency(rawValue: strVal) {
-							self.defaultCurrency = currency
-						} else {
-							print("Currency not on list")
-						}
-					} else {
-						print("Inparsable currency")
-					}
-					
-					if let arrayVal = dataDict["identifiers"] as? [[String:AnyObject]] {
-						self.userIdentifiers = []
-						if arrayVal.count == 0 {
-							print("Empty identifier array")
-						}
-						
-						for parsableIdentifier in arrayVal {
-							if let identifier = parsableIdentifier["identifier"] as? String, source = parsableIdentifier["source"] as? String, verified = parsableIdentifier["verified"] as? Bool, primary = parsableIdentifier["primary"] as? Bool {
-								self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false, primary: primary))
-							} else {
-								print("Cannot load identifier")
-							}
-						}
-					}
-					
-					self.save()
-				} else {
-					print("Cannot parse return as dictionary")
+	func getSettings(success: () -> (), failure: (error: SettlePadError) -> ()) {
+		HTTPWrapper.request("settings", method: .GET, parameters: nil, authenticateWithUser: self,
+			success: { json in
+				if let name = json["data"]["user_name"].string {
+					self.name = name
 				}
 				
-				requestCompleted(succeeded: true,error_msg: nil)
-			} else {
-				if let msg = data["text"] as? String {
-					requestCompleted(succeeded: false,error_msg: msg)
-				} else {
-					requestCompleted(succeeded: false,error_msg: "Unknown")
+				if let rawCurrency = json["data"]["default_currency"].string {
+					if let currency = Currency(rawValue: rawCurrency) {
+						self.defaultCurrency = currency
+					}
 				}
+				
+				self.userIdentifiers = []
+				for (_,subJson):(String, JSON) in json["data"]["identifiers"] {
+					if let identifier = subJson["identifier"].string , source = subJson["source"].string, verified = subJson["verified"].bool, primary = subJson["primary"].bool {
+						self.userIdentifiers.append(UserIdentifier(identifier: identifier, source: source, verified: verified, pending: false, primary: primary))
+					} else {
+						print("Cannot load identifier")
+					}
+				}
+				self.save()
+				
+				success()
+			},
+			failure: { error in
+				failure(error: error)
 			}
-		}
+		)
+	}
+	
+	func registerAPNToken(tokenStr: String, success : () -> (), failure: (error: SettlePadError)->()) {
+		HTTPWrapper.request("apn", method: .POST, parameters: ["token":tokenStr], authenticateWithUser: self,
+			success: { _ in
+				success()
+			},
+			failure: { error in
+				failure(error: error)
+			}
+		)
+	}
+	
+	func logout() {
+		//Invalidate session at server
+		HTTPWrapper.request("logout", method: .POST, parameters: nil, authenticateWithUser: self, success: {_ in },
+			failure: { error in
+				print(error.errorText)
+			}
+		)
+		Login.clearUser() //Do not wait until logout is finished
 	}
 
 }

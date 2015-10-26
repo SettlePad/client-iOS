@@ -7,11 +7,12 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 class Contact: NSObject { //required for sections in viewcontroller with collation
-    var name: String //The name, as set by the contact itself (from the server)
-	private(set) var friendlyName: String //The name, as set by the user (from the server)
-	var registered: Bool
+    var name: String = "" //The name, as set by the contact itself (from the server)
+	private(set) var friendlyName: String = "" //The name, as set by the user (from the server)
+	var registered: Bool = false
 	
 	func setFriendlyName (newValue: String, updateServer: Bool) {
 		let oldValue = friendlyName
@@ -40,7 +41,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		}
 	}
 	
-	private(set) var autoAccept: AutoAccept
+	private(set) var autoAccept: AutoAccept = .Manual
 	
 	func setAutoAccept(newValue: AutoAccept, updateServer: Bool) {
 		let oldValue = autoAccept
@@ -59,7 +60,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		autoAccept = newValue
 	}
 	
-    private(set) var favorite: Bool
+    private(set) var favorite: Bool = false
 
 	func setFavorite (newValue: Bool, updateServer: Bool) {
 		let oldValue = favorite
@@ -104,9 +105,12 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	}
 	
 	private(set) var limits = [Limit]()
-    var propagatedToServer: Bool //If false, we are sending it to the server
-    
-	init(name: String, friendlyName: String, registered: Bool, favorite: Bool, autoAccept: AutoAccept, identifiers: [String], propagatedToServer: Bool) {
+    var propagatedToServer: Bool = false //If false, we are sending it to the server
+	
+	var user: User
+	
+	init(name: String, friendlyName: String, registered: Bool, favorite: Bool, autoAccept: AutoAccept, identifiers: [String], propagatedToServer: Bool, user: User) {
+		
         self.name = name
         self.friendlyName = friendlyName
 		self.registered = registered
@@ -114,77 +118,63 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 		self.autoAccept = autoAccept
         self.identifiers = identifiers
         self.propagatedToServer = propagatedToServer
+		self.user = user
+		
+		super.init()
     }
-    
-    init(fromDict: NSDictionary = [:], propagatedToServer: Bool) {
-        if let parsed = fromDict["friendly_name"] as? String {
-            self.friendlyName = parsed
-        } else {
-            self.friendlyName = ""
-        }
+	
+	init(json: JSON, propagatedToServer: Bool, user: User) {
 		
-		var registeredBool = false
-		if let parsed = fromDict["registered"] as? Int {
-			if (parsed > 0) {
-				registeredBool = true
-			} else {
-				registeredBool = false
+		if let friendlyName = json["friendly_name"].string {
+			self.friendlyName = friendlyName
+		}
+
+		var unregistered = true
+		if let registered = json["registered"].int {
+			if (registered > 0) {
+				self.registered = true
+				unregistered = false
 			}
 		}
-		self.registered = registeredBool //We are going to use this flag later on in identifiers
 		
-        if let parsed = fromDict["favorite"] as? Int {
-            if (parsed > 0) {
-                self.favorite = true
-            } else {
-                self.favorite = false
-            }
-        } else {
-                self.favorite = false
-        }
+		if let favorite = json["favorite"].int {
+			if (favorite > 0) {
+				self.favorite = true
+			}
+			
+		}
 		
-		if let parsed = fromDict["auto_accept"] as? Int {
-			if let autoAccept = AutoAccept(rawValue: parsed) {
+		if let autoAcceptRaw = json["auto_accept"].int {
+			if let autoAccept = AutoAccept(rawValue: autoAcceptRaw) {
 				self.autoAccept = autoAccept
-			} else {
-				self.autoAccept = .Manual
 			}
-		} else {
-			self.autoAccept = .Manual
 		}
 		
-		var random_identifier:String  = ""
-        if let parsed = fromDict["identifiers"] as? Array <Dictionary <String, AnyObject> > {
-            for identifierObj in parsed {
-                if let identifier = identifierObj["identifier"] as? String {
-                    if let active = identifierObj["active"] as? Int {
-                        if active == 1 || registeredBool == false {
-							random_identifier = identifier
-                            self.identifiers.append(identifier)
-                        }
-                    }
-                }
-            }
-        }
-		
-		if let parsed = fromDict["name"] as? String {
-			self.name = parsed
-		} else {
-			self.name = random_identifier
-		}
-		
-		
-        self.propagatedToServer = propagatedToServer
-		
-		if let contactLimits = fromDict["limits"] as? Dictionary <String, Double> {
-			for (currencyString,limitDouble) in contactLimits {
-				if let currency = Currency(rawValue: currencyString) {
-					limits.append(Limit(currency: currency, limit: limitDouble))
-				} else {
-					print("Unknown currency: "+currencyString)
+		for (_,subJson):(String, JSON) in json["identifiers"] {
+			if let identifier = subJson["identifier"].string, active = subJson["active"].int {
+				if active == 1 || unregistered {
+					self.identifiers.append(identifier)
 				}
 			}
 		}
+		
+		if let name = json["name"].string {
+			self.name = name
+		} else if self.identifiers.count > 0 {
+			self.name = self.identifiers[0]
+		}
+		
+		for (currencyString,subJson):(String, JSON) in json["limits"] {
+			if let currency = Currency(rawValue: currencyString), limit = subJson.double {
+				limits.append(Limit(currency: currency, limit: limit))
+			}
+		}
+			
+        self.propagatedToServer = propagatedToServer
+		self.user = user
+		
+		super.init()
+
     }
 	
 	func addLimit(currency: Currency, limit: Double) {
@@ -273,7 +263,7 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	}
 	
 	func deleteContact() {
-		contacts.deleteContact(self)
+		user.contacts.deleteContact(self)
 	}
 	
 	func toDict() -> [String:AnyObject] {

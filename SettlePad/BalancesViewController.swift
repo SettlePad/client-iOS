@@ -37,7 +37,7 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 		//Goto login screen
 		if error_msg != nil {
 			displayError(error_msg!, viewController: self)
-			if (user == nil) {
+			if (activeUser == nil) {
 				dispatch_async(dispatch_get_main_queue()) {
 					let storyboard = UIStoryboard(name: "Main", bundle: nil)
 					let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") 
@@ -182,7 +182,7 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 		// Configure the cell...
 		var balanceName = balance.name
 		var balanceFavorite = false
-		let identifier: Identifier? = contacts.getIdentifier(balance.identifierStr)
+		let identifier: Identifier? = activeUser!.contacts.getIdentifier(balance.identifierStr)
 		if(identifier != nil) {
 			balanceName = identifier!.resultingName
 			if let balanceContact = identifier?.contact {
@@ -201,7 +201,7 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 		
 		//Go to contact view if available, otherwise ask to create a new contact
 		let balance = balances.getBalancesForCurrency(balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
-		let identifier: Identifier? = contacts.getIdentifier(balance.identifierStr)
+		let identifier: Identifier? = activeUser!.contacts.getIdentifier(balance.identifierStr)
 
 		dispatch_async(dispatch_get_main_queue()) {
 			let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -214,7 +214,7 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 				destVC.modalForEditing = true //So display close instead of save and cancel
 			} else {
 				//Create a new contact
-				destVC.contact = Contact(name: balance.name, friendlyName: "", registered: true, favorite: true, autoAccept: AutoAccept.Manual, identifiers: [balance.identifierStr], propagatedToServer: false)
+				destVC.contact = Contact(name: balance.name, friendlyName: "", registered: true, favorite: true, autoAccept: AutoAccept.Manual, identifiers: [balance.identifierStr], propagatedToServer: false, user: activeUser!)
 			}
 			destVC.delegate = self
 

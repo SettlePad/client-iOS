@@ -10,20 +10,16 @@ import Foundation
 import SwiftyJSON
 
 struct SettlePadError {
-	var errorCode: String?
-	var errorText: String?
+	var errorCode: String = "unknown_error"
+	var errorText: String = "Unknown Error"
 	
-	init(json: JSON, backupString: String) {
+	init(json: JSON) {
 		if let errorCode = json["error"]["code"].string {
 			self.errorCode = errorCode
-		} else {
-			self.errorCode = ""
 		}
 		
 		if let errorText = json["error"]["text"].string {
 			self.errorText = errorText
-		} else {
-			self.errorText = backupString
 		}
 	}
 	

@@ -55,11 +55,11 @@ class LimitsViewController: UIViewController,UITableViewDelegate, UITableViewDat
 		formCurrency.modInputView.delegate = self
 		
 		//Set currency picker to user's default currency
-		let row: Int? = sortedCurrencies.indexOf(user!.defaultCurrency)
+		let row: Int? = sortedCurrencies.indexOf(activeUser!.defaultCurrency)
 		if row != nil {
 			formCurrency.modInputView.selectRow(row!, inComponent: 0, animated: false)
-			selectedCurrency = user!.defaultCurrency
-			formCurrency.setTitle(user!.defaultCurrency.rawValue, forState: UIControlState.Normal)
+			selectedCurrency = activeUser!.defaultCurrency
+			formCurrency.setTitle(activeUser!.defaultCurrency.rawValue, forState: UIControlState.Normal)
 		}
 		
 	}

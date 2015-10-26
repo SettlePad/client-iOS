@@ -8,6 +8,7 @@
 
 import Foundation
 import AddressBook
+import SwiftyJSON
 
 class Contacts {
 	private(set) var contacts = [Contact]()
@@ -26,39 +27,36 @@ class Contacts {
 		return returnArray.first
 	}
 	
-	var localStatus: ABAuthorizationStatus {
+	static var localStatus: ABAuthorizationStatus {
 		get {
 			return ABAddressBookGetAuthorizationStatus()
 		}
 	}
 	
-    
-    func updateContacts(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+	weak var user: User!
+
+	func updateContacts(success: ()->(), failure: (error: SettlePadError) -> ()) {
 		//Update server contacts
 		
 		if contactsUpdating == false {
-		contactsUpdating = true
-			api.request("contacts", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-				if(!succeeded) {
-					if let error_msg = data["text"] as? String {
-						requestCompleted(succeeded: false,error_msg: error_msg)
-					} else {
-						requestCompleted(succeeded: false,error_msg: "Unknown error while refreshing contacts")
-					}
-				} else {
+			contactsUpdating = true
+			HTTPWrapper.request("contacts", method: .GET, parameters: nil, authenticateWithUser: user,
+				success: { json in
+					self.contactsUpdating = false
 					self.contacts = []
-					if let contactsArray = data["data"] as? [Dictionary <String, AnyObject>] {
-						for contactDict in contactsArray {
-							self.contacts.append(Contact(fromDict: contactDict, propagatedToServer: true))
-						}
+					for (_,subJson):(String, JSON) in json["data"] {
+						self.contacts.append(Contact(json: subJson, propagatedToServer: true, user: self.user))
 					}
 					self.updateIdentifiers()
-					requestCompleted(succeeded: true,error_msg: nil)
+					success()
+				},
+				failure: {error in
+					self.contactsUpdating = false
+					failure(error: error)
 				}
-				self.contactsUpdating = false
-			}
+			)
 		} else {
-			requestCompleted(succeeded: false, error_msg: "Already refreshing")
+			failure(error: SettlePadError(errorCode: "already_refreshing", errorText: "Already refreshing"))
 		}
     }
 
@@ -73,7 +71,7 @@ class Contacts {
         }
 		
 		//Add local address book
-		if (self.localStatus == .Authorized) {
+		if (Contacts.localStatus == .Authorized) {
 			if let addressBook: ABAddressBookRef = createAddressBook() {
 				//if let people = ABAddressBookCopyArrayOfAllPeople(addressBook)?.takeRetainedValue() as? [ABRecord] {
 				if let people =  ABAddressBookCopyArrayOfAllPeople(addressBook)?.takeRetainedValue()  as NSArray? as? [ABRecordRef] {
@@ -127,26 +125,24 @@ class Contacts {
     }
 	
 	
-	func addContact(contact: Contact, updateServer: Bool, requestCompleted: (succeeded: Bool, error_msg: String?) -> ()) {
+	func addContact(contact: Contact, updateServer: Bool, success: () -> (), failure: (error: SettlePadError) -> ()) {
 		if (updateServer) {
 			if contact.identifiers.count > 0 {
 				contact.propagatedToServer = false
 				contacts.append(contact)
-				api.request("contacts/"+contact.identifiers[0], method:"POST", formdata: contact.toDict(), secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-					if(succeeded) {
-						if let registered = data["data"]?["registered"] as? Bool {
+				
+				HTTPWrapper.request("contacts"+contact.identifiers[0], method: .POST, parameters: contact.toDict(), authenticateWithUser: user,
+					success: {json in
+						if let registered = json["data"]["registered"].bool {
 							contact.registered = registered
 						}
 						contact.propagatedToServer = true
-						requestCompleted(succeeded: true,error_msg: nil)
-					} else {
-						if let error_msg = data["text"] as? String {
-							requestCompleted(succeeded: false,error_msg: error_msg)
-						} else {
-							requestCompleted(succeeded: false,error_msg: "Unknown error while adding contact")
-						}
+						success()
+					},
+					failure: { error in
+						failure(error: error)
 					}
-				}
+				)
 			}
 		} else {
 			contacts.append(contact)
@@ -165,19 +161,18 @@ class Contacts {
 			contacts.removeAtIndex(row!)
 			self.updateIdentifiers()
 			if contact.identifiers.count > 0 {
-				api.request("contacts/"+contact.identifiers[0], method:"POST", formdata: ["identifier":""], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-					if(!succeeded) {
-						if let error_msg = data["text"] as? String {
-							print(error_msg)
-						} else {
-							print("Unknown error while removing contact")
-						}
+				HTTPWrapper.request("contacts"+contact.identifiers[0], method: .POST, parameters: ["identifier":""], authenticateWithUser: user,
+					success: {_ in
+				
+					},
+					failure: {error in
+						print(error.errorText)
 						
 						//roll back removal
 						self.contacts.append(contact)
 						self.updateIdentifiers()
 					}
-				}
+				)
 			}
 		}
 	}

@@ -11,7 +11,7 @@ import UIKit
 func displayError(errorMessage: String, viewController: UIViewController) {
     let alertController = UIAlertController(title: "Error", message: errorMessage, preferredStyle: .Alert)
 	let OKAction = UIAlertAction(title: "OK", style: .Default) { action -> Void in
-		if (user == nil && viewController.restorationIdentifier != "LoginController") {
+		if (activeUser == nil && viewController.restorationIdentifier != "LoginController") {
 			let storyboard = UIStoryboard(name: "Main", bundle: nil)
 			let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") 
 			dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -39,13 +39,14 @@ func displayValidationFormNotLoggedIn(identifierStr: String, viewController: UIV
 	let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
 		verificationStarted()
 		let validationTextField = alertController.textFields![0] 
-		api.verifyIdentifier(identifierStr, token: validationTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
-			if !succeeded {
-				verificationCompleted(succeeded: false, error_msg: error_msg!)
-			} else {
+		Login.verifyIdentifier(identifierStr, token: validationTextField.text!,
+			success: {
 				verificationCompleted(succeeded: true, error_msg: nil)
+			},
+			failure: { error in
+				verificationCompleted(succeeded: false, error_msg: error.errorText)
 			}
-		}
+		)
 	}
 	
 	alertController.addTextFieldWithConfigurationHandler { (textField) in
@@ -69,7 +70,7 @@ func displayValidationFormLoggedIn(identifier: UserIdentifier, viewController: U
 	
 	let enterAction = UIAlertAction(title: "Submit", style: .Default) { (action) in
 		let validationTextField = alertController.textFields![0]
-		user!.verifyIdentifier(identifier, token: validationTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
+		activeUser!.verifyIdentifier(identifier, token: validationTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
 				requestCompleted(succeeded: false, error_msg: error_msg!)
 			} else {
@@ -100,21 +101,22 @@ func displayIncorrectPasswordForm(identifierStr: String, viewController: UIViewC
 	
 	let requestAction = UIAlertAction(title: "Request reset", style: .Destructive) { (action) in
 		verificationStarted()
-		api.requestPasswordReset(identifierStr) { (succeeded: Bool, error_msg: String?) -> () in
-			if !succeeded {
-				verificationCompleted(succeeded: false, error_msg: error_msg!)
-			} else {
+		Login.requestPasswordReset(identifierStr,
+			success: {
 				displayResetPasswordForm(identifierStr, viewController: viewController, verificationCanceled: {() -> () in
 					//When canceled
 					verificationCanceled()
-				},verificationStarted: {() -> () in
-					//verification started
-					verificationStarted()
-				}) { (succeeded, error_msg) -> () in
-					verificationCompleted(succeeded: succeeded, error_msg: error_msg)
+					},verificationStarted: {() -> () in
+						//verification started
+						verificationStarted()
+					}) { (succeeded, error_msg) -> () in
+						verificationCompleted(succeeded: succeeded, error_msg: error_msg)
 				}
+			},
+			failure: {error in
+				verificationCompleted(succeeded: false, error_msg: error.errorText)
 			}
-		}
+		)
 	}
 	
 	let resetAction = UIAlertAction(title: "Change with received token", style: .Default) { (action) in
@@ -150,13 +152,14 @@ func displayResetPasswordForm(identifierStr: String, viewController: UIViewContr
 		verificationStarted()
 		let passwordTextField = alertController.textFields![0] 
 		let tokenTextField = alertController.textFields![1] 
-		api.resetPassword(identifierStr, passwordStr: passwordTextField.text!, tokenStr: tokenTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
-			if !succeeded {
-				verificationCompleted(succeeded: false, error_msg: error_msg!)
-			} else {
+		Login.resetPassword(identifierStr, passwordStr: passwordTextField.text!, tokenStr: tokenTextField.text!,
+			success: {
 				verificationCompleted(succeeded: true, error_msg: passwordTextField.text)
+			},
+			failure: {error in
+				verificationCompleted(succeeded: false, error_msg: error.errorText)
 			}
-		}
+		)
 	}
 	
 	alertController.addTextFieldWithConfigurationHandler { (textField) in

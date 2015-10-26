@@ -39,8 +39,8 @@ class IdentifiersViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Return the number of rows in the section.
-		if user != nil {
-			return user!.userIdentifiers.count
+		if activeUser != nil {
+			return activeUser!.userIdentifiers.count
 		} else {
 			return 0
 		}
@@ -53,7 +53,7 @@ class IdentifiersViewController: UITableViewController {
         // Configure the cell...
 		
 		
-        let identifier = user!.userIdentifiers[indexPath.row]
+        let identifier = activeUser!.userIdentifiers[indexPath.row]
 		cell.markup(identifier)
         
         return cell
@@ -80,7 +80,7 @@ class IdentifiersViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]?  {
-        let identifier = user!.userIdentifiers[indexPath.row]
+        let identifier = activeUser!.userIdentifiers[indexPath.row]
         
         let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Delete" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
             self.deleteIdentifier(identifier, tableView: tableView, indexPath: indexPath)
@@ -92,7 +92,7 @@ class IdentifiersViewController: UITableViewController {
     
     func deleteIdentifier (identifier: UserIdentifier, tableView: UITableView, indexPath: NSIndexPath) {
 		var message: String
-		if user!.userIdentifiers.count == 1 {
+		if activeUser!.userIdentifiers.count == 1 {
 			message = "If you proceed, you will close your account and log out. You cannot login ever again. Are you sure that is what you want?"
 		} else {
 			message = "Do you really want to delete "+identifier.identifier+"?"
@@ -107,13 +107,13 @@ class IdentifiersViewController: UITableViewController {
         
         let destroyAction = UIAlertAction(title: "Delete", style: .Destructive) { (action) in
             tableView.setEditing(false, animated: true)
-            user!.deleteIdentifier(identifier) { (succeeded: Bool, error_msg: String?) -> () in
+            activeUser!.deleteIdentifier(identifier) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
                     displayError(error_msg!,viewController: self)
                 }
-				if user != nil {
-					if user!.userIdentifiers.count == 0 {
-						api.clearUser() //No need to logout on the server, that is already done with removing the last identifier
+				if activeUser != nil {
+					if activeUser!.userIdentifiers.count == 0 {
+						Login.clearUser() //No need to logout on the server, that is already done with removing the last identifier
 						dispatch_async(dispatch_get_main_queue()) {
 							let storyboard = UIStoryboard(name: "Main", bundle: nil)
 							let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") 
@@ -143,7 +143,7 @@ class IdentifiersViewController: UITableViewController {
 		dispatch_async(dispatch_get_main_queue(), {
 			self.tableView.reloadData()
 		})
-		user!.setAsPrimary(identifier) { (succeeded: Bool, error_msg: String?) -> () in
+		activeUser!.setAsPrimary(identifier) { (succeeded: Bool, error_msg: String?) -> () in
 			if !succeeded {
 				displayError(error_msg!,viewController: self)
 
@@ -181,7 +181,7 @@ class IdentifiersViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        let identifier = user!.userIdentifiers[indexPath.row]
+        let identifier = activeUser!.userIdentifiers[indexPath.row]
         let cell = tableView.cellForRowAtIndexPath(indexPath)
 
 		//show Action sheet
@@ -200,13 +200,13 @@ class IdentifiersViewController: UITableViewController {
 		
 		if identifier.verified == false {
 			let verifyAction: UIAlertAction = UIAlertAction(title: "Enter verification code", style: .Default) { action -> Void in
-				let identifier = user!.userIdentifiers[indexPath.row]
+				let identifier = activeUser!.userIdentifiers[indexPath.row]
 				self.validationCodeForm(identifier)
 			}
 			actionSheetController.addAction(verifyAction)
 			
 			let resendCodeAction: UIAlertAction = UIAlertAction(title: "Resend verification code", style: .Default) { action -> Void in
-				user!.resendToken(identifier) { (succeeded: Bool, error_msg: String?) -> () in
+				activeUser!.resendToken(identifier) { (succeeded: Bool, error_msg: String?) -> () in
 					if !succeeded {
 						displayError(error_msg!,viewController: self)
 					}
@@ -217,14 +217,14 @@ class IdentifiersViewController: UITableViewController {
 	
 		if identifier.primary == false && identifier.verified {
 			let setPrimaryAction: UIAlertAction = UIAlertAction(title: "Set as primary", style: .Default) { action -> Void in
-				let identifier = user!.userIdentifiers[indexPath.row]
+				let identifier = activeUser!.userIdentifiers[indexPath.row]
 				self.setPrimary(identifier)
 			}
 			actionSheetController.addAction(setPrimaryAction)
 		}
 		
 		let deleteAction: UIAlertAction = UIAlertAction(title: "Delete", style: .Destructive) { action -> Void in
-			let identifier = user!.userIdentifiers[indexPath.row]
+			let identifier = activeUser!.userIdentifiers[indexPath.row]
 			self.deleteIdentifier (identifier, tableView: tableView, indexPath: indexPath)
 		}
 		actionSheetController.addAction(deleteAction)
@@ -246,7 +246,7 @@ class IdentifiersViewController: UITableViewController {
         
         let changeAction = UIAlertAction(title: "Change", style: .Default) { (action) in
             let firstPasswordTextField = alertController.textFields![0] 
-            user!.changePassword(identifier, password: firstPasswordTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
+            activeUser!.changePassword(identifier, password: firstPasswordTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
                     displayError(error_msg!,viewController: self)
                 }
@@ -302,7 +302,7 @@ class IdentifiersViewController: UITableViewController {
             let emailTextField = alertController.textFields![0] 
             let firstPasswordTextField = alertController.textFields![1] 
 			
-            user!.addIdentifier(emailTextField.text!, password: firstPasswordTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
+            activeUser!.addIdentifier(emailTextField.text!, password: firstPasswordTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
                 if !succeeded {
 					displayError(error_msg!,viewController: self)
 				}

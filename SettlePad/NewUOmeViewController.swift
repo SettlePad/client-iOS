@@ -49,13 +49,14 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
                 if succeeded == false {
 					self.delegate.transactionsPostCompleted(self, error_msg: error_msg!)
 				} else {
-					contacts.updateContacts {(succeeded: Bool, error_msg: String?) -> () in
-						if !succeeded {
-							self.delegate.transactionsPostCompleted(self, error_msg: error_msg!)
-						} else {
+					activeUser!.contacts.updateContacts(
+						{
 							self.delegate.transactionsPostCompleted(self, error_msg: nil)
+						},
+						failure: {error in
+							self.delegate.transactionsPostCompleted(self, error_msg: error.errorText)
 						}
-					}
+					)
 				}
 
             }
@@ -236,11 +237,11 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 		formCurrency.modInputView.delegate = self
 		
 		//Set currency picker to user's default currency
-		let row: Int? = sortedCurrencies.indexOf(user!.defaultCurrency)
+		let row: Int? = sortedCurrencies.indexOf(activeUser!.defaultCurrency)
 		if row != nil {
 			formCurrency.modInputView.selectRow(row!, inComponent: 0, animated: false)
-			selectedCurrency = user!.defaultCurrency
-			formCurrency.setTitle(user!.defaultCurrency.rawValue, forState: UIControlState.Normal)
+			selectedCurrency = activeUser!.defaultCurrency
+			formCurrency.setTitle(activeUser!.defaultCurrency.rawValue, forState: UIControlState.Normal)
 		}
 		
     }
@@ -433,7 +434,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
                 amount = -1*formAmount.text!.toDouble()!
             }
 			
-			let matchedIdentifier: Identifier? = contacts.getIdentifier(formTo.text!)
+			let matchedIdentifier: Identifier? = activeUser!.contacts.getIdentifier(formTo.text!)
 
 			var name: String
 			if matchedIdentifier != nil {
@@ -469,7 +470,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     
     func getMatchedContactIdentifiers(needle: String){
 		matchedContactIdentifiers.removeAll()
-        for contactIdentifier in contacts.contactIdentifiers {
+        for contactIdentifier in activeUser!.contacts.contactIdentifiers {
             if (contactIdentifier.identifierStr.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact?.name.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact?.friendlyName.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.localName?.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
                 matchedContactIdentifiers.append(contactIdentifier)
             }
