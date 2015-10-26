@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 
+//TODO: remove this function when SSL is introduced
 func JSONStringify(jsonObj: AnyObject) -> String {
     let jsonData: NSData?
 	do {

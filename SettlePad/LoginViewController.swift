@@ -11,8 +11,8 @@ import UIKit
 var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"plist")
 var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
 
-var api = APIController()
-var user = User() //If nil, not logged in
+var api = APIController() //TODO: make singleton
+var user = User() //If nil, not logged in. Undo make it failable
 var transactions=Transactions() //TODO: merge into user
 var contacts = Contacts() //TODO: merge into user
 var balances = Balances() //TODO: merge into user
