@@ -40,7 +40,7 @@ class Contacts {
 		
 		if contactsUpdating == false {
 			contactsUpdating = true
-			HTTPWrapper.request("contacts", method: .GET, parameters: nil, authenticateWithUser: user,
+			HTTPWrapper.request("contacts", method: .GET, authenticateWithUser: user,
 				success: { json in
 					self.contactsUpdating = false
 					self.contacts = []

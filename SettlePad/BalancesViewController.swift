@@ -79,21 +79,27 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 	}
 	
 	func refreshBalances() {
-		balances.updateBalances() {(succeeded: Bool, error_msg: String?) -> () in
-			if !succeeded {
-				displayError(error_msg!, viewController: self)	
+		balances.updateBalances(
+			{
+				self.footer.no_results = (balances.sortedCurrencies.count == 0)
+				dispatch_async(dispatch_get_main_queue(), {
+					//so it is run now, instead of at the end of code execution
+					self.tableView.reloadData()
+					
+					self.balancesRefreshControl.endRefreshing()
+					self.footer.setNeedsDisplay()
+					self.tableView.tableFooterView = self.footer
+				})
+			},
+			failure: {error in
+				displayError(error.errorText, viewController: self)
 			}
-			self.footer.no_results = (balances.sortedCurrencies.count == 0)
-			dispatch_async(dispatch_get_main_queue(), {
-				//so it is run now, instead of at the end of code execution
-				self.tableView.reloadData()
-
-				self.balancesRefreshControl.endRefreshing()
-				self.footer.setNeedsDisplay()
-				self.tableView.tableFooterView = self.footer
-			})
-		}
+			
+		)
 	}
+	
+
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

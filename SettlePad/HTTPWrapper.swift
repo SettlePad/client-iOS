@@ -14,7 +14,7 @@ class HTTPWrapper  {
 	typealias SuccesHandler = (JSON) -> Void
 	typealias FailureHandler = (SettlePadError) -> Void
 	
-	static func request(url: String, method: Alamofire.Method, parameters : [String : AnyObject]?, authenticateWithUser: User? = nil, success:SuccesHandler, failure:FailureHandler) -> Request {
+	static func request(url: String, method: Alamofire.Method, parameters : [String : AnyObject]? = nil, authenticateWithUser: User? = nil, success:SuccesHandler? = nil, failure:FailureHandler? = nil) -> Request {
 		
 		let server = settingsDictionary!["server"]! as! String
 		//let request = NSMutableURLRequest(URL: NSURL(string: server + url)!)
@@ -56,16 +56,16 @@ class HTTPWrapper  {
 				if let rawJSON = response.result.value {
 					let json = JSON(rawJSON)
 					if json["error"].isExists() {
-						failure(SettlePadError(json: json))
+						failure?(SettlePadError(json: json))
 					} else {
-						success(json)
+						success?(json)
 					}
 				} else {
-					success(JSON([])) //Empty
+					success?(JSON([])) //Empty
 				}
 			case .Failure(let error):
 				print(error)
-				failure(SettlePadError(errorCode: "no_json_error", errorText: error.description))
+				failure?(SettlePadError(errorCode: "no_json_error", errorText: error.description))
 			}
 		}
 		

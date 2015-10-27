@@ -45,10 +45,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         if newTransactions.count > 0 {
             //Post
 			
-            transactions.post(newTransactions) { (succeeded: Bool, error_msg: String?) -> () in
-                if succeeded == false {
-					self.delegate.transactionsPostCompleted(self, error_msg: error_msg!)
-				} else {
+            transactions.post(newTransactions,
+				success: {
 					activeUser!.contacts.updateContacts(
 						{
 							self.delegate.transactionsPostCompleted(self, error_msg: nil)
@@ -57,13 +55,13 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 							self.delegate.transactionsPostCompleted(self, error_msg: error.errorText)
 						}
 					)
+				},
+				failure: { error in
+					self.delegate.transactionsPostCompleted(self, error_msg: error.errorText)
+
 				}
-
-            }
-            
+			)
             //Close viewcontroller
-
-			
             delegate.transactionsPosted(self)
             self.dismissViewControllerAnimated(true, completion: nil)
 

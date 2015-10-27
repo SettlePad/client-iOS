@@ -11,7 +11,6 @@ import UIKit
 var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"plist")
 var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
 
-var api = APIController() //TODO: remove this
 var activeUser: User? = User.loadFromKeychain()
 var transactions=Transactions() //TODO: merge into user
 var balances = Balances() //TODO: merge into user
@@ -192,9 +191,7 @@ class LoginViewController: UIViewController {
 				}
 			)
 			
-			transactions.updateStatus({ (succeeded, error_msg) -> () in
-
-			})
+			transactions.updateStatus()
 	
 
 		} else {

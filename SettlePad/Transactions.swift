@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 class Transactions {
 	var countUnreadOpen: Int = 0
@@ -43,7 +44,7 @@ class Transactions {
         end_reached = false
     }
     
-    func post(newTransactions: [Transaction], requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+	func post(newTransactions: [Transaction], success: ()->(), failure: (error: SettlePadError)->()) {
         //Add to list with Posted status
         var formdataArray : [[String:AnyObject]] = []
         for newTransaction in newTransactions {
@@ -60,176 +61,138 @@ class Transactions {
 			transactions.insertContentsOf(newTransactions, at: 0)
 			
 			//Do post. When returned succesfully, replace status with what comes back
-			let url = "memo/send/"
-			api.request(url, method: "POST", formdata: formdataArray, secure: true){ (succeeded: Bool, data: NSDictionary) -> () in
-				if(succeeded) {
-					requestCompleted(succeeded: true,error_msg: nil)
-					self.transactions = self.transactions.filter({$0.status != .Posted}) //Delete all 
-					balances.updateBalances{(succeeded: Bool, error_msg: String?) -> () in }
-				} else {
-					if let msg = data["text"] as? String {
-						requestCompleted(succeeded: false,error_msg: msg)
-					} else {
-						requestCompleted(succeeded: false,error_msg: "Unknown")
-					}
+			HTTPWrapper.request( "memo/send/", method: .POST, parameters: ["transactions": formdataArray], authenticateWithUser: activeUser!,
+				success: {json in
+					self.transactions = self.transactions.filter({$0.status != .Posted}) //Delete all
+					balances.updateBalances({},failure: {_ in })
+					success()
+				},
+				failure: { error in
+					failure(error: error)
 				}
-			}
+			)
 		} else {
-			requestCompleted(succeeded: false,error_msg: "No viable transactions")			
+			failure(error: SettlePadError(errorCode: "no_viable_transactions", errorText:"No viable transactions"))
 		}
         //At this point, the transactions array does not contain the new UOme's yet and should be refreshed. We leave this to the view controller (which is triggered by the requestCompleted above)
     }
     
-	func get(group: TransactionsStatusGroup, search: String, requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
+	func get(group: TransactionsStatusGroup, search: String, success: ()->(), failure: (error: SettlePadError)->()) {
         self.group = group
         self.search = search.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet())!
         let url = "transactions/initial/"+String(nr_of_results)+"/"+self.group.rawValue+"/"+self.search
         self.transactions = [] //already clear out before reponse
         self.end_reached = false
-        getInternal(url, oneAtATime: true){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
-            self.transactions = [] //clear again to be sure
-            if (succeeded) {
-                if let transactions = dataDict!["transactions"] as? NSMutableArray {
-                    self.updateParams(dataDict!) //Update request parameters
-                    for transactionObj in transactions {
-                        if let transactionDict = transactionObj as? NSDictionary {
-                            let transaction = Transaction(fromDict: transactionDict)
-                            self.transactions.append(transaction) //Add in rear
-                        } else {
-                            print("Cannot parse transaction as dictionary")
-                        }
-                    }
-                } else {
-                    //no transactions, which is fine
-                }
-            }
-            if (self.transactions.count < self.nr_of_results) {
-                self.end_reached = true
-            }
-            requestCompleted(succeeded: succeeded,transactions: self.transactions,error_msg: error_msg)
-        }
+        getInternal(url, oneAtATime: true,
+			success: {json in
+				self.updateParams(json["data"]) //Update request parameters
+				for (_,subJson):(String, JSON) in json["data"]["transactions"] {
+					self.transactions.append(Transaction(json: subJson)) //Add in rear
+				}
+				if (self.transactions.count < self.nr_of_results) {
+					self.end_reached = true
+				}
+				success()
+			},
+			failure: {error in
+				failure(error: error)
+			}
+		)
     }
     
-    func getMore(requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
+	func getMore(success: () -> (), failure: (error: SettlePadError) -> ()) {
         let url = "transactions/older/\(oldestID)/"+String(nr_of_results)+"/"+self.group.rawValue+"/"+search
 
         if self.end_reached {
-            requestCompleted(succeeded: false,transactions: self.transactions,error_msg: "End reached")
+            failure(error: SettlePadError(errorCode: "end_reached", errorText: "End reached"))
         } else if  transactions.count  == 0 {
             //No transactions yet, so ignore request
         } else {
-            getInternal(url, oneAtATime: true){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
-                if (succeeded) {
-                    if let transactions = dataDict!["transactions"] as? NSMutableArray {
-                        self.updateParams(dataDict!) //Update request parameters
-                        for transactionObj in transactions {
-                            if let transactionDict = transactionObj as? NSDictionary {
-                                let transaction = Transaction(fromDict: transactionDict)
-                                self.transactions.append(transaction) //Add in rear
-								//TODO: add bool that checks whether we are already receiving something, otherwise we'll get the same response multiple times
-                            } else {
-                                print("Cannot parse transaction as dictionary")
-                            }
-                        }
-                    } else {
-                        //no transactions, which is fine
-                        self.end_reached = true
-                    }
-                }
-                requestCompleted(succeeded: succeeded,transactions: self.transactions,error_msg: error_msg)
-            }
+            getInternal(url, oneAtATime: true,
+				success: {json in
+					self.updateParams(json["data"]) //Update request parameters
+					if json["data"]["transactions"].count == 0 {
+						//no transactions, which is fine
+						self.end_reached = true
+					} else {
+						for (_,subJson):(String, JSON) in json["data"]["transactions"] {
+							self.transactions.append(Transaction(json: subJson)) //Add in rear
+						}
+					}
+					success()
+				},
+				failure: {error in
+					failure(error: error)
+				}
+			)
+			
         }
     }
     
-    func getUpdate(requestCompleted : (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> ()) {
+	func getUpdate(success: ()->(), failure: (error: SettlePadError) -> ()) {
         let url = "transactions/changes/\(oldestID)/\(newestID)/\(lastUpdate)"+"/"+String(nr_of_results)+"/"+self.group.rawValue+"/"+search
 		
-        getInternal(url, oneAtATime: true){ (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> () in
-            if (succeeded) {
-                if let updatedTransactionsArray = dataDict!["updates"]!["transactions"] as? NSMutableArray {
-
-                    //create dictionary of id (of transaction) to index (in array)
-                    var transactionKeyDict = [Int:Int]()
-                    for (i, transaction) in self.transactions.enumerate() {
-                        transactionKeyDict[transaction.transaction_id!] = i //Can be unwrapped safely, as no draft transactions are created here
-                    }
-
-                    //Loop over updated transactions
-                    for transactionObj in updatedTransactionsArray {
-                        if let transactionDict = transactionObj as? NSDictionary {
-                            let transaction = Transaction(fromDict: transactionDict)
-                            if let indexInt = transactionKeyDict[transaction.transaction_id!] { //Can be unwrapped safely, as no draft transactions are created here
-                                self.transactions[indexInt] = transaction //Replace
-                            } else {
-                                print("Cannot find transaction in local list")
-                            }
-                        }
-                    }
-                    
-                    self.updateParams(dataDict!["updates"]! as! NSDictionary) //Update request parameters
-                }
-                
-                if let newerTransactionsArray = dataDict!["newer"]!["transactions"] as? NSMutableArray {
-                    
-                    //Loop over new transactions
-                    for (i, transactionObj) in newerTransactionsArray.enumerate() {
-                        //append
-                        if let transactionDict = transactionObj as? NSDictionary {
-                            let transaction = Transaction(fromDict: transactionDict)
-                            self.transactions.insert(transaction,atIndex: i)
-                        } else {
-                            print("Cannot parse transaction as dictionary")
-                        }
-                    }
-                    
-                    self.updateParams(dataDict!["newer"]! as! NSDictionary) //Update request parameters
-                }
-                
-            }
-            
-            requestCompleted(succeeded: succeeded,transactions: self.transactions,error_msg: error_msg)
-        }
-    }
+        getInternal(url, oneAtATime: true,
+			success: {json in
+				for (_,subJson):(String, JSON) in json["data"]["updates"]["transactions"] {
+					let updatedTransaction = Transaction(json: subJson)
+					for (i, transaction) in self.transactions.enumerate() {
+						if transaction.transaction_id == updatedTransaction.transaction_id {
+							self.transactions[i] = updatedTransaction
+						}
+					}
+				}
+				self.updateParams(json["data"]["updates"])
+				
+				var i = 0
+				for (_,subJson):(String, JSON) in json["data"]["newer"]["transactions"] {
+					self.transactions.insert(Transaction(json: subJson),atIndex: i) //Add in front
+					i++
+				}
+				self.updateParams(json["data"]["newer"])
+				success()
+			},
+			failure: {error in
+				failure(error: error)
+			}
+		)
+	}
     
-	private func getInternal(url: String, oneAtATime: Bool, requestCompleted : (succeeded: Bool, dataDict: NSDictionary?, error_msg: String?) -> ()) {
+	private func getInternal(url: String, oneAtATime: Bool, success: (json: JSON) ->(), failure: (error: SettlePadError) ->()) {
 
         let requestDate = NSDate()
 
 		if oneAtATime && blockingRequestActive {
-			requestCompleted(succeeded: false,dataDict: nil, error_msg: "") //another blocking request is already pending
+			failure(error: SettlePadError(errorCode: "another_request_pending", errorText: "Another request is already sent out"))
 		} else {
 			if oneAtATime {
 				self.blockingRequestActive = true
 			}
-			api.request(url, method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-            //println(data)
-				if (requestDate.compare(self.lastRequest) != NSComparisonResult.OrderedAscending) { //requestDate is later than or equal to lastRequest
-					if(succeeded) {
-						self.lastRequest = requestDate
-						if let dataDict = data["data"] as? NSDictionary {
-							requestCompleted(succeeded: true,dataDict:dataDict,error_msg:nil)
-						} else {
-							//no transactions
-							requestCompleted(succeeded: true,dataDict:[:],error_msg:nil)
-
-						}
-					} else {
-						if let error_msg = data["text"] as? String {
-							requestCompleted(succeeded: false,dataDict: nil, error_msg: error_msg)
-						} else {
-							requestCompleted(succeeded: false,dataDict: nil, error_msg: "Unknown error")
-						}
+			HTTPWrapper.request(url, method: .GET, authenticateWithUser: activeUser!,
+				success: {json in
+					if oneAtATime {
+						self.blockingRequestActive = false
 					}
-				} else {
-					requestCompleted(succeeded: false,dataDict: nil, error_msg: "") //outdated request
+					if (requestDate.compare(self.lastRequest) != NSComparisonResult.OrderedAscending) { //requestDate is later than or equal to lastRequest
+						self.lastRequest = requestDate
+						success(json: json)
+					} else {
+						failure(error: SettlePadError(errorCode: "not_latest", errorText: "A request that was sent out later was returned before this request"))
+					}
+				},
+				failure: { error in
+					if oneAtATime {
+						self.blockingRequestActive = false
+					}
+					failure(error: error)
 				}
-				if oneAtATime {
-					self.blockingRequestActive = false
-				}
-			}
+			)
 		}
     }
-    
+	
+	/**
+	Updates the boundaries of the set of transactions that we received
+	*/
     private func updateParams(data: NSDictionary) {
         if let newestID = data["newest_id"] as? Int {
             self.newestID = max(newestID,self.newestID)
@@ -245,11 +208,28 @@ class Transactions {
             self.lastUpdate = max(lastUpdate,self.lastUpdate)
         }
     }
-    
+	//TODO: kill the one above it not used anymore
+	
+	private func updateParams(json: JSON) {
+		if let newestID = json["newest_id"].int {
+			self.newestID = max(newestID,self.newestID)
+		}
+		if let oldestID = json["oldest_id"].int {
+			if (self.oldestID == 0) {
+				self.oldestID = oldestID
+			} else {
+				self.oldestID = min(oldestID,self.oldestID)
+			}
+		}
+		if let lastUpdate = json["last_update"].int {
+			self.lastUpdate = max(lastUpdate,self.lastUpdate)
+		}
+	}
+	
     func getTransactions() -> [Transaction] {
         return transactions
     }
-    
+	
     func getTransaction(index: Int) -> Transaction? {
         if (index>=0 && index < transactions.count) {
             return transactions[index]
@@ -258,58 +238,43 @@ class Transactions {
         }
     }
     
-    func changeTransaction(action: String, transaction: Transaction, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+	func changeTransaction(action: String, transaction: Transaction, success: () -> (), failure: (error:SettlePadError)->()) {
         let url = "transactions/"+action+"/\(transaction.transaction_id!)/"
-        api.request(url, method: "POST", formdata: [:], secure: true){ (succeeded: Bool, data: NSDictionary) -> () in
-            if(succeeded) {
-                requestCompleted(succeeded: true,error_msg: nil)
-            } else {
-                if let msg = data["text"] as? String {
-                    requestCompleted(succeeded: false,error_msg: msg)
-                } else {
-                    requestCompleted(succeeded: false,error_msg: "Unknown")
-                }
-            }
-        }
+        HTTPWrapper.request(url, method: .POST, authenticateWithUser: activeUser!,
+			success: {json in
+				success()
+			},
+			failure: { error in
+				failure(error: error)
+			}
+		)
     }
 	
 	//TODO: when to call this function?
-	func updateStatus(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		api.request("status", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(succeeded) {
-				if let dataDict = data["data"] as? NSDictionary {
-					if let unreadArray = dataDict["unread"] as? [String:Int] {
-						if let unreadOpen = unreadArray["open"] {
-							self.countUnreadOpen = unreadOpen
-						}
-						if let unreadProcessed = unreadArray["processed"] {
-							self.countUnreadProcessed = unreadProcessed
-						}
-						if let unreadCanceled = unreadArray["canceled"] {
-							self.countUnreadCanceled = unreadCanceled
-						}
-					} else {
-						print("Inparsable unread count")
-					}
+	func updateStatus(success: (()->())? = nil, failure: ((error: SettlePadError)->())? = nil) {
+		HTTPWrapper.request("status", method: .GET, authenticateWithUser: activeUser! ,
+			success: {json in
+				if let countUnreadOpen = json["data"]["unread"]["open"].int {
+					self.countUnreadOpen = countUnreadOpen
+				}
+				if let countUnreadProcessed = json["data"]["unread"]["processed"].int {
+					self.countUnreadProcessed = countUnreadProcessed
+				}
+				if let countUnreadCanceled = json["data"]["unread"]["canceled"].int {
+					self.countUnreadCanceled = countUnreadCanceled
+				}
+				if let countOpen = json["data"]["open"].int {
+					self.countOpen = countOpen
+				}
+				badgeCount = self.countUnreadOpen + self.countUnreadProcessed + self.countUnreadCanceled
 					
-					if let openInt = dataDict["open"] as? Int {
-						self.countOpen = openInt
-					}
-
-					badgeCount = self.countUnreadOpen + self.countUnreadProcessed + self.countUnreadCanceled
-
-					self.tabBarDelegate?.updateBadges()
-				}
-				requestCompleted(succeeded: true,error_msg: nil)
-			} else {
-				if let msg = data["text"] as? String {
-					requestCompleted(succeeded: false,error_msg: msg)
-				} else {
-					requestCompleted(succeeded: false,error_msg: "Unknown")
-				}
+				self.tabBarDelegate?.updateBadges()
+				success?()
+			},
+			failure: { error in
+				failure?(error: error)
 			}
-			
-		}
+		)
 	}
 }
 

@@ -16,30 +16,24 @@ class User {
     var userIdentifiers: [UserIdentifier] = [] //array of identifiers (for now, only email addresses)
     var name: String = "" {
         didSet (oldValue) {
-            api.request("settings", method:"POST", formdata: ["name":name], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-                if(!succeeded) {
-                    if let error_msg = data["text"] as? String {
-                        print(error_msg)
-                    } else {
-                        print("Unknown error while setting name")
-                    }
-                }
-            }
-        }
+            HTTPWrapper.request("settings", method: .POST, parameters: ["name":name], authenticateWithUser: self,
+				success: {_ in },
+				failure: { error in
+					print(error.errorText)
+				}
+			)
+		}
     }
 
     var defaultCurrency: Currency = .EUR {
         didSet {
-            api.request("settings", method:"POST", formdata: ["default_currency":defaultCurrency.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-                if(!succeeded) {
-                    if let error_msg = data["text"] as? String {
-                        print(error_msg)
-                    } else {
-                        print("Unknown error while setting currency")
-                    }
-                }
-            }
-        }
+            HTTPWrapper.request("settings", method: .POST, parameters: ["default_currency":defaultCurrency.rawValue], authenticateWithUser: self,
+				success: {_ in },
+				failure: { error in
+					print(error.errorText)
+				}
+			)
+		}
     }
 	
 	var contacts = Contacts()
@@ -178,71 +172,62 @@ class User {
 		return User(id: id, name: name, series: series, token: token, defaultCurrency: defaultCurrency, userIdentifiers: userIdentifiers)
 	}
 	
-    func addIdentifier(email:String, password:String,requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+	func addIdentifier(email:String, password:String,success: ()->(), failure: (error: SettlePadError) -> ()) {
 		self.userIdentifiers.append(UserIdentifier(identifier: email, source: "email", verified: false, pending: true, primary: false))
-        api.request("identifiers/new", method:"POST", formdata: ["identifier":email,"password":password,"type":"email"], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-            if(succeeded) {
+        HTTPWrapper.request("identifiers/new", method: .POST, parameters: ["identifier":email,"password":password,"type":"email"], authenticateWithUser: self,
+			success: {_ in
 				for index in (self.userIdentifiers.count - 1).stride(through: 0, by: -1) {
 					if self.userIdentifiers[index].identifier == email {
 						self.userIdentifiers[index].pending = false
 					}
 				}
-                self.save()
-                requestCompleted(succeeded: true,error_msg: nil)
-            } else {
+				self.save()
+				success()
+			},
+			failure: { error in
 				for index in (self.userIdentifiers.count - 1).stride(through: 0, by: -1) {
 					if self.userIdentifiers[index].identifier == email {
 						self.userIdentifiers.removeAtIndex(index)
 					}
 				}
-                if let msg = data["text"] as? String {
-                    requestCompleted(succeeded: false,error_msg: msg)
-                } else {
-                    requestCompleted(succeeded: false,error_msg: "Unknown")
-                }
-            }
-        }
+				failure(error: error)
+			}
+		)
     }
     
-    func deleteIdentifier(identifier:UserIdentifier, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+	func deleteIdentifier(identifier:UserIdentifier, success: ()->(), failure: (error: SettlePadError) -> ()) {
 		for index in (self.userIdentifiers.count - 1).stride(through: 0, by: -1) {
 			if self.userIdentifiers[index].identifier == identifier.identifier {
 				self.userIdentifiers.removeAtIndex(index)
 			}
 		}
 		self.save()
-		api.request("identifiers/delete", method:"POST", formdata: ["identifier":identifier.identifier], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-            if(succeeded) {
-				if let primaryIdentifier = data["data"]?["new_primary_identifier"] as? String {
+		HTTPWrapper.request("identifiers/delete", method: .POST, parameters: ["identifier":identifier.identifier], authenticateWithUser: self,
+			success: {json in
+				if let primaryIdentifier = json["data"]["new_primary_identifier"].string {
 					for userIdentifier in self.userIdentifiers {
 						if userIdentifier.identifier == primaryIdentifier {
 							userIdentifier.primary = true
 						}
 					}
 				}
-                requestCompleted(succeeded: true,error_msg: nil)
-            } else {
-                if let msg = data["text"] as? String {
-                    requestCompleted(succeeded: false,error_msg: msg)
-                } else {
-                    requestCompleted(succeeded: false,error_msg: "Unknown")
-                }
-            }
-        }
+				success()
+			},
+			failure: { error in
+				failure(error: error)
+			}
+		)
     }
     
-    func resendToken(identifier:UserIdentifier,requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-        api.request("register/resend_token", method:"POST", formdata: ["identifier":identifier.identifier,"user_id":self.id], secure:false) { (succeeded: Bool, data: NSDictionary) -> () in
-            if(succeeded) {
-                requestCompleted(succeeded: true,error_msg: nil)
-            } else {
-                if let msg = data["text"] as? String {
-                    requestCompleted(succeeded: false,error_msg: msg)
-                } else {
-                    requestCompleted(succeeded: false,error_msg: "Unknown")
-                }
-            }
-        }
+	func resendToken(identifier:UserIdentifier,success: (()->())? = nil, failure: (error:SettlePadError)->()) {
+        HTTPWrapper.request("register/resend_token", method: .POST, parameters: ["identifier":identifier.identifier,"user_id":self.id],
+			success: {json in
+				success?()
+			},
+			failure: { error in
+				failure(error: error)
+			}
+		)
     }
 	
 	func verifyIdentifier(identifier:UserIdentifier, token:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
@@ -265,22 +250,18 @@ class User {
 		)
 	}
 
-    func changePassword(identifier:UserIdentifier, password:String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-
-        api.request("identifiers/change_pwd", method:"POST", formdata: ["identifier":identifier.identifier,"password":password], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-            if(succeeded) {
-                requestCompleted(succeeded: true,error_msg: nil)
-            } else {
-                if let msg = data["text"] as? String {
-                    requestCompleted(succeeded: false,error_msg: msg)
-                } else {
-                    requestCompleted(succeeded: false,error_msg: "Unknown")
-                }
-            }
-        }
+	func changePassword(identifier:UserIdentifier, password:String, success: (()->())? = nil, failure: (error:SettlePadError)->()) {
+        HTTPWrapper.request("identifiers/change_pwd", method: .POST, parameters: ["identifier":identifier.identifier,"password":password], authenticateWithUser: self,
+			success: {json in
+				success?()
+			},
+			failure: { error in
+				failure(error: error)
+			}
+		)
     }
 	
-	func setAsPrimary(identifier:UserIdentifier, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+	func setAsPrimary(identifier:UserIdentifier, success: ()->(), failure: (error: SettlePadError)-> ()) {
 		let oldValue = identifier.primary
 		var oldPrimary: UserIdentifier? = nil
 		for userIdentifier in userIdentifiers {
@@ -290,23 +271,22 @@ class User {
 		}
 		oldPrimary?.primary = false
 		identifier.primary = true
-		api.request("identifiers/default", method:"POST", formdata: ["identifier":identifier.identifier], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(succeeded) {
-				requestCompleted(succeeded: true,error_msg: nil)
-			} else {
+		
+		
+		HTTPWrapper.request("identifiers/default", method: .POST, parameters: ["identifier":identifier.identifier], authenticateWithUser: self,
+			success: {json in
+				success()
+			},
+			failure: { error in
 				identifier.primary = oldValue
 				oldPrimary?.primary = true
-				if let msg = data["text"] as? String {
-					requestCompleted(succeeded: false,error_msg: msg)
-				} else {
-					requestCompleted(succeeded: false,error_msg: "Unknown")
-				}
+				failure(error: error)
 			}
-		}
+		)
 	}
 
 	func getSettings(success: () -> (), failure: (error: SettlePadError) -> ()) {
-		HTTPWrapper.request("settings", method: .GET, parameters: nil, authenticateWithUser: self,
+		HTTPWrapper.request("settings", method: .GET, authenticateWithUser: self,
 			success: { json in
 				if let name = json["data"]["user_name"].string {
 					self.name = name
@@ -349,7 +329,7 @@ class User {
 	
 	func logout() {
 		//Invalidate session at server
-		HTTPWrapper.request("logout", method: .POST, parameters: nil, authenticateWithUser: self, success: {_ in },
+		HTTPWrapper.request("logout", method: .POST, authenticateWithUser: self, success: {_ in },
 			failure: { error in
 				print(error.errorText)
 			}

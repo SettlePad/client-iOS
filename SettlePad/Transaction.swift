@@ -7,20 +7,21 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 class Transaction {	
-    var time_sent: NSDate
-    var time_updated: NSDate
-	var primaryIdentifierStr: String? //Primary identifier of counterpart
-	var usedIdentifierStr: String  //Identifier of counterpart used in transaction
-	var name: String
-    var is_sender: Bool
-    var transaction_id: Int?
-    var description: String
-    var currency: Currency
-    var amount: Double
-    var status: transactionStatus
-    var reduced: Bool
+    var time_sent: NSDate = NSDate() //TODO: change to camelCase
+	var time_updated: NSDate = NSDate()
+	var primaryIdentifierStr: String? = nil //Primary identifier of counterpart
+	var usedIdentifierStr: String = "" //Identifier of counterpart used in transaction
+	var name: String = ""
+    var is_sender: Bool = false
+    var transaction_id: Int? = nil
+    var description: String = ""
+    var currency: Currency = .EUR
+    var amount: Double = 0
+    var status: transactionStatus = .Processed
+    var reduced: Bool = false
 
     var can_be_canceled: Bool {
         get {
@@ -47,14 +48,8 @@ class Transaction {
         }
     }
     
-    enum transactionStatus {
-        case Draft
-        case Posted
-        case Processed
-        case AwaitingValidation
-        case CanceledOrRejected
-    }
-    
+
+	//TODO: kill this
     init(fromDict: NSDictionary = [:]) {
         if let parsed = fromDict["status"] as? Int {
             //0 = processed, 1 = waiting for validation by recipient, 3 = canceled or rejected
@@ -182,7 +177,77 @@ class Transaction {
             print("Failed to get reduced parameter")
         }
     }
-    
+	
+	init(json: JSON) {
+		if let statusRaw = json["status"].int {
+			if let status = transactionStatus(rawValue: statusRaw){
+				self.status = status
+			}
+		}
+		
+		if let timeSentString = json["time_sent"].string {
+			let dateFormatter = NSDateFormatter()
+			dateFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+			dateFormatter.timeZone = NSTimeZone.localTimeZone()
+			dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+			if let time_sent = dateFormatter.dateFromString(timeSentString) { //NSDate
+				self.time_sent = time_sent
+			}
+		}
+		
+		if let timeUpdatedString = json["time_updated"].string {
+			let dateFormatter = NSDateFormatter()
+			dateFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+			dateFormatter.timeZone = NSTimeZone.localTimeZone()
+			dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+			if let time_updated = dateFormatter.dateFromString(timeUpdatedString) { //NSDate
+				self.time_updated = time_updated
+			}
+		}
+		
+		if let name = json["counterpart_name"].string {
+			self.name = name
+		}
+		
+		if let primaryIdentifierStr = json["counterpart_primary_identifier"].string {
+			self.primaryIdentifierStr = primaryIdentifierStr
+		}
+		
+		if let usedIdentifierStr = json["counterpart_used_identifier"].string {
+			self.usedIdentifierStr = usedIdentifierStr
+		}
+		
+		if let isSenderInt = json["is_sender"].int {
+			if isSenderInt == 1 {
+				self.is_sender = true
+			}
+		}
+		
+		if let transactionId = json["transaction_id"].int {
+			transaction_id = transactionId
+		}
+		
+		if let description = json["description"].string {
+			self.description = description
+		}
+		
+		if let currencyRaw = json["status"].string {
+			if let currency = Currency(rawValue: currencyRaw){
+				self.currency = currency
+			}
+		}
+		
+		if let amount = json["amount"].double {
+			self.amount = amount
+		}
+		
+		if let reducedInt = json["reduced"].int {
+			if reducedInt == 1 {
+				self.reduced = true
+			}
+		}
+	}
+	
 	init(name: String, identifier: String, description: String, currency: Currency, amount: Double) {
         time_sent = NSDate()
         time_updated = NSDate()
@@ -197,4 +262,12 @@ class Transaction {
         status = .Draft
         reduced = false
     }
+}
+
+enum transactionStatus: Int {
+	case Processed = 0
+	case AwaitingValidation = 1
+	case CanceledOrRejected = 3
+	case Draft = 4 //local only
+	case Posted = 5 //local only
 }

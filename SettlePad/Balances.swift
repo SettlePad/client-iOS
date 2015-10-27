@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 class Balances {
 	private(set) var balances = [Balance]()
@@ -30,63 +31,37 @@ class Balances {
 		return returnArray.first
 	}
 	
-	func updateBalances(requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
-		api.request("balance/currencies", method:"GET", formdata: nil, secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-			if(!succeeded) {
-				if let error_msg = data["text"] as? String {
-					requestCompleted(succeeded: false,error_msg: error_msg)
-				} else {
-					requestCompleted(succeeded: false,error_msg: "Unknown error while refreshing balances")
-				}
-
-			} else {
-				
+	func updateBalances(success: ()->(), failure: (error:SettlePadError)->()) {
+		HTTPWrapper.request("balance/currencies", method: .GET, authenticateWithUser: activeUser!,
+			success: {json in
 				self.balances = []
 				self.currenciesSummary = []
-
-				if let dataDict = data["data"] as? NSDictionary {
-					if let connectionsDict = dataDict["connections"] as? Dictionary <String, [Dictionary <String, AnyObject>] > {
-						for (currencyKey,balances) in connectionsDict {
-							for details in balances {
-								if let
-									contactIdentifier = details["primary_identifier"] as? String,
-									contactName = details["name"] as? String,
-									balance = details["balance"] as? Double,
-									unprocessed = details["unprocessed"] as? Bool
-								{
-									if let currency = Currency(rawValue: currencyKey) {
-										self.balances.append(Balance(identifierStr: contactIdentifier, name: contactName, currency: currency, balance: balance, unprocessed: unprocessed))
-									} else {
-										print("Unknown currency parsing balance: " + currencyKey)
-									}
-								}
-							}
-						}
-					} else {
-						print("no connections")
-					}
 				
-					if let summaryDict = dataDict["summary"] as? Dictionary <String, Dictionary <String, AnyObject> > {
-						for (currencyKey,details) in summaryDict {
-							if let
-								get = details["get"] as? Double,
-								owe = details["owe"] as? Double,
-								currency = Currency(rawValue: currencyKey)
-							{
-								if get != 0 || owe != 0 {
-									self.currenciesSummary.append(CurrencySummary(currency: currency, get: get, owe: owe))
-								}
-							} else {
-								print("Cannot parse summary for: "+currencyKey)
-								
-							}
+				for (rawCurrency,connectionJSON):(String, JSON) in json["data"]["connections"] {
+					for (_,connection):(String, JSON) in connectionJSON {
+						if let
+							contactIdentifier = connection["primary_identifier"].string,
+							contactName = connection["name"].string,
+							balance = connection["balance"].double,
+							unprocessed = connection["unprocessed"].bool,
+							currency = Currency(rawValue: rawCurrency)
+						{
+						
+							self.balances.append(Balance(identifierStr: contactIdentifier, name: contactName, currency: currency, balance: balance, unprocessed: unprocessed))
 						}
-					} else {
-						print("Cannot parse summary")
 					}
-					
-				} else {
-					//no balances, which is fine
+				}
+				
+				for (rawCurrency,balance):(String, JSON) in json["data"]["summary"] {
+					if let
+						get = balance["get"].double,
+						owe = balance["owe"].double,
+						currency = Currency(rawValue: rawCurrency)
+					{
+						if get != 0 || owe != 0 {
+							self.currenciesSummary.append(CurrencySummary(currency: currency, get: get, owe: owe))
+						}
+					}
 				}
 
 				self.sortedCurrencies = []
@@ -97,9 +72,12 @@ class Balances {
 				self.sortedCurrencies.sortInPlace({(left: Currency, right: Currency) -> Bool in
 					left.toLongName().localizedCaseInsensitiveCompare(right.toLongName()) == NSComparisonResult.OrderedDescending})
 				
-				requestCompleted(succeeded: true,error_msg: nil)
+				success()
+			},
+			failure: { error in
+				failure(error: error)
 			}
-		}
+		)
 	}
 }
 

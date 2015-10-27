@@ -18,7 +18,6 @@
 		543FEFDB1A541B6200C18230 /* TransactionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543FEFDA1A541B6200C18230 /* TransactionsViewController.swift */; };
 		543FEFDE1A542D8C00C18230 /* HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543FEFDD1A542D8C00C18230 /* HMAC.swift */; };
 		543FEFE01A543CBC00C18230 /* Transactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543FEFDF1A543CBC00C18230 /* Transactions.swift */; };
-		544731C21A3A3C0A0008829C /* http.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544731C11A3A3C0A0008829C /* http.swift */; };
 		545067EC1B7A9825002F32DC /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 545067EB1B7A9825002F32DC /* ContactViewController.swift */; };
 		545AC3241A90C25000E62E76 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 545AC3231A90C25000E62E76 /* User.swift */; };
 		547116D41AC1E4D600214A06 /* IdentifiersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 547116D31AC1E4D600214A06 /* IdentifiersViewController.swift */; };
@@ -61,7 +60,7 @@
 /* Begin PBXFileReference section */
 		215E8C80B2C09993400EE9F6 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		29F2E7F0C34C2A0CF88A76C6 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
-		540165D81A82B4C0009F3405 /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
+		540165D81A82B4C0009F3405 /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Contact.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		540B4D611AD17E9600C94C7F /* ContactsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ContactsViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		540C21661A5717E400E9A29A /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		540C218C1A5C855400E9A29A /* keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = keychain.swift; sourceTree = "<group>"; };
@@ -72,13 +71,12 @@
 		543FEFDA1A541B6200C18230 /* TransactionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionsViewController.swift; sourceTree = "<group>"; };
 		543FEFDC1A542CFD00C18230 /* SettlePad-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SettlePad-Bridging-Header.h"; sourceTree = "<group>"; };
 		543FEFDD1A542D8C00C18230 /* HMAC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HMAC.swift; sourceTree = "<group>"; };
-		543FEFDF1A543CBC00C18230 /* Transactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transactions.swift; sourceTree = "<group>"; };
-		544731C11A3A3C0A0008829C /* http.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = http.swift; sourceTree = "<group>"; usesTabs = 1; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		543FEFDF1A543CBC00C18230 /* Transactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Transactions.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		545067EB1B7A9825002F32DC /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ContactViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		545AC3231A90C25000E62E76 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		545AC3231A90C25000E62E76 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = User.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		547116D31AC1E4D600214A06 /* IdentifiersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = IdentifiersViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		547116D51AC2079600214A06 /* UserIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserIdentifier.swift; sourceTree = "<group>"; };
-		54716AED1AFF750D00F72717 /* Balances.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Balances.swift; sourceTree = "<group>"; };
+		54716AED1AFF750D00F72717 /* Balances.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Balances.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		54716AEF1AFF75C800F72717 /* Balance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		54716AF11AFF82E300F72717 /* BalancesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = BalancesViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		5483263F1A7E9515004973B7 /* NewUOmeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = NewUOmeViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -183,7 +181,6 @@
 		54DF03671A5593A90078AE8B /* API */ = {
 			isa = PBXGroup;
 			children = (
-				544731C11A3A3C0A0008829C /* http.swift */,
 				54D612811BDE8D2A004E2A7A /* Error.swift */,
 				54D6127F1BDE648C004E2A7A /* HTTPWrapper.swift */,
 				54D612831BDEABE8004E2A7A /* Login.swift */,
@@ -459,7 +456,6 @@
 				540C218D1A5C855400E9A29A /* keychain.swift in Sources */,
 				54EA37D61BDC109E00EFED87 /* TabBarController.swift in Sources */,
 				54716AEE1AFF750D00F72717 /* Balances.swift in Sources */,
-				544731C21A3A3C0A0008829C /* http.swift in Sources */,
 				54D612801BDE648C004E2A7A /* HTTPWrapper.swift in Sources */,
 				540C21671A5717E400E9A29A /* Transaction.swift in Sources */,
 				542A4A7A1A5DEA5100FF865A /* SettingsViewController.swift in Sources */,

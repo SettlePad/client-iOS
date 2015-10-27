@@ -107,25 +107,27 @@ class IdentifiersViewController: UITableViewController {
         
         let destroyAction = UIAlertAction(title: "Delete", style: .Destructive) { (action) in
             tableView.setEditing(false, animated: true)
-            activeUser!.deleteIdentifier(identifier) { (succeeded: Bool, error_msg: String?) -> () in
-                if !succeeded {
-                    displayError(error_msg!,viewController: self)
-                }
-				if activeUser != nil {
-					if activeUser!.userIdentifiers.count == 0 {
-						Login.clearUser() //No need to logout on the server, that is already done with removing the last identifier
-						dispatch_async(dispatch_get_main_queue()) {
-							let storyboard = UIStoryboard(name: "Main", bundle: nil)
-							let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController") 
-							self.presentViewController(vc, animated: false, completion: nil)
+            activeUser!.deleteIdentifier(identifier,
+				success: {
+					if activeUser != nil {
+						if activeUser!.userIdentifiers.count == 0 {
+							Login.clearUser() //No need to logout on the server, that is already done with removing the last identifier
+							dispatch_async(dispatch_get_main_queue()) {
+								let storyboard = UIStoryboard(name: "Main", bundle: nil)
+								let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController")
+								self.presentViewController(vc, animated: false, completion: nil)
+							}
+						} else {
+							dispatch_async(dispatch_get_main_queue(), {
+								self.tableView.reloadData()
+							})
 						}
-					} else {
-						dispatch_async(dispatch_get_main_queue(), {
-							self.tableView.reloadData()
-						})
-					}
+					}		
+				},
+				failure: {error in
+                    displayError(error.errorText,viewController: self)
 				}
-            }
+			)
 			
 			//already add with spinner
 			dispatch_async(dispatch_get_main_queue(), {
@@ -143,15 +145,15 @@ class IdentifiersViewController: UITableViewController {
 		dispatch_async(dispatch_get_main_queue(), {
 			self.tableView.reloadData()
 		})
-		activeUser!.setAsPrimary(identifier) { (succeeded: Bool, error_msg: String?) -> () in
-			if !succeeded {
-				displayError(error_msg!,viewController: self)
-
+		activeUser!.setAsPrimary(identifier, success: {},
+			failure: {error in
+				displayError(error.errorText,viewController: self)
+				
 				dispatch_async(dispatch_get_main_queue(), {
 					self.tableView.reloadData()
 				})
 			}
-		}
+		)
 	}
     
     /*
@@ -206,11 +208,11 @@ class IdentifiersViewController: UITableViewController {
 			actionSheetController.addAction(verifyAction)
 			
 			let resendCodeAction: UIAlertAction = UIAlertAction(title: "Resend verification code", style: .Default) { action -> Void in
-				activeUser!.resendToken(identifier) { (succeeded: Bool, error_msg: String?) -> () in
-					if !succeeded {
-						displayError(error_msg!,viewController: self)
+				activeUser!.resendToken(identifier,
+					failure: {error in
+						displayError(error.errorText,viewController: self)
 					}
-				}
+				)
 			}
 			actionSheetController.addAction(resendCodeAction)
 		}
@@ -246,11 +248,11 @@ class IdentifiersViewController: UITableViewController {
         
         let changeAction = UIAlertAction(title: "Change", style: .Default) { (action) in
             let firstPasswordTextField = alertController.textFields![0] 
-            activeUser!.changePassword(identifier, password: firstPasswordTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
-                if !succeeded {
-                    displayError(error_msg!,viewController: self)
+            activeUser!.changePassword(identifier, password: firstPasswordTextField.text!,
+				failure: {error in
+                    displayError(error.errorText,viewController: self)
                 }
-            }
+            )
         }
         changeAction.enabled = false
         
@@ -302,16 +304,16 @@ class IdentifiersViewController: UITableViewController {
             let emailTextField = alertController.textFields![0] 
             let firstPasswordTextField = alertController.textFields![1] 
 			
-            activeUser!.addIdentifier(emailTextField.text!, password: firstPasswordTextField.text!) { (succeeded: Bool, error_msg: String?) -> () in
-                if !succeeded {
-					displayError(error_msg!,viewController: self)
+            activeUser!.addIdentifier(emailTextField.text!, password: firstPasswordTextField.text!,
+				success: {
+					dispatch_async(dispatch_get_main_queue(), {
+						self.tableView.reloadData()
+					})
+				},
+				failure: {error in
+					displayError(error.errorText,viewController: self)
 				}
-				dispatch_async(dispatch_get_main_queue(), {
-					self.tableView.reloadData()
-				})
-            }
-			
-			//already add with spinner
+			)
 			dispatch_async(dispatch_get_main_queue(), {
 				self.tableView.reloadData()
 			})

@@ -327,9 +327,11 @@ class ContactEmailInputCell: UITableViewCell {
     @IBOutlet var emailText: UITextField!
     @IBAction func emailEditingDidEnd(sender: UITextField) {
 		if validateInput() {
-			contact?.updateServerIdentifier(emailText.text!) { (succeeded: Bool, error_msg: String?) -> () in
-				self.delegate.reloadContent()
-			}
+			contact?.updateServerIdentifier(emailText.text!,
+				success: {
+					self.delegate.reloadContent()
+				}
+			)
 		}
     }
 	override func awakeFromNib() {

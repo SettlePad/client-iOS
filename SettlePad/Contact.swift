@@ -17,18 +17,14 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	func setFriendlyName (newValue: String, updateServer: Bool) {
 		let oldValue = friendlyName
 		if identifiers.count > 0 && newValue != friendlyName && updateServer && propagatedToServer == true {
-			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["friendly_name":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-				if(!succeeded) {
-					if let error_msg = data["text"] as? String {
-						print(error_msg)
-					} else {
-						print("Unknown error while setting friendly name")
-					}
+			HTTPWrapper.request("contacts/"+identifiers[0], method: .POST, parameters: ["friendly_name":newValue], authenticateWithUser: activeUser!,
+				failure: { error in
+					print(error.errorText)
 					self.friendlyName = oldValue
 				}
-			}
+			)
+			friendlyName = newValue
 		}
-		friendlyName = newValue
 	}
 	
 	var resultingName: String {
@@ -46,18 +42,14 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	func setAutoAccept(newValue: AutoAccept, updateServer: Bool) {
 		let oldValue = autoAccept
 		if identifiers.count > 0 && newValue != autoAccept && updateServer && propagatedToServer == true {
-			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["auto_accept":newValue.rawValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-				if(!succeeded) {
-					if let error_msg = data["text"] as? String {
-						print(error_msg)
-					} else {
-						print("Unknown error while setting auto accept")
-					}
+			HTTPWrapper.request("contacts/"+identifiers[0], method: .POST, parameters: ["auto_accept":newValue.rawValue], authenticateWithUser: activeUser!,
+				failure: { error in
+					print(error.errorText)
 					self.autoAccept = oldValue
 				}
-			}
+			)
+			autoAccept = newValue
 		}
-		autoAccept = newValue
 	}
 	
     private(set) var favorite: Bool = false
@@ -65,43 +57,35 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 	func setFavorite (newValue: Bool, updateServer: Bool) {
 		let oldValue = favorite
 		if identifiers.count > 0 && newValue != favorite && updateServer && propagatedToServer == true {
-			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["favorite":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-				if(!succeeded) {
-					if let error_msg = data["text"] as? String {
-						print(error_msg)
-					} else {
-						print("Unknown error while setting favorite")
-					}
+			HTTPWrapper.request("contacts/"+identifiers[0], method: .POST, parameters: ["favorite":newValue], authenticateWithUser: activeUser!,
+				failure: { error in
+					print(error.errorText)
 					self.favorite = oldValue
 				}
-			}
+			)
+			favorite = newValue
 		}
-        favorite = newValue
     }
 	
     var identifiers = [String]()
 	
-	func updateServerIdentifier(newValue: String, requestCompleted : (succeeded: Bool, error_msg: String?) -> ()) {
+	func updateServerIdentifier(newValue: String, success: (()->())? = nil, failure: ((error: SettlePadError)-> ())? = nil) {
 		let oldValue = identifiers
 		if newValue.isEmail() && oldValue.count > 0 && propagatedToServer == true {
-			api.request("contacts/"+oldValue[0], method:"POST", formdata: ["identifier":newValue], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-				if(!succeeded) {
-					if let error_msg = data["text"] as? String {
-						requestCompleted(succeeded: false, error_msg: error_msg)
-					} else {
-						requestCompleted(succeeded: false, error_msg: "Unknown error while changing identifier")
-					}
-					self.identifiers = oldValue
-				} else {
-					if let registered = data["data"]?["registered"] as? Bool {
+			HTTPWrapper.request("contacts/"+oldValue[0], method: .POST, parameters: ["identifier":newValue], authenticateWithUser: activeUser!,
+				success: {json in
+					if let registered = json["data"]["registered"].bool {
 						self.registered = registered
 					}
-					requestCompleted(succeeded: true, error_msg: nil)
+					success?()
+				},
+				failure: { error in
+					self.identifiers = oldValue
+					failure?(error: error)
 				}
-				
-			}
+			)
+			identifiers = [newValue]
 		}
-		identifiers = [newValue]
 	}
 	
 	private(set) var limits = [Limit]()
@@ -199,13 +183,9 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 			limitDict[singleLimit.currency.rawValue] = singleLimit.limit
 		}
 		if identifiers.count > 0 && propagatedToServer == true {
-			api.request("contacts/"+identifiers[0], method:"POST", formdata: ["limits":limitDict], secure:true) { (succeeded: Bool, data: NSDictionary) -> () in
-				if(!succeeded) {
-					if let error_msg = data["text"] as? String {
-						print(error_msg)
-					} else {
-						print("Unknown error while adding limit")
-					}
+			HTTPWrapper.request("contacts/"+identifiers[0], method: .POST, parameters: ["limits":limitDict], authenticateWithUser: activeUser!,
+				failure: { error in
+					print(error.errorText)
 					//roll back addition
 					
 					for (index,limit) in self.limits.enumerate() {
@@ -221,9 +201,8 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 							self.limits.removeAtIndex(row!)
 						}
 					}
-
 				}
-			}
+			)
 		}
 	}
 	
@@ -245,18 +224,14 @@ class Contact: NSObject { //required for sections in viewcontroller with collati
 					limitDict[singleLimit.currency.rawValue] = singleLimit.limit
 				}
 				if identifiers.count > 0  && propagatedToServer == true {
-					api.request("contacts/"+identifiers[0], method:"POST", formdata: ["limits":limitDict], secure:true)  { (succeeded: Bool, data: NSDictionary) -> () in
-						if(!succeeded) {
-							if let error_msg = data["text"] as? String {
-								print(error_msg)
-							} else {
-								print("Unknown error while removing limit")
-							}
-
+					HTTPWrapper.request("contacts/"+identifiers[0], method: .POST, parameters: ["limits":limitDict], authenticateWithUser: activeUser!,
+						failure: { error in
+							print(error.errorText)
+							
 							//roll back removal
 							self.limits.append(old_limit)
 						}
-					}
+					)
 				}
 			}
 		}

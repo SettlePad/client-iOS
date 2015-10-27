@@ -67,15 +67,17 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
         transactions.clear()
         refreshTable(true) //want to show spinner
         
-		transactions.get(.Open, search: ""){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-			dispatch_async(dispatch_get_main_queue(), {
-				//so it is run now, instead of at the end of code execution
-				self.refreshTable()
-			})
-			if (!succeeded) {
-                displayError(error_msg!, viewController: self)
-            }
-        }
+		transactions.get(.Open, search: "",
+			success: {
+				dispatch_async(dispatch_get_main_queue(), {
+					//so it is run now, instead of at the end of code execution
+					self.refreshTable()
+				})
+			},
+			failure: {error in
+				displayError(error.errorText, viewController: self)
+			}
+		)
 
         /*
         //To hide empty separators (not needed as footer is already implemented by refreshTable()
@@ -200,15 +202,16 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
     }
 	
     func changeTransaction(action:String, transaction:Transaction){
-        transactions.changeTransaction(action,transaction: transaction) { (succeeded: Bool, error_msg: String?) -> () in
-			dispatch_async(dispatch_get_main_queue(), {
-				//so it is run now, instead of at the end of code execution
-				self.refreshTransactions()
-			})
-			if (!succeeded) {
-                displayError(error_msg!, viewController: self)
-            }
-        }
+        transactions.changeTransaction(action,transaction: transaction,
+			success: {
+				dispatch_async(dispatch_get_main_queue(), {
+					self.refreshTransactions()
+				})
+			},
+			failure: {error in
+                displayError(error.errorText, viewController: self)
+			}
+		)
     }
 
     /*
@@ -283,29 +286,35 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 			searchVal = transactionsSearchBar.text!
 		}
 
-		transactions.get(getGroupType(),search: searchVal){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-			dispatch_async(dispatch_get_main_queue(), {
-				//so it is run now, instead of at the end of code execution
-				self.refreshTable()
-			})
-			if (!succeeded) {
-				displayError(error_msg!, viewController: self)
+		transactions.get(getGroupType(),search: searchVal,
+			success: {
+				dispatch_async(dispatch_get_main_queue(), {
+					//so it is run now, instead of at the end of code execution
+					self.refreshTable()
+				})
+			},
+			failure: {error in
+				displayError(error.errorText, viewController: self)
+
 			}
-		}
+		)
+		
 		refreshTable(true) //want to show spinner
 	}
 	
     func refreshTransactions() {
-        transactions.getUpdate(){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-			dispatch_async(dispatch_get_main_queue(), {
-				//so it is run now, instead of at the end of code execution
-				self.refreshTable()
-			})
-			if (!succeeded) {
-                displayError(error_msg!, viewController: self)
-            }
+        transactions.getUpdate(
+			{
+				dispatch_async(dispatch_get_main_queue(), {
+					//so it is run now, instead of at the end of code execution
+					self.refreshTable()
+				})
+			},
+			failure: {error in
+				displayError(error.errorText, viewController: self)
 
-        }
+			}
+		)
     }
     
     @IBAction func transactionsGroupValueChanged(sender: UISegmentedControl) {
@@ -339,15 +348,17 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
             let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
             
             if (maximumOffset - currentOffset) <= 40 {
-                transactions.getMore(){ (succeeded: Bool, transactions: [Transaction], error_msg: String?) -> () in
-					dispatch_async(dispatch_get_main_queue(), {
-						//so it is run now, instead of at the end of code execution
-						self.refreshTable()
-					})
-					if (!succeeded && error_msg! != "") {
-						displayError(error_msg!, viewController: self)
-                    }
-                }
+                transactions.getMore(
+					{
+						dispatch_async(dispatch_get_main_queue(), {
+							//so it is run now, instead of at the end of code execution
+							self.refreshTable()
+						})
+					},
+					failure: {error in
+						displayError(error.errorText, viewController: self)
+					}
+				)
             }
         }
     }
