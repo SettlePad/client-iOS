@@ -64,7 +64,7 @@ class Transactions {
 			HTTPWrapper.request( "memo/send/", method: .POST, parameters: ["transactions": formdataArray], authenticateWithUser: activeUser!,
 				success: {json in
 					self.transactions = self.transactions.filter({$0.status != .Posted}) //Delete all
-					balances.updateBalances({},failure: {_ in })
+					activeUser!.balances.updateBalances({},failure: {_ in })
 					success()
 				},
 				failure: { error in

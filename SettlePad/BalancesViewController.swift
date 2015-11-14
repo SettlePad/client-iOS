@@ -79,9 +79,9 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 	}
 	
 	func refreshBalances() {
-		balances.updateBalances(
+		activeUser!.balances.updateBalances(
 			{
-				self.footer.no_results = (balances.sortedCurrencies.count == 0)
+				self.footer.no_results = (activeUser!.balances.sortedCurrencies.count == 0)
 				dispatch_async(dispatch_get_main_queue(), {
 					//so it is run now, instead of at the end of code execution
 					self.tableView.reloadData()
@@ -111,13 +111,13 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return balances.sortedCurrencies.count
+        return activeUser!.balances.sortedCurrencies.count
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return balances.getBalancesForCurrency(balances.sortedCurrencies[section]).count
+        return activeUser!.balances.getBalancesForCurrency(activeUser!.balances.sortedCurrencies[section]).count
     }
 
 	/*override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -150,9 +150,9 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 		/*if balances.sortedCurrencies.count < section {
 			return "Refresh please" //To overcome bad access
 		} else {*/
-			let currency = balances.sortedCurrencies[section]
+			let currency = activeUser!.balances.sortedCurrencies[section]
 
-			if let currencySummary =  balances.getSummaryForCurrency(currency) {
+			if let currencySummary =  activeUser!.balances.getSummaryForCurrency(currency) {
 				let doubleFormat = ".2" //See http://www.codingunit.com/printf-format-specifiers-format-conversions-and-formatted-output
 				//return currency.rawValue+" "+currencySummary.balance.format(doubleFormat)+" (get "+currencySummary.get.format(doubleFormat)+", owe " + (currencySummary.owe * -1).format(doubleFormat)+")"
 				return currency.rawValue+" "+currencySummary.balance.format(doubleFormat)
@@ -164,9 +164,9 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 	
 	override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
 		let headerView = view as! UITableViewHeaderFooterView
-		let currency = balances.sortedCurrencies[section]
+		let currency = activeUser!.balances.sortedCurrencies[section]
 		
-		if let currencySummary =  balances.getSummaryForCurrency(currency) {
+		if let currencySummary =  activeUser!.balances.getSummaryForCurrency(currency) {
 			if currencySummary.balance < 0 {
 				headerView.textLabel!.textColor = Colors.gray.textToUIColor()
 			} else {
@@ -183,7 +183,7 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 		
 		let cell = tableView.dequeueReusableCellWithIdentifier("Balance", forIndexPath: indexPath) as! BalanceCell
 		
-		let balance = balances.getBalancesForCurrency(balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
+		let balance = activeUser!.balances.getBalancesForCurrency(activeUser!.balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
 		
 		// Configure the cell...
 		var balanceName = balance.name
@@ -206,7 +206,7 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 		tableView.deselectRowAtIndexPath(indexPath, animated: true)
 		
 		//Go to contact view if available, otherwise ask to create a new contact
-		let balance = balances.getBalancesForCurrency(balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
+		let balance = activeUser!.balances.getBalancesForCurrency(activeUser!.balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
 		let identifier: Identifier? = activeUser!.contacts.getIdentifier(balance.identifierStr)
 
 		dispatch_async(dispatch_get_main_queue()) {

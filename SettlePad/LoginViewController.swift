@@ -8,13 +8,7 @@
 
 import UIKit
 
-var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"plist")
-var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
 
-var activeUser: User? = User.loadFromKeychain()
-var transactions=Transactions() //TODO: merge into user
-var balances = Balances() //TODO: merge into user
-var badgeCount:Int = 0
 
 class LoginViewController: UIViewController {
 	/*See 
@@ -191,7 +185,7 @@ class LoginViewController: UIViewController {
 				}
 			)
 			
-			transactions.updateStatus()
+			activeUser!.transactions.updateStatus()
 	
 
 		} else {

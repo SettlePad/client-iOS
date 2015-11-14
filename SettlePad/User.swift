@@ -50,6 +50,8 @@ class User {
 		save()
     }
 
+	var transactions=Transactions()
+	var balances = Balances()
 	
 	init(json: JSON){
 		if let id = json["user_id"].int {
@@ -334,7 +336,7 @@ class User {
 				print(error.errorText)
 			}
 		)
-		Login.clearUser() //Do not wait until logout is finished
+		clearUser() //Do not wait until logout is finished
 	}
 
 }

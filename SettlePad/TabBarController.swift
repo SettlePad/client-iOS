@@ -19,7 +19,7 @@ class TabBarController: UITabBarController, TabBarDelegate {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-		transactions.tabBarDelegate = self
+		activeUser?.transactions.tabBarDelegate = self
 	}
 
     override func didReceiveMemoryWarning() {

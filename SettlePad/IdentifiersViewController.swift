@@ -111,7 +111,7 @@ class IdentifiersViewController: UITableViewController {
 				success: {
 					if activeUser != nil {
 						if activeUser!.userIdentifiers.count == 0 {
-							Login.clearUser() //No need to logout on the server, that is already done with removing the last identifier
+							clearUser() //No need to logout on the server, that is already done with removing the last identifier
 							dispatch_async(dispatch_get_main_queue()) {
 								let storyboard = UIStoryboard(name: "Main", bundle: nil)
 								let vc = storyboard.instantiateViewControllerWithIdentifier("LoginController")

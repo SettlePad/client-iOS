@@ -45,7 +45,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
         if newTransactions.count > 0 {
             //Post
 			
-            transactions.post(newTransactions,
+            activeUser!.transactions.post(newTransactions,
 				success: {
 					activeUser!.contacts.updateContacts(
 						{

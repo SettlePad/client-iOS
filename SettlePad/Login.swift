@@ -9,6 +9,17 @@
 import Foundation
 import SwiftyJSON
 
+var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"plist")
+var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
+
+var activeUser: User? = User.loadFromKeychain()
+var badgeCount:Int = 0
+
+func clearUser() {
+	User.wipe()
+	activeUser = nil
+}
+
 class Login {
 	static func login(username: String, password: String, success : (user: User) -> (), failure: (error: SettlePadError) -> ()) {
 		
@@ -78,13 +89,5 @@ class Login {
 				failure(error: error)
 			}
 		)
-	}
-	
-	
-	//TODO: move elsewhere
-	static func clearUser() {
-		User.wipe()
-		activeUser = nil
-		transactions.clear()
 	}
 }

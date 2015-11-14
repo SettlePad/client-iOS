@@ -64,10 +64,10 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
-        transactions.clear()
+        activeUser!.transactions.clear()
         refreshTable(true) //want to show spinner
         
-		transactions.get(.Open, search: "",
+		activeUser!.transactions.get(.Open, search: "",
 			success: {
 				dispatch_async(dispatch_get_main_queue(), {
 					//so it is run now, instead of at the end of code execution
@@ -124,7 +124,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 
 	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Return the number of rows in the section.
-        return transactions.getTransactions().count
+        return activeUser!.transactions.getTransactions().count
     }
 
     
@@ -132,7 +132,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
         let cell = transactionsTableView.dequeueReusableCellWithIdentifier("TransactionCell", forIndexPath: indexPath) as! TransactionsCell
         
         // Configure the cell...
-        if let transaction = transactions.getTransaction(indexPath.row)  {
+        if let transaction = activeUser!.transactions.getTransaction(indexPath.row)  {
             cell.markup(transaction)
         }
 		cell.layoutIfNeeded() //to get right layout given dynamic height
@@ -145,7 +145,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 	func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the specified item to be editable.
         //Editable or not
-        if let transaction = transactions.getTransaction(indexPath.row)  {
+        if let transaction = activeUser!.transactions.getTransaction(indexPath.row)  {
             if (transaction.canBeCanceled || transaction.canBeAccepted) {
                 return true
             } else {
@@ -172,7 +172,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
     
     
 	func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]?  {
-        if let transaction = transactions.getTransaction(indexPath.row)  {
+        if let transaction = activeUser!.transactions.getTransaction(indexPath.row)  {
             if transaction.canBeCanceled {
                 let cancelAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Cancel" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
                         self.changeTransaction("cancel", transaction: transaction)
@@ -202,7 +202,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
     }
 	
     func changeTransaction(action:String, transaction:Transaction){
-        transactions.changeTransaction(action,transaction: transaction,
+        activeUser!.transactions.changeTransaction(action,transaction: transaction,
 			success: {
 				dispatch_async(dispatch_get_main_queue(), {
 					self.refreshTransactions()
@@ -242,7 +242,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
     
     func searchBarShouldBeginEditing(searchBar: UISearchBar!) -> Bool // return NO to not become first responder
     {
-        transactions.clear()
+        activeUser!.transactions.clear()
         refreshTable(searching: true) //want to show search instructions
         
         return true
@@ -286,7 +286,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 			searchVal = transactionsSearchBar.text!
 		}
 
-		transactions.get(getGroupType(),search: searchVal,
+		activeUser!.transactions.get(getGroupType(),search: searchVal,
 			success: {
 				dispatch_async(dispatch_get_main_queue(), {
 					//so it is run now, instead of at the end of code execution
@@ -303,7 +303,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 	}
 	
     func refreshTransactions() {
-        transactions.getUpdate(
+        activeUser!.transactions.getUpdate(
 			{
 				dispatch_async(dispatch_get_main_queue(), {
 					//so it is run now, instead of at the end of code execution
@@ -343,12 +343,12 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 	func scrollViewDidScroll(scrollView: UIScrollView) {
         //println("scroll")
 
-        if (!transactions.endReached) {
+        if (!activeUser!.transactions.endReached) {
             let currentOffset = scrollView.contentOffset.y
             let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
             
             if (maximumOffset - currentOffset) <= 40 {
-                transactions.getMore(
+                activeUser!.transactions.getMore(
 					{
 						dispatch_async(dispatch_get_main_queue(), {
 							//so it is run now, instead of at the end of code execution
@@ -374,9 +374,9 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
         if loading {
             self.footer.endReached = false
         } else {
-            self.footer.endReached = transactions.endReached
+            self.footer.endReached = activeUser!.transactions.endReached
         }
-        self.footer.no_results = (transactions.getTransactions().count == 0)
+        self.footer.no_results = (activeUser!.transactions.getTransactions().count == 0)
         self.footer.setNeedsDisplay()
         self.transactionsTableView.tableFooterView = self.footer
 		if loading == false {
