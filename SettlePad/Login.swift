@@ -85,7 +85,6 @@ class Login {
 	static func clearUser() {
 		User.wipe()
 		activeUser = nil
-		
 		transactions.clear()
 	}
 }

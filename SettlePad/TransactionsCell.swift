@@ -64,12 +64,12 @@ class TransactionsCell: UITableViewCell {
         let weekAgo = NSCalendar.currentCalendar().dateFromComponents(NSCalendar.currentCalendar().components([.Year, .Month, .Day], fromDate: NSDate(timeIntervalSinceNow: -60*60*24*6)))
         
         let labeldateFormatter = NSDateFormatter()
-        if (transaction.time_sent.compare(today!) != NSComparisonResult.OrderedAscending) {
+        if (transaction.timeSent.compare(today!) != NSComparisonResult.OrderedAscending) {
             //Today, display time
             //http://makeapppie.com/tag/date-to-string-in-swift/
             labeldateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
             labeldateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-        } else if (transaction.time_sent.compare(weekAgo!) != NSComparisonResult.OrderedAscending) {
+        } else if (transaction.timeSent.compare(weekAgo!) != NSComparisonResult.OrderedAscending) {
             //Last seven days, display day of the week
             labeldateFormatter.dateFormat = "eeee" //http://zframework.ph/swift-ios-date-formatting-options/
         } else {
@@ -77,8 +77,8 @@ class TransactionsCell: UITableViewCell {
             labeldateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
             labeldateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
         }
-        let dateString = labeldateFormatter.stringFromDate(transaction.time_sent)
-        if (transaction.is_sender == false) {
+        let dateString = labeldateFormatter.stringFromDate(transaction.timeSent)
+        if (transaction.isSender == false) {
             timeLabel.text = "Received: "+dateString
         } else {
             timeLabel.text = "Sent: "+dateString
@@ -110,7 +110,7 @@ class TransactionsCell: UITableViewCell {
             spinner.hidden = true
             amountLabel.hidden = false
             
-            if (transaction.is_sender == true) { // 0 = recipient
+            if (transaction.isSender == true) { // 0 = recipient
                 statusString = "Pending approval"
                 statusLabel.textColor = Colors.gray.textToUIColor()
             } else {

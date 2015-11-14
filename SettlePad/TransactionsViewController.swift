@@ -146,7 +146,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
         // Return NO if you do not want the specified item to be editable.
         //Editable or not
         if let transaction = transactions.getTransaction(indexPath.row)  {
-            if (transaction.can_be_canceled || transaction.can_be_accepted) {
+            if (transaction.canBeCanceled || transaction.canBeAccepted) {
                 return true
             } else {
                 return false
@@ -173,15 +173,15 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
     
 	func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]?  {
         if let transaction = transactions.getTransaction(indexPath.row)  {
-            if transaction.can_be_canceled {
+            if transaction.canBeCanceled {
                 let cancelAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Cancel" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
                         self.changeTransaction("cancel", transaction: transaction)
                 })
                 cancelAction.backgroundColor = Colors.gray.textToUIColor()
                 return [cancelAction]
 
-            } else if transaction.can_be_accepted {
-                //mutually exclusive with can_be_canceled, which can happen if user is sender. This can only happen if user is recipient
+            } else if transaction.canBeAccepted {
+                //mutually exclusive with canBeCanceled, which can happen if user is sender. This can only happen if user is recipient
                 let acceptAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Accept" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
                     self.changeTransaction("accept", transaction: transaction)
                 })
@@ -343,7 +343,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 	func scrollViewDidScroll(scrollView: UIScrollView) {
         //println("scroll")
 
-        if (!transactions.end_reached) {
+        if (!transactions.endReached) {
             let currentOffset = scrollView.contentOffset.y
             let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
             
@@ -372,9 +372,9 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
         
         self.footer.searching = searching
         if loading {
-            self.footer.end_reached = false
+            self.footer.endReached = false
         } else {
-            self.footer.end_reached = transactions.end_reached
+            self.footer.endReached = transactions.endReached
         }
         self.footer.no_results = (transactions.getTransactions().count == 0)
         self.footer.setNeedsDisplay()
@@ -386,7 +386,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 }
 
 class TransactionsFooterView: UIView {
-	var end_reached = true
+	var endReached = true
 	var no_results = true
 	var searching = false
 	
@@ -411,7 +411,7 @@ class TransactionsFooterView: UIView {
 		}
 		
 		
-		if self.end_reached || self.searching {
+		if self.endReached || self.searching {
 			let footerLabel: UILabel = UILabel(frame: rect)
 			footerLabel.textColor = Colors.gray.textToUIColor()
 			footerLabel.font = UIFont.boldSystemFontOfSize(11)

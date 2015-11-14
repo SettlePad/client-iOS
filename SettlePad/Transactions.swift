@@ -16,13 +16,13 @@ class Transactions {
 	var countOpen: Int = 0
 	
     var transactions = [Transaction]()
-    private var nr_of_results = 20
+    private var nrOfResults = 20
     private var search = ""
 	private var group: TransactionsStatusGroup = .Open
     private var newestID = 0
     private var oldestID = 0
     private var lastUpdate = 0
-    var end_reached = false
+    var endReached = false
 	
 	var tabBarDelegate:TabBarDelegate?
 	
@@ -35,13 +35,13 @@ class Transactions {
     
     func clear() {
         transactions = []
-        nr_of_results = 20
+        nrOfResults = 20
         search = ""
 		group = .Open
         newestID = 0
         oldestID = 0
         lastUpdate = 0
-        end_reached = false
+        endReached = false
     }
     
 	func post(newTransactions: [Transaction], success: ()->(), failure: (error: SettlePadError)->()) {
@@ -80,17 +80,17 @@ class Transactions {
 	func get(group: TransactionsStatusGroup, search: String, success: ()->(), failure: (error: SettlePadError)->()) {
         self.group = group
         self.search = search.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet())!
-        let url = "transactions/initial/"+String(nr_of_results)+"/"+self.group.rawValue+"/"+self.search
+        let url = "transactions/initial/"+String(nrOfResults)+"/"+self.group.rawValue+"/"+self.search
         self.transactions = [] //already clear out before reponse
-        self.end_reached = false
+        self.endReached = false
         getInternal(url, oneAtATime: true,
 			success: {json in
 				self.updateParams(json["data"]) //Update request parameters
 				for (_,subJson):(String, JSON) in json["data"]["transactions"] {
 					self.transactions.append(Transaction(json: subJson)) //Add in rear
 				}
-				if (self.transactions.count < self.nr_of_results) {
-					self.end_reached = true
+				if (self.transactions.count < self.nrOfResults) {
+					self.endReached = true
 				}
 				success()
 			},
@@ -101,9 +101,9 @@ class Transactions {
     }
     
 	func getMore(success: () -> (), failure: (error: SettlePadError) -> ()) {
-        let url = "transactions/older/\(oldestID)/"+String(nr_of_results)+"/"+self.group.rawValue+"/"+search
+        let url = "transactions/older/\(oldestID)/"+String(nrOfResults)+"/"+self.group.rawValue+"/"+search
 
-        if self.end_reached {
+        if self.endReached {
             failure(error: SettlePadError(errorCode: "end_reached", errorText: "End reached"))
         } else if  transactions.count  == 0 {
             //No transactions yet, so ignore request
@@ -113,7 +113,7 @@ class Transactions {
 					self.updateParams(json["data"]) //Update request parameters
 					if json["data"]["transactions"].count == 0 {
 						//no transactions, which is fine
-						self.end_reached = true
+						self.endReached = true
 					} else {
 						for (_,subJson):(String, JSON) in json["data"]["transactions"] {
 							self.transactions.append(Transaction(json: subJson)) //Add in rear
@@ -130,14 +130,14 @@ class Transactions {
     }
     
 	func getUpdate(success: ()->(), failure: (error: SettlePadError) -> ()) {
-        let url = "transactions/changes/\(oldestID)/\(newestID)/\(lastUpdate)"+"/"+String(nr_of_results)+"/"+self.group.rawValue+"/"+search
+        let url = "transactions/changes/\(oldestID)/\(newestID)/\(lastUpdate)"+"/"+String(nrOfResults)+"/"+self.group.rawValue+"/"+search
 		
         getInternal(url, oneAtATime: true,
 			success: {json in
 				for (_,subJson):(String, JSON) in json["data"]["updates"]["transactions"] {
 					let updatedTransaction = Transaction(json: subJson)
 					for (i, transaction) in self.transactions.enumerate() {
-						if transaction.transaction_id == updatedTransaction.transaction_id {
+						if transaction.transactionID == updatedTransaction.transactionID {
 							self.transactions[i] = updatedTransaction
 						}
 					}
@@ -193,22 +193,6 @@ class Transactions {
 	/**
 	Updates the boundaries of the set of transactions that we received
 	*/
-    private func updateParams(data: NSDictionary) {
-        if let newestID = data["newest_id"] as? Int {
-            self.newestID = max(newestID,self.newestID)
-        }
-        if let oldestID = data["oldest_id"] as? Int {
-            if (self.oldestID == 0) {
-                self.oldestID = oldestID
-            } else {
-                self.oldestID = min(oldestID,self.oldestID)
-            }
-        }
-        if let lastUpdate = data["last_update"] as? Int {
-            self.lastUpdate = max(lastUpdate,self.lastUpdate)
-        }
-    }
-	//TODO: kill the one above it not used anymore
 	
 	private func updateParams(json: JSON) {
 		if let newestID = json["newest_id"].int {
@@ -239,7 +223,7 @@ class Transactions {
     }
     
 	func changeTransaction(action: String, transaction: Transaction, success: () -> (), failure: (error:SettlePadError)->()) {
-        let url = "transactions/"+action+"/\(transaction.transaction_id!)/"
+        let url = "transactions/"+action+"/\(transaction.transactionID!)/"
         HTTPWrapper.request(url, method: .POST, authenticateWithUser: activeUser!,
 			success: {json in
 				success()
