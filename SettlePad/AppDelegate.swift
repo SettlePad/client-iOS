@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -84,18 +85,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	
 	func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]){
 		//See https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
-		if let aps = userInfo["aps"] as? NSDictionary {
-			if let alert = aps["alert"] as? NSDictionary {
-				if let message = alert["body"] as? NSString {
-					//TODO Do stuff
-					print(message)
-				}
-			} else if let alert = aps["alert"] as? NSString {
-				//TODO Do stuff
-				print(alert)
-			}
+		if let data = userInfo["data"] as? JSON {
+			print(data.rawString())
+			activeUser?.transactions.processUnreadCounts(data)
 		}
 	}
-
 }
 

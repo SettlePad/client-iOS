@@ -234,31 +234,37 @@ class Transactions {
 		)
     }
 	
-	//TODO: when to call this function?
-	func updateStatus(success: (()->())? = nil, failure: ((error: SettlePadError)->())? = nil) {
+	func updateUnreadCounts(success: (()->())? = nil, failure: ((error: SettlePadError)->())? = nil) {
 		HTTPWrapper.request("status", method: .GET, authenticateWithUser: activeUser! ,
 			success: {json in
-				if let countUnreadOpen = json["data"]["unread"]["open"].int {
-					self.countUnreadOpen = countUnreadOpen
-				}
-				if let countUnreadProcessed = json["data"]["unread"]["processed"].int {
-					self.countUnreadProcessed = countUnreadProcessed
-				}
-				if let countUnreadCanceled = json["data"]["unread"]["canceled"].int {
-					self.countUnreadCanceled = countUnreadCanceled
-				}
-				if let countOpen = json["data"]["open"].int {
-					self.countOpen = countOpen
-				}
-				badgeCount = self.countUnreadOpen + self.countUnreadProcessed + self.countUnreadCanceled
-					
-				self.tabBarDelegate?.updateBadges()
+				self.processUnreadCounts(json)
 				success?()
 			},
 			failure: { error in
 				failure?(error: error)
 			}
 		)
+	}
+	
+	/**
+	Updates unread counts.
+	*/
+	func processUnreadCounts(json:JSON) {
+		if let countUnreadOpen = json["data"]["unread"]["open"].int {
+			self.countUnreadOpen = countUnreadOpen
+		}
+		if let countUnreadProcessed = json["data"]["unread"]["processed"].int {
+			self.countUnreadProcessed = countUnreadProcessed
+		}
+		if let countUnreadCanceled = json["data"]["unread"]["canceled"].int {
+			self.countUnreadCanceled = countUnreadCanceled
+		}
+		if let countOpen = json["data"]["open"].int {
+			self.countOpen = countOpen
+		}
+		badgeCount = self.countUnreadOpen + self.countUnreadProcessed + self.countUnreadCanceled
+		
+		self.tabBarDelegate?.updateBadges()
 	}
 }
 

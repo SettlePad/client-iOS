@@ -185,7 +185,7 @@ class LoginViewController: UIViewController {
 				}
 			)
 			
-			activeUser!.transactions.updateStatus()
+			activeUser!.transactions.updateUnreadCounts()
 	
 
 		} else {
