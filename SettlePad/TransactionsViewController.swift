@@ -204,9 +204,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
     func changeTransaction(action:String, transaction:Transaction){
         activeUser!.transactions.changeTransaction(action,transaction: transaction,
 			success: {
-				dispatch_async(dispatch_get_main_queue(), {
-					self.refreshTransactions()
-				})
+				self.refreshTransactions()
 			},
 			failure: {error in
                 displayError(error.errorText, viewController: self)
@@ -303,8 +301,12 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 	}
 	
     func refreshTransactions() {
-        activeUser!.transactions.getUpdate(
-			{
+		var searchVal = ""
+		if transactionsSearchBar.text != nil {
+			searchVal = transactionsSearchBar.text!
+		}
+		activeUser!.transactions.get(getGroupType(),search: searchVal,
+			success: {
 				dispatch_async(dispatch_get_main_queue(), {
 					//so it is run now, instead of at the end of code execution
 					self.refreshTable()
