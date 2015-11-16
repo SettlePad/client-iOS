@@ -70,6 +70,8 @@ enum Colors {
     
     func backgroundToUIColor() -> UIColor{
         switch (self) {
+		case .primary:
+			return UIColor(red: 0xd6/255, green: 0xea/255, blue: 0xbd/255, alpha: 1.0)
         case .danger:
             return UIColor(red: 0xea/255, green: 0xbe/255, blue: 0xbd/255, alpha: 1.0)
         default:

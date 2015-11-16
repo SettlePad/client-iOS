@@ -134,6 +134,12 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
         // Configure the cell...
         if let transaction = activeUser!.transactions.getTransaction(indexPath.row)  {
             cell.markup(transaction)
+			if transaction.isRead == false {
+				//transition to is read
+				cell.animateToIsRead({
+					//mark as read
+				})
+			}
         }
 		cell.layoutIfNeeded() //to get right layout given dynamic height
         return cell

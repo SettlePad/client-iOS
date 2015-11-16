@@ -43,11 +43,7 @@ class TransactionsCell: UITableViewCell {
             amountLabel.textColor = Colors.success.textToUIColor()
             amountLabel.text = transaction.currency.rawValue + " \(transaction.amount.format(doubleFormat))"
         }
-		if transaction.isRead {
-			amountLabel.font = UIFont.systemFontOfSize(13.0)
-		} else {
-			amountLabel.font = UIFont.boldSystemFontOfSize(13.0)
-		}
+		amountLabel.font = UIFont.boldSystemFontOfSize(13.0)
 		
         //Counterpart
 		if (transaction.primaryIdentifierStr != nil) {
@@ -61,11 +57,7 @@ class TransactionsCell: UITableViewCell {
 			counterpartLabel.text = transaction.name
 		}
 		counterpartLabel.textColor = UIColor.blackColor()
-		if transaction.isRead {
-			counterpartLabel.font = UIFont.systemFontOfSize(15.0)
-		} else {
-			counterpartLabel.font = UIFont.boldSystemFontOfSize(15.0)
-		}
+		counterpartLabel.font = UIFont.boldSystemFontOfSize(15.0)
 
         
         //Time
@@ -184,7 +176,19 @@ class TransactionsCell: UITableViewCell {
             attributedtimeText.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, attributedtimeText.length))
             timeLabel.attributedText = attributedtimeText
         }
-        
+		
+		//unread or not
+		if !transaction.isRead {
+			self.backgroundColor = Colors.primary.backgroundToUIColor()
+		}
     }
-    
+	
+	func animateToIsRead(completion: () -> ()) {
+		UIView.animateWithDuration(5, animations: { () -> Void in
+			self.backgroundColor = UIColor.whiteColor() //transparent
+		}, completion: {(value: Bool ) in
+			completion()
+		})
+	}
+	
 }
