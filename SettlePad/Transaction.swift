@@ -22,7 +22,8 @@ class Transaction {
     var amount: Double = 0
     var status: transactionStatus = .Processed
     var reduced: Bool = false
-
+	var isRead: Bool = true
+	
     var canBeCanceled: Bool {
         get {
             let now = NSDate()
@@ -116,6 +117,12 @@ class Transaction {
 				self.reduced = true
 			}
 		}
+		
+		if let isReadInt = json["is_read"].int {
+			if isReadInt == 0 {
+				self.isRead = false
+			}
+		}
 	}
 	
 	init(name: String, identifier: String, description: String, currency: Currency, amount: Double) {
@@ -131,6 +138,7 @@ class Transaction {
         self.amount = amount
         status = .Draft
         reduced = false
+		isRead = true //draft memos are always read
     }
 }
 

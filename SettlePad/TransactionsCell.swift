@@ -43,7 +43,12 @@ class TransactionsCell: UITableViewCell {
             amountLabel.textColor = Colors.success.textToUIColor()
             amountLabel.text = transaction.currency.rawValue + " \(transaction.amount.format(doubleFormat))"
         }
-        
+		if transaction.isRead {
+			amountLabel.font = UIFont.systemFontOfSize(13.0)
+		} else {
+			amountLabel.font = UIFont.boldSystemFontOfSize(13.0)
+		}
+		
         //Counterpart
 		if (transaction.primaryIdentifierStr != nil) {
 			let identifier: Identifier? = activeUser!.contacts.getIdentifier(transaction.primaryIdentifierStr!)
@@ -56,6 +61,11 @@ class TransactionsCell: UITableViewCell {
 			counterpartLabel.text = transaction.name
 		}
 		counterpartLabel.textColor = UIColor.blackColor()
+		if transaction.isRead {
+			counterpartLabel.font = UIFont.systemFontOfSize(15.0)
+		} else {
+			counterpartLabel.font = UIFont.boldSystemFontOfSize(15.0)
+		}
 
         
         //Time
@@ -83,8 +93,8 @@ class TransactionsCell: UITableViewCell {
         } else {
             timeLabel.text = "Sent: "+dateString
         }
-        timeLabel.textColor = Colors.gray.textToUIColor()
-
+		timeLabel.textColor = Colors.gray.textToUIColor()
+		
         
         //Status
         var statusString = "Unknown"
