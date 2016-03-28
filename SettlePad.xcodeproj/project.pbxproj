@@ -27,15 +27,15 @@
 		54716AF21AFF82E300F72717 /* BalancesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54716AF11AFF82E300F72717 /* BalancesViewController.swift */; };
 		548326401A7E9515004973B7 /* NewUOmeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5483263F1A7E9515004973B7 /* NewUOmeViewController.swift */; };
 		54D4BD071AD0821000AB262B /* Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D4BD061AD0821000AB262B /* Alerts.swift */; };
-		54D612801BDE648C004E2A7A /* HTTPWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D6127F1BDE648C004E2A7A /* HTTPWrapper.swift */; settings = {ASSET_TAGS = (); }; };
-		54D612821BDE8D2A004E2A7A /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D612811BDE8D2A004E2A7A /* Error.swift */; settings = {ASSET_TAGS = (); }; };
-		54D612841BDEABE8004E2A7A /* Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D612831BDEABE8004E2A7A /* Login.swift */; settings = {ASSET_TAGS = (); }; };
+		54D612801BDE648C004E2A7A /* HTTPWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D6127F1BDE648C004E2A7A /* HTTPWrapper.swift */; };
+		54D612821BDE8D2A004E2A7A /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D612811BDE8D2A004E2A7A /* Error.swift */; };
+		54D612841BDEABE8004E2A7A /* Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D612831BDEABE8004E2A7A /* Login.swift */; };
 		54DF03691A5597020078AE8B /* TransactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DF03681A5597020078AE8B /* TransactionsCell.swift */; };
 		54DF036E1A55A9E20078AE8B /* generalFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DF036D1A55A9E20078AE8B /* generalFunctions.swift */; };
 		54E48ACC1B810CF300667615 /* AcceptMemosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E48ACB1B810CF300667615 /* AcceptMemosViewController.swift */; };
 		54EA13691A9691A500654E84 /* NewUOmeAddressBook.xib in Resources */ = {isa = PBXBuildFile; fileRef = 54EA13681A9691A500654E84 /* NewUOmeAddressBook.xib */; };
 		54EA136B1A96980900654E84 /* NewUOmeAddressBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EA136A1A96980900654E84 /* NewUOmeAddressBook.swift */; };
-		54EA37D61BDC109E00EFED87 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EA37D51BDC109E00EFED87 /* TabBarController.swift */; settings = {ASSET_TAGS = (); }; };
+		54EA37D61BDC109E00EFED87 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EA37D51BDC109E00EFED87 /* TabBarController.swift */; };
 		54EA444C1B12546400FF81C0 /* KeyboardLayoutConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EA444B1B12546400FF81C0 /* KeyboardLayoutConstraint.swift */; };
 		54F9EA471A0831D7009DC930 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F9EA461A0831D7009DC930 /* AppDelegate.swift */; };
 		54F9EA491A0831D7009DC930 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F9EA481A0831D7009DC930 /* LoginViewController.swift */; };
@@ -588,6 +588,7 @@
 				INFOPLIST_FILE = SettlePad/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_SWIFT_FLAGS = "$(inherited) -DDEBUG \"-D\" \"COCOAPODS\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "SettlePad.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SettlePad;
 				PROVISIONING_PROFILE = "";
@@ -604,6 +605,7 @@
 				INFOPLIST_FILE = SettlePad/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_SWIFT_FLAGS = "$(inherited) -DRELEASE \"-D\" \"COCOAPODS\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "SettlePad.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SettlePad;
 				PROVISIONING_PROFILE = "";

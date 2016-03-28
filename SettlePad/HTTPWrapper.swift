@@ -16,7 +16,12 @@ class HTTPWrapper  {
 	
 	static func request(url: String, method: Alamofire.Method, parameters : [String : AnyObject]? = nil, authenticateWithUser: User? = nil, success:SuccesHandler? = nil, failure:FailureHandler? = nil) -> Request {
 		
-		let server = settingsDictionary!["server"]! as! String
+		#if DEBUG
+			let server = settingsDictionary!["server_debug"]! as! String
+		#else
+			let server = settingsDictionary!["server_prod"]! as! String
+		#endif
+
 		//let request = NSMutableURLRequest(URL: NSURL(string: server + url)!)
 		
 		var encoding: Alamofire.ParameterEncoding
@@ -50,12 +55,20 @@ class HTTPWrapper  {
 		
 		let request = Alamofire.request(method, server+url, parameters: parameters, encoding: encoding, headers: headers)
 
+		print("URL:" + server+url)
+		print("Parameters:" + parameters.debugDescription)
+		request.responseString {response in
+			if let val = response.result.value {
+				print("Return:" + val)
+			}
+		}
+		
 		request.responseJSON {response in
 			switch response.result {
 			case .Success:
 				if let rawJSON = response.result.value {
 					let json = JSON(rawJSON)
-					if json["error"].isExists() {
+					if json["error"].exists() {
 						failure?(SettlePadError(json: json))
 					} else {
 						success?(json)

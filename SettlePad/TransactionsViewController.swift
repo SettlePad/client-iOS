@@ -92,7 +92,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
         //Add pull to refresh
             self.transactionsRefreshControl = UIRefreshControl()
             self.transactionsRefreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-            self.transactionsRefreshControl.addTarget(self, action: "refreshTransactions", forControlEvents: UIControlEvents.ValueChanged)
+            self.transactionsRefreshControl.addTarget(self, action: #selector(TransactionsViewController.refreshTransactions), forControlEvents: UIControlEvents.ValueChanged)
             self.transactionsTableView.addSubview(transactionsRefreshControl)
         
     }
@@ -138,6 +138,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 				//transition to is read
 				cell.animateToIsRead({
 					//mark as read
+					
 				})
 			}
         }
@@ -179,45 +180,76 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
     
 	func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]?  {
         if let transaction = activeUser!.transactions.getTransaction(indexPath.row)  {
-            if transaction.canBeCanceled {
+			var returnArray: [UITableViewRowAction] = []
+			
+			if transaction.isRead {
+				let markAsUnreadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Mark unread" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
+					transaction.markUnread(
+						{
+							self.refreshTransactions()
+						},
+						failure: {error in
+							displayError(error.errorText, viewController: self)
+						}
+					)
+					}
+				)
+				markAsUnreadAction.backgroundColor = Colors.gray.textToUIColor()
+				returnArray.append(markAsUnreadAction)
+			}
+			
+			if transaction.canBeCanceled {
                 let cancelAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Cancel" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
-                        self.changeTransaction("cancel", transaction: transaction)
-                })
+                        transaction.cancel(
+							{
+								self.refreshTransactions()
+							},
+							failure: {error in
+								displayError(error.errorText, viewController: self)
+							}
+						)
+					}
+				)
                 cancelAction.backgroundColor = Colors.gray.textToUIColor()
-                return [cancelAction]
+				returnArray.append(cancelAction)
 
             } else if transaction.canBeAccepted {
                 //mutually exclusive with canBeCanceled, which can happen if user is sender. This can only happen if user is recipient
                 let acceptAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Accept" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
-                    self.changeTransaction("accept", transaction: transaction)
-                })
+						transaction.accept(
+							{
+								self.refreshTransactions()
+							},
+							failure: {error in
+								displayError(error.errorText, viewController: self)
+							}
+						)
+					}
+				)
                 acceptAction.backgroundColor = Colors.success.textToUIColor()
-                
+				returnArray.append(acceptAction)
+				
                 let rejectAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Reject" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
-                    self.changeTransaction("reject", transaction: transaction)
-                })
+						transaction.reject(
+							{
+								self.refreshTransactions()
+							},
+							failure: {error in
+								displayError(error.errorText, viewController: self)
+							}
+						)
+					}
+				)
                 rejectAction.backgroundColor = Colors.danger.backgroundToUIColor()
-                return [acceptAction,rejectAction]
-            } else {
-                return nil
+				returnArray.append(rejectAction)
             }
+			return returnArray
         } else {
             print("not set?")
             return []
         }
     }
 	
-    func changeTransaction(action:String, transaction:Transaction){
-        activeUser!.transactions.changeTransaction(action,transaction: transaction,
-			success: {
-				self.refreshTransactions()
-			},
-			failure: {error in
-                displayError(error.errorText, viewController: self)
-			}
-		)
-    }
-
     /*
     // Override to support rearranging the table view.
     override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {

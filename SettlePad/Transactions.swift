@@ -147,7 +147,7 @@ class Transactions {
 				var i = 0
 				for (_,subJson):(String, JSON) in json["data"]["newer"]["transactions"] {
 					self.transactions.insert(Transaction(json: subJson),atIndex: i) //Add in front
-					i++
+					i += 1
 				}
 				self.updateParams(json["data"]["newer"])
 				success()
@@ -220,18 +220,6 @@ class Transactions {
         } else {
             return nil
         }
-    }
-    
-	func changeTransaction(action: String, transaction: Transaction, success: () -> (), failure: (error:SettlePadError)->()) {
-        let url = "transactions/"+action+"/\(transaction.transactionID!)/"
-        HTTPWrapper.request(url, method: .POST, authenticateWithUser: activeUser!,
-			success: {json in
-				success()
-			},
-			failure: { error in
-				failure(error: error)
-			}
-		)
     }
 	
 	func updateUnreadCounts(success: (()->())? = nil, failure: ((error: SettlePadError)->())? = nil) {

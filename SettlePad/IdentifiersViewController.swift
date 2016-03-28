@@ -259,14 +259,14 @@ class IdentifiersViewController: UITableViewController {
         alertController.addTextFieldWithConfigurationHandler { (textField) in
             textField.placeholder = "Password"
             textField.secureTextEntry = true
-            textField.addTarget(self, action: "changePasswordFormTextChanged:", forControlEvents: .EditingChanged)
+            textField.addTarget(self, action: #selector(IdentifiersViewController.changePasswordFormTextChanged(_:)), forControlEvents: .EditingChanged)
         }
         
         
         alertController.addTextFieldWithConfigurationHandler { (textField) in
             textField.placeholder = "Password (again)"
             textField.secureTextEntry = true
-            textField.addTarget(self, action: "changePasswordFormTextChanged:", forControlEvents: .EditingChanged)
+            textField.addTarget(self, action: #selector(IdentifiersViewController.changePasswordFormTextChanged(_:)), forControlEvents: .EditingChanged)
         }
         
         alertController.addAction(cancelAction)
@@ -324,20 +324,20 @@ class IdentifiersViewController: UITableViewController {
         alertController.addTextFieldWithConfigurationHandler { (textField) in
             textField.placeholder = "Email address"
             textField.secureTextEntry = false
-            textField.addTarget(self, action: "newIdentifierFormTextChanged:", forControlEvents: .EditingChanged)
+            textField.addTarget(self, action: #selector(IdentifiersViewController.newIdentifierFormTextChanged(_:)), forControlEvents: .EditingChanged)
         }
         
         alertController.addTextFieldWithConfigurationHandler { (textField) in
             textField.placeholder = "Password"
             textField.secureTextEntry = true
-            textField.addTarget(self, action: "newIdentifierFormTextChanged:", forControlEvents: .EditingChanged)
+            textField.addTarget(self, action: #selector(IdentifiersViewController.newIdentifierFormTextChanged(_:)), forControlEvents: .EditingChanged)
         }
         
         alertController.addTextFieldWithConfigurationHandler { (textField) in
             textField.placeholder = "Password (again)"
             textField.secureTextEntry = true
             
-            textField.addTarget(self, action: "newIdentifierFormTextChanged:", forControlEvents: .EditingChanged)
+            textField.addTarget(self, action: #selector(IdentifiersViewController.newIdentifierFormTextChanged(_:)), forControlEvents: .EditingChanged)
         }
         
         alertController.addAction(cancelAction)

@@ -140,6 +140,89 @@ class Transaction {
         reduced = false
 		isRead = true //draft memos are always read
     }
+	
+	func cancel(success: ()->(), failure: (error:SettlePadError)->()) {
+		if canBeCanceled && transactionID != nil {
+			let url = "transactions/cancel/\(transactionID!)/"
+			HTTPWrapper.request(url, method: .POST, authenticateWithUser: activeUser!,
+				success: {json in
+					success()
+				},
+				failure: { error in
+					failure(error: error)
+				}
+			)
+		} else {
+			failure(error: SettlePadError(errorCode: "not_cancellable", errorText: "Transaction is not cancellable"))
+		}
+	}
+	
+	
+	func accept(success: ()->(), failure: (error:SettlePadError)->()) {
+		if canBeAccepted && transactionID != nil {
+			let url = "transactions/accept/\(transactionID!)/"
+			HTTPWrapper.request(url, method: .POST, authenticateWithUser: activeUser!,
+				success: {json in
+					success()
+				},
+				failure: { error in
+					failure(error: error)
+				}
+			)
+		} else {
+			failure(error: SettlePadError(errorCode: "not_acceptable", errorText: "Transaction is not acceptable"))
+		}
+	}
+	
+	
+	func reject(success: ()->(), failure: (error:SettlePadError)->()) {
+		if canBeAccepted && transactionID != nil {
+			let url = "transactions/reject/\(transactionID!)/"
+			HTTPWrapper.request(url, method: .POST, authenticateWithUser: activeUser!,
+				success: {json in
+					success()
+				},
+				failure: { error in
+					failure(error: error)
+				}
+			)
+		} else {
+			failure(error: SettlePadError(errorCode: "not_rejectable", errorText: "Transaction is not rejectable"))
+		}
+	}
+
+	
+	func markRead(success: ()->(), failure: (error:SettlePadError)->()) {
+		if canBeAccepted && !isRead {
+			let url = "transactions/mark_read/\(transactionID!)/"
+			HTTPWrapper.request(url, method: .POST, authenticateWithUser: activeUser!,
+				success: {json in
+					success()
+				},
+				failure: { error in
+					failure(error: error)
+				}
+			)
+		} else {
+			failure(error: SettlePadError(errorCode: "not_rejectable", errorText: "Transaction cannot be marked read"))
+		}
+	}
+	
+	func markUnread(success: ()->(), failure: (error:SettlePadError)->()) {
+		if canBeAccepted && isRead {
+			let url = "transactions/mark_unread/\(transactionID!)/"
+			HTTPWrapper.request(url, method: .POST, authenticateWithUser: activeUser!,
+				success: {json in
+					success()
+				},
+				failure: { error in
+					failure(error: error)
+				}
+			)
+		} else {
+			failure(error: SettlePadError(errorCode: "cannot_be_marked_unread", errorText: "Transaction is cannot be marked unread"))
+		}
+	}
 }
 
 enum transactionStatus: Int {

@@ -103,7 +103,7 @@ class ContactsViewController: UITableViewController, ContactsViewControllerDeleg
 		//Add pull to refresh
 		self.contactsRefreshControl = UIRefreshControl()
 		self.contactsRefreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-		self.contactsRefreshControl.addTarget(self, action: "refreshContacts", forControlEvents: UIControlEvents.ValueChanged)
+		self.contactsRefreshControl.addTarget(self, action: #selector(ContactsViewController.refreshContacts), forControlEvents: UIControlEvents.ValueChanged)
 		self.tableView.addSubview(contactsRefreshControl)
 		
     }

@@ -2,7 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>server</key>
-	<string>http://127.0.0.1/</string>
+	<key>server_debug</key>
+	<string>http://localhost/</string>
+	<key>server_prod</key>
+	<string>https://api.settlepad.com/</string>
 </dict>
 </plist>

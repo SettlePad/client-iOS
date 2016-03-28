@@ -47,7 +47,7 @@ class SettingsViewController: UITableViewController {
 		//Add pull to refresh
 		self.settingsRefreshControl = UIRefreshControl()
 		self.settingsRefreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-		self.settingsRefreshControl.addTarget(self, action: "refreshUserData", forControlEvents: UIControlEvents.ValueChanged)
+		self.settingsRefreshControl.addTarget(self, action: #selector(SettingsViewController.refreshUserData), forControlEvents: UIControlEvents.ValueChanged)
 		self.tableView.addSubview(settingsRefreshControl)
     }
 

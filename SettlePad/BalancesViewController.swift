@@ -63,7 +63,7 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 		//Add pull to refresh
 		self.balancesRefreshControl = UIRefreshControl()
 		self.balancesRefreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-		self.balancesRefreshControl.addTarget(self, action: "refreshBalances", forControlEvents: UIControlEvents.ValueChanged)
+		self.balancesRefreshControl.addTarget(self, action: #selector(BalancesViewController.refreshBalances), forControlEvents: UIControlEvents.ValueChanged)
 		self.tableView.addSubview(balancesRefreshControl)
 		
 		//Hide additional gridlines, and set gray background for footer

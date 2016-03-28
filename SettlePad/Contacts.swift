@@ -82,7 +82,7 @@ class Contacts {
 						}
 						
 						let emailMVR: ABMultiValueRef = ABRecordCopyValue(person, kABPersonEmailProperty).takeRetainedValue()
-						for (var i = 0; i < ABMultiValueGetCount(emailMVR); i++) {
+						for i in 0...ABMultiValueGetCount(emailMVR)-1 {
 							if let email = ABMultiValueCopyValueAtIndex(emailMVR, i)?.takeRetainedValue() as? String {
 								if email.isEmail() {
 									if let existingIdentifier = getIdentifier(email) {
