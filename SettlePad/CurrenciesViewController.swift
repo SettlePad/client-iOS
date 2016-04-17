@@ -169,7 +169,7 @@ class CurrenciesViewController: UITableViewController {
         let cell = tableView.cellForRowAtIndexPath(indexPath)
         let currencyObject = self.sections[indexPath.section].currencies[indexPath.row]
 
-        activeUser?.defaultCurrency = currencyObject.currency
+        activeUser?.setDefaultCurrency(currencyObject.currency)
         cell?.accessoryType = .Checkmark
     }
     

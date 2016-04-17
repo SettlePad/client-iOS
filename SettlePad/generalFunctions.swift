@@ -9,20 +9,6 @@
 import Foundation
 import UIKit
 
-//TODO: remove this function when SSL is introduced
-func JSONStringify(jsonObj: AnyObject) -> String {
-    let jsonData: NSData?
-	do {
-		jsonData = try NSJSONSerialization.dataWithJSONObject(
-				jsonObj,
-				options: NSJSONWritingOptions(rawValue: 0))
-		return NSString(data: jsonData!, encoding: NSUTF8StringEncoding)! as String
-	//} catch let error as NSError {
-	} catch {
-		return ""
-	}
-}
-
 extension Double {
     func format(f: String) -> String {
         return NSString(format: "%\(f)f", self) as String

@@ -13,7 +13,6 @@ var documentList = NSBundle.mainBundle().pathForResource("settings", ofType:"pli
 var settingsDictionary = NSDictionary(contentsOfFile: documentList!)
 
 var activeUser: User? = User.loadFromKeychain()
-var badgeCount:Int = 0
 
 func clearUser() {
 	User.wipe()

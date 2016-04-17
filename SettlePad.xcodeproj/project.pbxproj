@@ -16,7 +16,6 @@
 		542A4A7F1A5F342700FF865A /* CurrenciesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */; };
 		543FEFD91A518ACE00C18230 /* settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 543FEFD81A518ACE00C18230 /* settings.plist */; };
 		543FEFDB1A541B6200C18230 /* TransactionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543FEFDA1A541B6200C18230 /* TransactionsViewController.swift */; };
-		543FEFDE1A542D8C00C18230 /* HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543FEFDD1A542D8C00C18230 /* HMAC.swift */; };
 		543FEFE01A543CBC00C18230 /* Transactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543FEFDF1A543CBC00C18230 /* Transactions.swift */; };
 		545067EC1B7A9825002F32DC /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 545067EB1B7A9825002F32DC /* ContactViewController.swift */; };
 		545AC3241A90C25000E62E76 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 545AC3231A90C25000E62E76 /* User.swift */; };
@@ -69,8 +68,6 @@
 		542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrenciesViewController.swift; sourceTree = "<group>"; };
 		543FEFD81A518ACE00C18230 /* settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = settings.plist; sourceTree = "<group>"; };
 		543FEFDA1A541B6200C18230 /* TransactionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionsViewController.swift; sourceTree = "<group>"; };
-		543FEFDC1A542CFD00C18230 /* SettlePad-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SettlePad-Bridging-Header.h"; sourceTree = "<group>"; };
-		543FEFDD1A542D8C00C18230 /* HMAC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HMAC.swift; sourceTree = "<group>"; };
 		543FEFDF1A543CBC00C18230 /* Transactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Transactions.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		545067EB1B7A9825002F32DC /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ContactViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		545AC3231A90C25000E62E76 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = User.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -135,7 +132,6 @@
 		542A4A811A6BDFDF00FF865A /* General functions */ = {
 			isa = PBXGroup;
 			children = (
-				543FEFDD1A542D8C00C18230 /* HMAC.swift */,
 				54EA444B1B12546400FF81C0 /* KeyboardLayoutConstraint.swift */,
 				54D4BD061AD0821000AB262B /* Alerts.swift */,
 				54DF036D1A55A9E20078AE8B /* generalFunctions.swift */,
@@ -232,7 +228,6 @@
 				54F9EA4D1A0831D7009DC930 /* Images.xcassets */,
 				54F9EA4F1A0831D7009DC930 /* LaunchScreen.xib */,
 				54F9EA441A0831D7009DC930 /* Supporting Files */,
-				543FEFDC1A542CFD00C18230 /* SettlePad-Bridging-Header.h */,
 			);
 			path = SettlePad;
 			sourceTree = "<group>";
@@ -443,7 +438,6 @@
 				54E48ACC1B810CF300667615 /* AcceptMemosViewController.swift in Sources */,
 				54EA136B1A96980900654E84 /* NewUOmeAddressBook.swift in Sources */,
 				54D612821BDE8D2A004E2A7A /* Error.swift in Sources */,
-				543FEFDE1A542D8C00C18230 /* HMAC.swift in Sources */,
 				545067EC1B7A9825002F32DC /* ContactViewController.swift in Sources */,
 				54F9EA471A0831D7009DC930 /* AppDelegate.swift in Sources */,
 				545AC3241A90C25000E62E76 /* User.swift in Sources */,
@@ -592,7 +586,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "SettlePad.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SettlePad;
 				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "SettlePad/SettlePad-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -609,7 +603,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "SettlePad.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SettlePad;
 				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "SettlePad/SettlePad-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

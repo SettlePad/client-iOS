@@ -20,6 +20,7 @@ class TabBarController: UITabBarController, TabBarDelegate {
 
         // Do any additional setup after loading the view.
 		activeUser?.transactions.tabBarDelegate = self
+		updateBadges()
 	}
 
     override func didReceiveMemoryWarning() {
@@ -33,15 +34,19 @@ class TabBarController: UITabBarController, TabBarDelegate {
 		let tabArray = tabBar.items as NSArray!
 		let tabItem = tabArray.objectAtIndex(1) as! UITabBarItem
 		dispatch_async(dispatch_get_main_queue()) {
-			if badgeCount > 0 {
-				tabItem.badgeValue = badgeCount.description
+			if let badgeCount = activeUser?.transactions.badgeCount {
+				if badgeCount > 0 {
+					tabItem.badgeValue = badgeCount.description
+				} else {
+					tabItem.badgeValue = nil
+				}
 			} else {
-				tabItem.badgeValue = ""
+				tabItem.badgeValue = nil
 			}
 		}
 		
 		//Also update appBadge
-		if let appDelegate = UIApplication.sharedApplication().delegate as? AppDelegate {
+		if let appDelegate = UIApplication.sharedApplication().delegate as? AppDelegate, badgeCount = activeUser?.transactions.badgeCount {
 			appDelegate.setBadgeNumber(badgeCount)
 		}
 	}

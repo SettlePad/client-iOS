@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -54,13 +54,13 @@
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="3Hf-Pp-j2F"/>
                                 </connections>
                             </textField>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="Settlepad color" translatesAutoresizingMaskIntoConstraints="NO" id="BDc-u0-Ici">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Settlepad color" translatesAutoresizingMaskIntoConstraints="NO" id="BDc-u0-Ici">
                                 <rect key="frame" x="138" y="120" width="325" height="49"/>
                             </imageView>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="pLG-xO-be0">
                                 <rect key="frame" x="290" y="553" width="20" height="20"/>
                             </activityIndicatorView>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FtP-ze-IGP">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FtP-ze-IGP">
                                 <rect key="frame" x="272.5" y="179" width="56" height="30"/>
                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="15"/>
                                 <state key="normal" title="Register">
@@ -159,7 +159,7 @@
                                     <action selector="transactionsGroupValueChanged:" destination="hTd-M0-iVE" eventType="valueChanged" id="RiQ-ty-8m2"/>
                                 </connections>
                             </segmentedControl>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" allowsSelection="NO" rowHeight="72" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="RZf-RY-YIq">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" allowsSelectionDuringEditing="YES" rowHeight="72" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="RZf-RY-YIq">
                                 <rect key="frame" x="0.0" y="48" width="600" height="439"/>
                                 <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <gestureRecognizers/>
@@ -181,7 +181,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="500" text="Museum ticket FOAM" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qc1-Oa-1co">
-                                                    <rect key="frame" x="15" y="26" width="477.5" height="16"/>
+                                                    <rect key="frame" x="15" y="26" width="478" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -191,25 +191,25 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EUR -15.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ymy-4F-kJB">
-                                                    <rect key="frame" x="512" y="26" width="72.5" height="16"/>
+                                                    <rect key="frame" x="512.5" y="26" width="72.5" height="16"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                                                     <color key="textColor" red="0.40784313729999999" green="0.40784313729999999" blue="0.40784313729999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="Swipe to accept" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gE4-7n-PK1">
-                                                    <rect key="frame" x="487" y="44" width="97.5" height="16"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="Tap to accept" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gE4-7n-PK1">
+                                                    <rect key="frame" x="502" y="44" width="83" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="3 months ago" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iqi-6N-lFE">
-                                                    <rect key="frame" x="15" y="44" width="452.5" height="16"/>
+                                                    <rect key="frame" x="15" y="44" width="467.5" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="wVj-rn-FJW">
-                                                    <rect key="frame" x="512" y="26" width="72.5" height="20"/>
+                                                    <rect key="frame" x="512.5" y="26" width="72.5" height="20"/>
                                                 </activityIndicatorView>
                                             </subviews>
                                             <constraints>
@@ -277,7 +277,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nl4-m1-8O4" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="l2p-XZ-WIj">
+                <tapGestureRecognizer enabled="NO" cancelsTouchesInView="NO" delaysTouchesEnded="NO" id="l2p-XZ-WIj">
                     <connections>
                         <action selector="viewTapped:" destination="hTd-M0-iVE" id="q6L-bY-lYU"/>
                     </connections>
@@ -532,12 +532,36 @@
                                             <segue destination="aUx-7g-dDr" kind="show" id="aK6-Ay-njW"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="3Ec-Pu-JxL">
+                                        <rect key="frame" x="0.0" y="181.5" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="3Ec-Pu-JxL" id="u6j-cM-vDE">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="IBAN" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="zjV-uf-xdL">
+                                                    <rect key="frame" x="15" y="10" width="570" height="24"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" spellCheckingType="no"/>
+                                                    <connections>
+                                                        <action selector="ibanEdited:" destination="Rt1-kG-ePe" eventType="editingDidEnd" id="Uld-QO-cPb"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="zjV-uf-xdL" firstAttribute="top" secondItem="u6j-cM-vDE" secondAttribute="topMargin" id="4au-aR-Id9"/>
+                                                <constraint firstItem="zjV-uf-xdL" firstAttribute="trailing" secondItem="u6j-cM-vDE" secondAttribute="trailingMargin" id="WgT-rO-W23"/>
+                                                <constraint firstItem="zjV-uf-xdL" firstAttribute="leading" secondItem="u6j-cM-vDE" secondAttribute="leadingMargin" id="XJg-Wa-q4c"/>
+                                                <constraint firstItem="zjV-uf-xdL" firstAttribute="bottom" secondItem="u6j-cM-vDE" secondAttribute="bottomMargin" id="ad2-oR-NyI"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="Contacts" id="8k5-LR-WlI">
                                 <cells>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="1d5-bx-fgs" detailTextLabel="vMn-Zl-eZg" rowHeight="44" style="IBUITableViewCellStyleValue1" id="tVj-bO-sTQ">
-                                        <rect key="frame" x="0.0" y="235.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="279.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tVj-bO-sTQ" id="Rt6-hm-Syw">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -569,7 +593,7 @@
                             <tableViewSection headerTitle="Logout" id="GLW-Lx-MJJ">
                                 <cells>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="44" id="MJq-wZ-6Pk">
-                                        <rect key="frame" x="0.0" y="333.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="377.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MJq-wZ-6Pk" id="wmN-jW-ho0">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -609,6 +633,7 @@
                         <outlet property="credentialsLabel" destination="4Rm-so-3ws" id="poi-pY-IpZ"/>
                         <outlet property="currencyLabel" destination="r1J-LQ-dnS" id="U0O-sM-Fq1"/>
                         <outlet property="favoritesLabel" destination="vMn-Zl-eZg" id="hrh-VQ-ij0"/>
+                        <outlet property="ibanText" destination="zjV-uf-xdL" id="kPX-Gz-15w"/>
                         <outlet property="nameText" destination="1HJ-V6-jlc" id="tmf-hR-MtB"/>
                     </connections>
                 </tableViewController>
@@ -1287,7 +1312,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="500" text="Museum ticket FOAM" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pUx-Wq-jOE">
-                                                    <rect key="frame" x="15" y="26" width="477.5" height="16"/>
+                                                    <rect key="frame" x="15" y="26" width="478" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -1297,25 +1322,25 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EUR -15.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BCZ-jE-0lX">
-                                                    <rect key="frame" x="512" y="26" width="72.5" height="16"/>
+                                                    <rect key="frame" x="512.5" y="26" width="72.5" height="16"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                                                     <color key="textColor" red="0.40784313729999999" green="0.40784313729999999" blue="0.40784313729999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="Swipe to accept" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O2o-5a-Cb2">
-                                                    <rect key="frame" x="487" y="44" width="97.5" height="16"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" text="Tap to accept" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O2o-5a-Cb2">
+                                                    <rect key="frame" x="502" y="44" width="83" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="3 months ago" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ih8-ka-Y7p">
-                                                    <rect key="frame" x="15" y="44" width="452.5" height="16"/>
+                                                    <rect key="frame" x="15" y="44" width="467.5" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <color key="textColor" red="0.46666666670000001" green="0.46666666670000001" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="64P-Ih-R46">
-                                                    <rect key="frame" x="512" y="26" width="72.5" height="20"/>
+                                                    <rect key="frame" x="512.5" y="26" width="72.5" height="20"/>
                                                 </activityIndicatorView>
                                             </subviews>
                                             <constraints>

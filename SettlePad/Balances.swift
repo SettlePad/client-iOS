@@ -42,12 +42,13 @@ class Balances {
 						if let
 							contactIdentifier = connection["primary_identifier"].string,
 							contactName = connection["name"].string,
+							contactIban = connection["iban"].string,
 							balance = connection["balance"].double,
 							unprocessed = connection["unprocessed"].bool,
 							currency = Currency(rawValue: rawCurrency)
 						{
 						
-							self.balances.append(Balance(identifierStr: contactIdentifier, name: contactName, currency: currency, balance: balance, unprocessed: unprocessed))
+							self.balances.append(Balance(identifierStr: contactIdentifier, name: contactName, iban: contactIban, currency: currency, balance: balance, unprocessed: unprocessed))
 						}
 					}
 				}

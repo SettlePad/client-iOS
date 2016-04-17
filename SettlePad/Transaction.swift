@@ -20,9 +20,9 @@ class Transaction {
     var description: String = ""
     var currency: Currency = .EUR
     var amount: Double = 0
-    var status: transactionStatus = .Processed
+    var status: TransactionStatus = .Processed
     var reduced: Bool = false
-	var isRead: Bool = true
+	var readStatus: ReadStatus = .Read
 	
     var canBeCanceled: Bool {
         get {
@@ -51,7 +51,7 @@ class Transaction {
 	
 	init(json: JSON) {
 		if let statusRaw = json["status"].int {
-			if let status = transactionStatus(rawValue: statusRaw){
+			if let status = TransactionStatus(rawValue: statusRaw){
 				self.status = status
 			}
 		}
@@ -119,8 +119,8 @@ class Transaction {
 		}
 		
 		if let isReadInt = json["is_read"].int {
-			if isReadInt == 0 {
-				self.isRead = false
+			if let readStatus = ReadStatus(rawValue: isReadInt) {
+				self.readStatus = readStatus
 			}
 		}
 	}
@@ -138,7 +138,7 @@ class Transaction {
         self.amount = amount
         status = .Draft
         reduced = false
-		isRead = true //draft memos are always read
+		readStatus = .Read //draft memos are always read
     }
 	
 	func cancel(success: ()->(), failure: (error:SettlePadError)->()) {
@@ -193,10 +193,19 @@ class Transaction {
 
 	
 	func markRead(success: ()->(), failure: (error:SettlePadError)->()) {
-		if canBeAccepted && !isRead {
+		if readStatus != .Read {
 			let url = "transactions/mark_read/\(transactionID!)/"
 			HTTPWrapper.request(url, method: .POST, authenticateWithUser: activeUser!,
 				success: {json in
+					self.readStatus = .Read
+					if self.status == .Processed {
+						activeUser!.transactions.countUnreadProcessed -= 1
+					} else if self.status == .AwaitingValidation {
+						activeUser!.transactions.countUnreadOpen -= 1
+					} else if self.status == .CanceledOrRejected {
+						activeUser!.transactions.countUnreadCanceled -= 1
+					}
+					activeUser!.transactions.updateUnreadCountViews()
 					success()
 				},
 				failure: { error in
@@ -209,10 +218,19 @@ class Transaction {
 	}
 	
 	func markUnread(success: ()->(), failure: (error:SettlePadError)->()) {
-		if canBeAccepted && isRead {
+		if readStatus == .Read {
 			let url = "transactions/mark_unread/\(transactionID!)/"
 			HTTPWrapper.request(url, method: .POST, authenticateWithUser: activeUser!,
 				success: {json in
+					self.readStatus = .MarkedUnread
+					if self.status == .Processed {
+						activeUser!.transactions.countUnreadProcessed += 1
+					} else if self.status == .AwaitingValidation {
+						activeUser!.transactions.countUnreadOpen += 1
+					} else if self.status == .CanceledOrRejected {
+						activeUser!.transactions.countUnreadCanceled += 1
+					}
+					activeUser!.transactions.updateUnreadCountViews()
 					success()
 				},
 				failure: { error in
@@ -220,15 +238,21 @@ class Transaction {
 				}
 			)
 		} else {
-			failure(error: SettlePadError(errorCode: "cannot_be_marked_unread", errorText: "Transaction is cannot be marked unread"))
+			failure(error: SettlePadError(errorCode: "cannot_be_marked_unread", errorText: "Transaction cannot be marked unread"))
 		}
 	}
 }
 
-enum transactionStatus: Int {
+enum TransactionStatus: Int {
 	case Processed = 0
 	case AwaitingValidation = 1
 	case CanceledOrRejected = 3
 	case Draft = 4 //local only
 	case Posted = 5 //local only
+}
+
+enum ReadStatus: Int {
+	case NotSeen = 0
+	case Read = 1
+	case MarkedUnread = 2
 }

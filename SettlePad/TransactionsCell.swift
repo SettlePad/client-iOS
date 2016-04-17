@@ -116,8 +116,8 @@ class TransactionsCell: UITableViewCell {
                 statusString = "Pending approval"
                 statusLabel.textColor = Colors.gray.textToUIColor()
             } else {
-                statusString = "Swipe to approve"
-                statusLabel.textColor = Colors.primary.textToUIColor()
+                statusString = "Tap to approve"
+                statusLabel.textColor = Colors.gray.textToUIColor()
             }
             
             statusLabel.text = statusString
@@ -127,7 +127,7 @@ class TransactionsCell: UITableViewCell {
             spinner.hidden = true
             amountLabel.hidden = false
             
-            statusLabel.textColor = Colors.primary.textToUIColor()
+            statusLabel.textColor = Colors.gray.textToUIColor()
             statusLabel.text = "Swipe to delete"
         } else if transaction.status == .Posted {
             statusLabel.hidden = true
@@ -178,8 +178,10 @@ class TransactionsCell: UITableViewCell {
         }
 		
 		//unread or not
-		if !transaction.isRead {
+		if transaction.readStatus != .Read {
 			self.backgroundColor = Colors.primary.backgroundToUIColor()
+		} else {
+			self.backgroundColor = UIColor.whiteColor()
 		}
     }
 	

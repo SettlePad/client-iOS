@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>server_debug</key>
-	<string>http://localhost/</string>
+	<string>http://robs-macbook-pro.local/</string>
 	<key>server_prod</key>
 	<string>https://api.settlepad.com/</string>
 </dict>

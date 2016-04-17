@@ -25,9 +25,14 @@ class Transactions {
     var endReached = false
 	
 	var tabBarDelegate:TabBarDelegate?
+	var transactionsSegmentedControlDelegate:TransactionsSegmentedControlDelegate?
 	
     var lastRequest = NSDate(timeIntervalSinceNow: -24*60*60) //Only newer requests for getInternal will be succesfully completed. By default somewhere in the past (now one day)
 	var blockingRequestActive = false
+	
+	var badgeCount: Int {
+		return countUnreadOpen + countUnreadProcessed + countUnreadCanceled
+	}
 	
     init() {
 
@@ -250,9 +255,12 @@ class Transactions {
 		if let countOpen = json["data"]["open"].int {
 			self.countOpen = countOpen
 		}
-		badgeCount = self.countUnreadOpen + self.countUnreadProcessed + self.countUnreadCanceled
-		
+		updateUnreadCountViews()
+	}
+	
+	func updateUnreadCountViews() {
 		self.tabBarDelegate?.updateBadges()
+		self.transactionsSegmentedControlDelegate?.updateBadges()
 	}
 }
 

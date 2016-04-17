@@ -15,7 +15,12 @@
 
 import UIKit
 
-class TransactionsViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, NewUOmeModalDelegate {	
+protocol TransactionsSegmentedControlDelegate {
+	func updateBadges()
+}
+
+
+class TransactionsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NewUOmeModalDelegate, TransactionsSegmentedControlDelegate {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showUOmeSegueFromTransactions" {
             let navigationController = segue.destinationViewController as! UINavigationController
@@ -52,6 +57,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 	
     @IBOutlet var transationsGroupSegmentedControl: UISegmentedControl!
     
+    
     var transactionsRefreshControl:UIRefreshControl!
     var footer = TransactionsFooterView(frame: CGRectMake(0, 0, 320, 44))
  
@@ -79,6 +85,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 			}
 		)
 
+		
         /*
         //To hide empty separators (not needed as footer is already implemented by refreshTable()
         transactionsTableView.tableFooterView = UIView(frame:CGRectZero)
@@ -94,6 +101,9 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
             self.transactionsRefreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
             self.transactionsRefreshControl.addTarget(self, action: #selector(TransactionsViewController.refreshTransactions), forControlEvents: UIControlEvents.ValueChanged)
             self.transactionsTableView.addSubview(transactionsRefreshControl)
+		
+		activeUser?.transactions.transactionsSegmentedControlDelegate = self
+		updateBadges()
         
     }
 	
@@ -134,12 +144,14 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
         // Configure the cell...
         if let transaction = activeUser!.transactions.getTransaction(indexPath.row)  {
             cell.markup(transaction)
-			if transaction.isRead == false {
+			if transaction.readStatus == .NotSeen {
 				//transition to is read
-				cell.animateToIsRead({
-					//mark as read
-					
-				})
+				cell.animateToIsRead({})
+				transaction.markRead({}, failure: {_ in })
+			}
+			if !(transaction.canBeAccepted || transaction.canBeCanceled) {
+				//To hide the gray selection of cells that do not have a UIAlertController
+				cell.selectionStyle = UITableViewCellSelectionStyle.None
 			}
         }
 		cell.layoutIfNeeded() //to get right layout given dynamic height
@@ -152,21 +164,10 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 	func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the specified item to be editable.
         //Editable or not
-        if let transaction = activeUser!.transactions.getTransaction(indexPath.row)  {
-            if (transaction.canBeCanceled || transaction.canBeAccepted) {
-                return true
-            } else {
-                return false
-            }
-        } else {
-            return false
-        }
         
-        //return true
+        return true
     }
-    
-
-    
+	
     // Override to support editing the table view.
 	func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         /*if editingStyle == .Delete {
@@ -182,7 +183,8 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
         if let transaction = activeUser!.transactions.getTransaction(indexPath.row)  {
 			var returnArray: [UITableViewRowAction] = []
 			
-			if transaction.isRead {
+			if transaction.readStatus == .NotSeen || transaction.readStatus == .Read {
+				//Cannot actually be .NotSeen, but by the time the user presses the button, it is already marked as read
 				let markAsUnreadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Mark unread" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
 					transaction.markUnread(
 						{
@@ -198,57 +200,98 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 				returnArray.append(markAsUnreadAction)
 			}
 			
-			if transaction.canBeCanceled {
-                let cancelAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Cancel" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
-                        transaction.cancel(
-							{
-								self.refreshTransactions()
-							},
-							failure: {error in
-								displayError(error.errorText, viewController: self)
-							}
-						)
+			if transaction.readStatus == .MarkedUnread {
+				let markAsUnreadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Mark read" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
+					transaction.markRead(
+						{
+							self.refreshTransactions()
+						},
+						failure: {error in
+							displayError(error.errorText, viewController: self)
+						}
+					)
 					}
 				)
-                cancelAction.backgroundColor = Colors.gray.textToUIColor()
-				returnArray.append(cancelAction)
-
-            } else if transaction.canBeAccepted {
-                //mutually exclusive with canBeCanceled, which can happen if user is sender. This can only happen if user is recipient
-                let acceptAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Accept" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
-						transaction.accept(
-							{
-								self.refreshTransactions()
-							},
-							failure: {error in
-								displayError(error.errorText, viewController: self)
-							}
-						)
-					}
-				)
-                acceptAction.backgroundColor = Colors.success.textToUIColor()
-				returnArray.append(acceptAction)
-				
-                let rejectAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Reject" , handler: { (action:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
-						transaction.reject(
-							{
-								self.refreshTransactions()
-							},
-							failure: {error in
-								displayError(error.errorText, viewController: self)
-							}
-						)
-					}
-				)
-                rejectAction.backgroundColor = Colors.danger.backgroundToUIColor()
-				returnArray.append(rejectAction)
-            }
+				markAsUnreadAction.backgroundColor = Colors.gray.textToUIColor()
+				returnArray.append(markAsUnreadAction)
+			}
+			
+			
 			return returnArray
         } else {
             print("not set?")
             return []
         }
     }
+	
+	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+		tableView.deselectRowAtIndexPath(indexPath, animated: true)
+		
+		if let transaction = activeUser!.transactions.getTransaction(indexPath.row)  {
+			if transaction.canBeCanceled {
+				let alertController = UIAlertController(title: nil, message: "Do you want to recall this memo?", preferredStyle: .ActionSheet)
+				let recallAction = UIAlertAction(title: "Recall", style: .Destructive) { (action) in
+					transaction.cancel(
+						{
+							self.refreshTransactions()
+						},
+						failure: {error in
+							displayError(error.errorText, viewController: self)
+						}
+					)
+				}
+				alertController.addAction(recallAction)
+				
+				let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
+					// ...
+				}
+				alertController.addAction(cancelAction)
+				
+				self.presentViewController(alertController, animated: true) {
+					// ...
+				}
+			} else if transaction.canBeAccepted {
+				//mutually exclusive with canBeCanceled, which can happen if user is sender. This can only happen if user is recipient
+				
+				let alertController = UIAlertController(title: nil, message: "Do you want to accept this memo?", preferredStyle: .ActionSheet)
+				let AcceptAction = UIAlertAction(title: "Accept", style: .Default) { (action) in
+					transaction.accept(
+						{
+							self.refreshTransactions()
+						},
+						failure: {error in
+							displayError(error.errorText, viewController: self)
+						}
+					)
+				}
+				alertController.addAction(AcceptAction)
+				
+				
+				let rejectAction = UIAlertAction(title: "Reject", style: .Destructive) { (action) in
+					transaction.reject(
+						{
+							self.refreshTransactions()
+						},
+						failure: {error in
+							displayError(error.errorText, viewController: self)
+						}
+					)
+				}
+				alertController.addAction(rejectAction)
+				
+				
+				let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
+					// ...
+				}
+				alertController.addAction(cancelAction)
+				
+				self.presentViewController(alertController, animated: true) {
+					// ...
+				}
+
+			}
+		}
+	}
 	
     /*
     // Override to support rearranging the table view.
@@ -303,6 +346,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
     {
         //get new results
         newRequest()
+		transactionsSearchBar.resignFirstResponder()
     }
     
     func searchBarCancelButtonClicked(searchBar: UISearchBar!)
@@ -343,18 +387,20 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 		if transactionsSearchBar.text != nil {
 			searchVal = transactionsSearchBar.text!
 		}
-		activeUser!.transactions.get(getGroupType(),search: searchVal,
-			success: {
-				dispatch_async(dispatch_get_main_queue(), {
-					//so it is run now, instead of at the end of code execution
-					self.refreshTable()
-				})
-			},
-			failure: {error in
-				displayError(error.errorText, viewController: self)
+		activeUser?.transactions.updateUnreadCounts({
+			activeUser!.transactions.get(self.getGroupType(),search: searchVal,
+				success: {
+					dispatch_async(dispatch_get_main_queue(), {
+						//so it is run now, instead of at the end of code execution
+						self.refreshTable()
+					})
+				},
+				failure: {error in
+					displayError(error.errorText, viewController: self)
 
-			}
-		)
+				}
+			)
+		})
     }
     
     @IBAction func transactionsGroupValueChanged(sender: UISegmentedControl) {
@@ -376,7 +422,8 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 	
     @IBAction func viewTapped(sender : AnyObject) {
         //To hide the keyboard, when needed
-        self.view.endEditing(true)
+		
+		//transactionsSearchBar.resignFirstResponder()
     }
     
     //To do infinite scrolling
@@ -405,11 +452,7 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
     
     private func refreshTable(loading: Bool = false, searching: Bool = false) {
         self.transactionsTableView!.reloadData()
-
-        /*for transaction in transactions! { // loop through data items
-        println(transaction.description!)
-        }*/
-        
+		
         self.footer.searching = searching
         if loading {
             self.footer.endReached = false
@@ -423,6 +466,28 @@ class TransactionsViewController: UIViewController,UITableViewDelegate, UITableV
 			transactionsRefreshControl.endRefreshing()
 		}
     }
+	
+	func updateBadges() {
+		//Update badgeCount
+		if let activeUser = activeUser {
+			let segmentNames = ["Open","Done","Canceled","All"]
+			let segmentUnreadCounts = [
+				activeUser.transactions.countUnreadOpen,
+				activeUser.transactions.countUnreadProcessed,
+				activeUser.transactions.countUnreadCanceled,
+				activeUser.transactions.countUnreadOpen + activeUser.transactions.countUnreadProcessed + activeUser.transactions.countUnreadCanceled
+			]
+			for i in 0...3 {
+				dispatch_async(dispatch_get_main_queue()) {
+					if segmentUnreadCounts[i] > 0 {
+						self.transationsGroupSegmentedControl.setTitle(segmentNames[i] + " (" + segmentUnreadCounts[i].description + ")", forSegmentAtIndex: i)
+					} else {
+						self.transationsGroupSegmentedControl.setTitle(segmentNames[i], forSegmentAtIndex: i)
+					}
+				}
+			}
+		}
+	}
 }
 
 class TransactionsFooterView: UIView {

@@ -14,33 +14,47 @@ class User {
     var series: String = ""
     var token: String = ""
     var userIdentifiers: [UserIdentifier] = [] //array of identifiers (for now, only email addresses)
-    var name: String = "" {
-        didSet (oldValue) {
-            HTTPWrapper.request("settings", method: .POST, parameters: ["name":name], authenticateWithUser: self,
-				success: {_ in },
-				failure: { error in
-					print(error.errorText)
-				}
-			)
-		}
+	
+	private(set) var name = ""
+	private(set) var iban = ""
+	private(set) var defaultCurrency: Currency = .EUR
+	
+	func setName(name: String) {
+		self.name = name
+		HTTPWrapper.request("settings", method: .POST, parameters: ["name":name], authenticateWithUser: self,
+			success: {_ in },
+			failure: { error in
+				print(error.errorText)
+			}
+		)
     }
+	
+	func setIban(iban: String) {
+		self.iban = iban
+		HTTPWrapper.request("settings", method: .POST, parameters: ["iban":iban], authenticateWithUser: self,
+			success: {_ in },
+			failure: { error in
+				print(error.errorText)
+			}
+		)
+	}
 
-    var defaultCurrency: Currency = .EUR {
-        didSet {
-            HTTPWrapper.request("settings", method: .POST, parameters: ["default_currency":defaultCurrency.rawValue], authenticateWithUser: self,
-				success: {_ in },
-				failure: { error in
-					print(error.errorText)
-				}
-			)
-		}
+	func setDefaultCurrency(defaultCurrency: Currency) {
+		self.defaultCurrency = defaultCurrency
+		HTTPWrapper.request("settings", method: .POST, parameters: ["default_currency":defaultCurrency.rawValue], authenticateWithUser: self,
+			success: {_ in },
+			failure: { error in
+				print(error.errorText)
+			}
+		)
     }
 	
 	var contacts = Contacts()
     
-    init (id: Int, name: String, series:String, token: String, defaultCurrency: Currency, userIdentifiers: [UserIdentifier]){
+	init (id: Int, name: String, iban:String, series:String, token: String, defaultCurrency: Currency, userIdentifiers: [UserIdentifier]){
         self.id = id
         self.name = name
+		self.iban = iban
         self.series = series
         self.token = token
         self.defaultCurrency = defaultCurrency
@@ -60,6 +74,10 @@ class User {
 		
 		if let name = json["user_name"].string {
 			self.name = name
+		}
+		
+		if let iban = json["user_iban"].string {
+			self.iban = iban
 		}
 		
 		if let series = json["series"].string {
@@ -97,6 +115,7 @@ class User {
         Keychain.save("token", data: token.dataValue)
         Keychain.save("series", data: series.dataValue)
         Keychain.save("user_name", data: name.dataValue)
+		Keychain.save("user_iban", data: iban.dataValue)
         
         //Set NSUserdefaults
         let defaults = NSUserDefaults.standardUserDefaults()
@@ -111,6 +130,7 @@ class User {
         Keychain.delete("token")
         Keychain.delete("series")
         Keychain.delete("user_name")
+		Keychain.delete("user_iban")
 
         //Wipe NSUserdefaults
         let defaults = NSUserDefaults.standardUserDefaults()
@@ -121,6 +141,7 @@ class User {
 	static func loadFromKeychain() -> User? {
 		var id: Int = 0
 		var name: String = ""
+		var iban: String = ""
 		var series: String = ""
 		var token: String = ""
 		var userIdentifiers: [UserIdentifier] = []
@@ -134,6 +155,12 @@ class User {
 		
 		if let keychainObj = Keychain.load("user_name") {
 			name = keychainObj.stringValue
+		} else {
+			return nil
+		}
+		
+		if let keychainObj = Keychain.load("user_iban") {
+			iban = keychainObj.stringValue
 		} else {
 			return nil
 		}
@@ -171,7 +198,7 @@ class User {
 			return nil
 		}
 		
-		return User(id: id, name: name, series: series, token: token, defaultCurrency: defaultCurrency, userIdentifiers: userIdentifiers)
+		return User(id: id, name: name, iban:iban, series: series, token: token, defaultCurrency: defaultCurrency, userIdentifiers: userIdentifiers)
 	}
 	
 	func addIdentifier(email:String, password:String,success: ()->(), failure: (error: SettlePadError) -> ()) {
@@ -292,6 +319,10 @@ class User {
 			success: { json in
 				if let name = json["data"]["user_name"].string {
 					self.name = name
+				}
+				
+				if let iban = json["data"]["user_iban"].string {
+					self.iban = iban
 				}
 				
 				if let rawCurrency = json["data"]["default_currency"].string {

@@ -186,16 +186,9 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 		let balance = activeUser!.balances.getBalancesForCurrency(activeUser!.balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
 		
 		// Configure the cell...
-		var balanceName = balance.name
-		var balanceFavorite = false
-		let identifier: Identifier? = activeUser!.contacts.getIdentifier(balance.identifierStr)
-		if(identifier != nil) {
-			balanceName = identifier!.resultingName
-			if let balanceContact = identifier?.contact {
-				balanceFavorite = balanceContact.favorite
-			}
-		}
-		
+		var balanceName = balance.resultingName
+		var balanceFavorite = balance.favorite
+		let identifier: Identifier? = activeUser!.contacts.getIdentifier(balance.identifierStr)		
 		cell.markup(balanceName, currency: balance.currency, balance: balance.balance, favorite: balanceFavorite)
 		
 		
@@ -205,27 +198,100 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 		tableView.deselectRowAtIndexPath(indexPath, animated: true)
 		
-		//Go to contact view if available, otherwise ask to create a new contact
-		let balance = activeUser!.balances.getBalancesForCurrency(activeUser!.balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
-		let identifier: Identifier? = activeUser!.contacts.getIdentifier(balance.identifierStr)
-
-		dispatch_async(dispatch_get_main_queue()) {
-			let storyboard = UIStoryboard(name: "Main", bundle: nil)
-			let navigationController = storyboard.instantiateViewControllerWithIdentifier("ContactNavigationController") as! UINavigationController
-			let destVC = navigationController.viewControllers[0] as! ContactViewController
-			if let balanceContact = identifier?.contact {
-				//Go to balanceContact
-				destVC.contact = balanceContact
-				destVC.delegate = self
-				destVC.modalForEditing = true //So display close instead of save and cancel
-			} else {
-				//Create a new contact
-				destVC.contact = Contact(name: balance.name, friendlyName: "", registered: true, favorite: true, autoAccept: AutoAccept.Manual, identifiers: [balance.identifierStr], propagatedToServer: false, user: activeUser!)
+		let balance = activeUser!.balances.getBalancesForCurrency(activeUser!.balances.sortedCurrencies[indexPath.section])[indexPath.row]
+		
+		if balance.balance > 0 {
+			//Remind
+			let alertController = UIAlertController(title: nil, message: "Do you want to remind " + balance.name + " to pay you?", preferredStyle: .ActionSheet)
+			
+			let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
+				// ...
 			}
-			destVC.delegate = self
+			alertController.addAction(cancelAction)
+			
+			let OKAction = UIAlertAction(title: "Remind", style: .Default) { (action) in
+				balance.remind({
+					let alertController = UIAlertController(title: "Reminder sent", message: "We've sent " + balance.name + " an email asking to pay you", preferredStyle: .Alert)
+					
+					let OKAction = UIAlertAction(title: "OK", style: .Default) { (action) in
+						// ...
+					}
+					alertController.addAction(OKAction)
+					
+					self.presentViewController(alertController, animated: true) {
+						// ...
+					}
+				}, failure: { (error) in
+						displayError(error.errorText,viewController: self)
+				})
+			}
+			alertController.addAction(OKAction)
 
-			self.presentViewController(navigationController, animated: true, completion: nil)
+			self.presentViewController(alertController, animated: true) {
+				// ...
+			}
+		} else {
+			//Pay
+			UIPasteboard.generalPasteboard().string = balance.iban //copy iban to clipboard
+			
+			let title = "Please wire " + balance.currency.rawValue + " " + balance.balance.format(".2") + " to " + balance.resultingName
+			let msg = "His IBAN is " + balance.iban + " (copied to clipboard)"
+			
+			
+			let alertController = UIAlertController(title: title, message: msg, preferredStyle: .Alert)
+			
+			let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
+				// ...
+			}
+			alertController.addAction(cancelAction)
+			
+			let OKAction = UIAlertAction(title: "I have paid", style: .Default) { (action) in
+				balance.pay({
+					let alertController = UIAlertController(title: "Settlement memo sent", message: "Not right? You can cancel it for 5 minutes.", preferredStyle: .Alert)
+					
+					let OKAction = UIAlertAction(title: "OK", style: .Default) { (action) in
+						// ...
+					}
+					alertController.addAction(OKAction)
+					
+					self.presentViewController(alertController, animated: true) {
+						// ...
+					}
+					}, failure: { (error) in
+						displayError(error.errorText,viewController: self)
+				})
+			}
+			alertController.addAction(OKAction)
+			
+			self.presentViewController(alertController, animated: true) {
+				// ...
+			}
 		}
+		
+		
+		/*
+			//Go to contact view if available, otherwise ask to create a new contact
+			let balance = activeUser!.balances.getBalancesForCurrency(activeUser!.balances.sortedCurrencies[indexPath.section])[indexPath.row] //of type Balance
+			let identifier: Identifier? = activeUser!.contacts.getIdentifier(balance.identifierStr)
+
+			dispatch_async(dispatch_get_main_queue()) {
+				let storyboard = UIStoryboard(name: "Main", bundle: nil)
+				let navigationController = storyboard.instantiateViewControllerWithIdentifier("ContactNavigationController") as! UINavigationController
+				let destVC = navigationController.viewControllers[0] as! ContactViewController
+				if let balanceContact = identifier?.contact {
+					//Go to balanceContact
+					destVC.contact = balanceContact
+					destVC.delegate = self
+					destVC.modalForEditing = true //So display close instead of save and cancel
+				} else {
+					//Create a new contact
+					destVC.contact = Contact(name: balance.name, friendlyName: "", registered: true, favorite: true, autoAccept: AutoAccept.Manual, identifiers: [balance.identifierStr], propagatedToServer: false, user: activeUser!)
+				}
+				destVC.delegate = self
+
+				self.presentViewController(navigationController, animated: true, completion: nil)
+			}
+		*/
 	}
 	
 	
