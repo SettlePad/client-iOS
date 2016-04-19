@@ -16,6 +16,7 @@ class SettingsViewController: UITableViewController {
     @IBOutlet var currencyLabel: UILabel!
     @IBOutlet var favoritesLabel: UILabel!
     @IBOutlet var ibanText: UITextField!
+    @IBOutlet var notificationsByMailSwitch: UISwitch!
 	
 	var settingsRefreshControl:UIRefreshControl!
 	
@@ -32,6 +33,9 @@ class SettingsViewController: UITableViewController {
         activeUser?.setIban(sender.text!)
     }
     
+    @IBAction func notificationsByMailEdited(sender: UISwitch) {
+		activeUser?.setNotifyByMail(sender.on)
+    }
     
     @IBAction func logout(sender: AnyObject) {
         activeUser?.logout()
@@ -134,11 +138,14 @@ class SettingsViewController: UITableViewController {
     */
     
     func updateLabels () {
-        currencyLabel.text = activeUser?.defaultCurrency.rawValue
-        nameText.text = activeUser?.name
-		ibanText.text = activeUser?.iban
-        credentialsLabel.text = activeUser?.userIdentifiers.count.description
-        favoritesLabel.text = activeUser!.contacts.contacts.count.description
+		if let usr = activeUser {
+			currencyLabel.text = usr.defaultCurrency.rawValue
+			nameText.text = usr.name
+			ibanText.text = usr.iban
+			notificationsByMailSwitch.on = usr.notifyByMail
+			credentialsLabel.text = usr.userIdentifiers.count.description
+			favoritesLabel.text = usr.contacts.contacts.count.description
+		}
     }
 	
 	func refreshUserData () {

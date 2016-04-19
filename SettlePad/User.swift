@@ -17,6 +17,7 @@ class User {
 	
 	private(set) var name = ""
 	private(set) var iban = ""
+	private(set) var notifyByMail: Bool = true
 	private(set) var defaultCurrency: Currency = .EUR
 	
 	func setName(name: String) {
@@ -38,6 +39,16 @@ class User {
 			}
 		)
 	}
+	
+	func setNotifyByMail(notifyByMail: Bool) {
+		self.notifyByMail = notifyByMail
+		HTTPWrapper.request("settings", method: .POST, parameters: ["notify_by_mail":notifyByMail],authenticateWithUser: self,
+			success: {_ in },
+			failure: { error in
+				print(error.errorText)
+			}
+		)
+	}
 
 	func setDefaultCurrency(defaultCurrency: Currency) {
 		self.defaultCurrency = defaultCurrency
@@ -51,10 +62,11 @@ class User {
 	
 	var contacts = Contacts()
     
-	init (id: Int, name: String, iban:String, series:String, token: String, defaultCurrency: Currency, userIdentifiers: [UserIdentifier]){
+	init (id: Int, name: String, iban:String, notifyByMail:Bool, series:String, token: String, defaultCurrency: Currency, userIdentifiers: [UserIdentifier]){
         self.id = id
         self.name = name
 		self.iban = iban
+		self.notifyByMail = notifyByMail
         self.series = series
         self.token = token
         self.defaultCurrency = defaultCurrency
@@ -78,6 +90,10 @@ class User {
 		
 		if let iban = json["user_iban"].string {
 			self.iban = iban
+		}
+		
+		if let notifyByMail = json["user_notify_by_mail"].bool {
+			self.notifyByMail = notifyByMail
 		}
 		
 		if let series = json["series"].string {
@@ -122,6 +138,7 @@ class User {
         defaults.setObject(defaultCurrency.rawValue, forKey: "defaultCurrency")
         let data = NSKeyedArchiver.archivedDataWithRootObject(userIdentifiers)
         defaults.setObject(data, forKey: "userIdentifiers")
+		defaults.setBool(notifyByMail, forKey: "notifyByMail")
     }
     
     static func wipe() {
@@ -136,6 +153,7 @@ class User {
         let defaults = NSUserDefaults.standardUserDefaults()
         defaults.setObject(nil, forKey: "defaultCurrency")
         defaults.setObject(nil, forKey: "userIdentifiers")
+        defaults.setObject(nil, forKey: "notifyByMail")
     }
 	
 	static func loadFromKeychain() -> User? {
@@ -198,7 +216,9 @@ class User {
 			return nil
 		}
 		
-		return User(id: id, name: name, iban:iban, series: series, token: token, defaultCurrency: defaultCurrency, userIdentifiers: userIdentifiers)
+		let notifyByMail = defaults.boolForKey("notifyByMail")
+		
+		return User(id: id, name: name, iban:iban, notifyByMail: notifyByMail, series: series, token: token, defaultCurrency: defaultCurrency, userIdentifiers: userIdentifiers)
 	}
 	
 	func addIdentifier(email:String, password:String,success: ()->(), failure: (error: SettlePadError) -> ()) {
@@ -323,6 +343,10 @@ class User {
 				
 				if let iban = json["data"]["user_iban"].string {
 					self.iban = iban
+				}
+
+				if let notifyByMail = json["data"]["user_notify_by_mail"].bool {
+					self.notifyByMail = notifyByMail
 				}
 				
 				if let rawCurrency = json["data"]["default_currency"].string {
