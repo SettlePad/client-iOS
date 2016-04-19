@@ -11,6 +11,8 @@
 		540B4D621AD17E9600C94C7F /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540B4D611AD17E9600C94C7F /* ContactsViewController.swift */; };
 		540C21671A5717E400E9A29A /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540C21661A5717E400E9A29A /* Transaction.swift */; };
 		540C218D1A5C855400E9A29A /* keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540C218C1A5C855400E9A29A /* keychain.swift */; };
+		5420E9441CC4038E00884368 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5420E9431CC4038E00884368 /* GoogleService-Info.plist */; };
+		5420E9451CC4038E00884368 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5420E9431CC4038E00884368 /* GoogleService-Info.plist */; };
 		542970791A93DAF000641F9F /* Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542970781A93DAF000641F9F /* Contacts.swift */; };
 		542A4A7A1A5DEA5100FF865A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542A4A791A5DEA5100FF865A /* SettingsViewController.swift */; };
 		542A4A7F1A5F342700FF865A /* CurrenciesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */; };
@@ -63,6 +65,8 @@
 		540B4D611AD17E9600C94C7F /* ContactsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ContactsViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		540C21661A5717E400E9A29A /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		540C218C1A5C855400E9A29A /* keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = keychain.swift; sourceTree = "<group>"; };
+		5420E9431CC4038E00884368 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		5420E9461CC4046700884368 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		542970781A93DAF000641F9F /* Contacts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Contacts.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		542A4A791A5DEA5100FF865A /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsViewController.swift; path = ../SettingsViewController.swift; sourceTree = "<group>"; };
 		542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrenciesViewController.swift; sourceTree = "<group>"; };
@@ -236,6 +240,8 @@
 			isa = PBXGroup;
 			children = (
 				54F9EA451A0831D7009DC930 /* Info.plist */,
+				5420E9461CC4046700884368 /* Bridging-Header.h */,
+				5420E9431CC4038E00884368 /* GoogleService-Info.plist */,
 				543FEFD81A518ACE00C18230 /* settings.plist */,
 			);
 			name = "Supporting Files";
@@ -360,6 +366,7 @@
 				543FEFD91A518ACE00C18230 /* settings.plist in Resources */,
 				54F9EA511A0831D7009DC930 /* LaunchScreen.xib in Resources */,
 				54F9EA4E1A0831D7009DC930 /* Images.xcassets in Resources */,
+				5420E9441CC4038E00884368 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +374,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5420E9451CC4038E00884368 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -579,6 +587,8 @@
 			baseConfigurationReference = 29F2E7F0C34C2A0CF88A76C6 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SettlePad/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -586,7 +596,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "SettlePad.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SettlePad;
 				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "SettlePad/Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -596,6 +606,8 @@
 			baseConfigurationReference = 215E8C80B2C09993400EE9F6 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SettlePad/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -603,7 +615,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "SettlePad.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SettlePad;
 				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "SettlePad/Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

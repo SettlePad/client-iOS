@@ -259,7 +259,7 @@ class Transactions {
 	}
 	
 	func updateUnreadCountViews() {
-		self.tabBarDelegate?.updateBadges()
+		self.tabBarDelegate?.updateBadges() //AppIcon badge is updated in this function
 		self.transactionsSegmentedControlDelegate?.updateBadges()
 	}
 }
