@@ -620,10 +620,34 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection headerTitle="About" id="a67-cQ-Fii">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="of1-Wu-QVq" style="IBUITableViewCellStyleDefault" id="5U7-M8-O1e">
+                                        <rect key="frame" x="0.0" y="421.5" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5U7-M8-O1e" id="BHG-y2-mTQ">
+                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Send us a message" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="of1-Wu-QVq">
+                                                    <rect key="frame" x="15" y="0.0" width="550" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="VLr-af-Ly9" kind="show" id="dNz-8D-kxt"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                             <tableViewSection headerTitle="Logout" id="L7Z-3Z-ORG">
                                 <cells>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Logout" rowHeight="44" id="MJq-wZ-6Pk">
-                                        <rect key="frame" x="0.0" y="421.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="519.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MJq-wZ-6Pk" id="wmN-jW-ho0">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -882,6 +906,47 @@
                 </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="3130" y="3253"/>
+        </scene>
+        <!--Contact us-->
+        <scene sceneID="R3E-bU-PpS">
+            <objects>
+                <viewController id="VLr-af-Ly9" customClass="MessageViewController" customModule="SettlePad" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ai3-2Z-bU5"/>
+                        <viewControllerLayoutGuide type="bottom" id="pYq-O3-AbN"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Vdi-HM-cB3">
+                        <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" placeholder="Enter your message here" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ROI-Cu-gLd">
+                                <rect key="frame" x="20" y="20" width="560" height="467"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="ROI-Cu-gLd" firstAttribute="leading" secondItem="Vdi-HM-cB3" secondAttribute="leadingMargin" id="4Ag-Ju-Luw"/>
+                            <constraint firstItem="ROI-Cu-gLd" firstAttribute="top" secondItem="Ai3-2Z-bU5" secondAttribute="bottom" constant="20" id="Mcp-Bh-QKK"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="ROI-Cu-gLd" secondAttribute="trailing" id="ajv-8W-nkt"/>
+                            <constraint firstItem="pYq-O3-AbN" firstAttribute="top" secondItem="ROI-Cu-gLd" secondAttribute="bottom" id="cDl-Xb-gfl"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Contact us" id="FXR-qC-RcE">
+                        <barButtonItem key="rightBarButtonItem" title="Send" style="done" id="AAe-90-dqK">
+                            <connections>
+                                <action selector="sendPressed:" destination="VLr-af-Ly9" id="WlD-VZ-9vP"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="messageTextField" destination="ROI-Cu-gLd" id="Ohc-na-HCV"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WEK-O4-dgL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3130" y="3970"/>
         </scene>
         <!--Contact-->
         <scene sceneID="yXJ-85-SsP">
@@ -1598,8 +1663,8 @@
         <image name="Thermometer" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="S17-zq-Lf5"/>
         <segue reference="TqL-PQ-HG8"/>
-        <segue reference="geG-aq-szc"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.52549019607843139" green="0.77254901960784317" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

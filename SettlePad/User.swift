@@ -393,5 +393,16 @@ class User {
 		)
 		clearUser() //Do not wait until logout is finished
 	}
+	
+	func sendMessage(message:String, success : () -> (), failure: (error: SettlePadError)->()) {
+		HTTPWrapper.request("message", method: .POST, parameters: ["message":message], authenticateWithUser: self,
+			success: { _ in
+				success()
+			},
+			failure: { error in
+				failure(error: error)
+			}
+		)
+	}
 
 }

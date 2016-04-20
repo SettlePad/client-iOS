@@ -175,7 +175,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GGLInstanceIDDelegate, GC
 		// Handle the received message
 
 		if let data = userInfo["data"] as? JSON {
-			print(data.rawString())
+			//print(data.rawString())
 			activeUser?.transactions.processUnreadCounts(data)
 		}
 	}

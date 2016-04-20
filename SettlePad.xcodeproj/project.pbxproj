@@ -13,6 +13,7 @@
 		540C218D1A5C855400E9A29A /* keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540C218C1A5C855400E9A29A /* keychain.swift */; };
 		5420E9441CC4038E00884368 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5420E9431CC4038E00884368 /* GoogleService-Info.plist */; };
 		5420E9451CC4038E00884368 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5420E9431CC4038E00884368 /* GoogleService-Info.plist */; };
+		5420E9481CC7F86800884368 /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5420E9471CC7F86800884368 /* MessageViewController.swift */; };
 		542970791A93DAF000641F9F /* Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542970781A93DAF000641F9F /* Contacts.swift */; };
 		542A4A7A1A5DEA5100FF865A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542A4A791A5DEA5100FF865A /* SettingsViewController.swift */; };
 		542A4A7F1A5F342700FF865A /* CurrenciesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */; };
@@ -67,6 +68,7 @@
 		540C218C1A5C855400E9A29A /* keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = keychain.swift; sourceTree = "<group>"; };
 		5420E9431CC4038E00884368 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5420E9461CC4046700884368 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
+		5420E9471CC7F86800884368 /* MessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		542970781A93DAF000641F9F /* Contacts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Contacts.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		542A4A791A5DEA5100FF865A /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsViewController.swift; path = ../SettingsViewController.swift; sourceTree = "<group>"; };
 		542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrenciesViewController.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 				545067EB1B7A9825002F32DC /* ContactViewController.swift */,
 				54E48ACB1B810CF300667615 /* AcceptMemosViewController.swift */,
 				54FFD8861B9B75B900B352B8 /* LimitsViewController.swift */,
+				5420E9471CC7F86800884368 /* MessageViewController.swift */,
 				54F9EA481A0831D7009DC930 /* LoginViewController.swift */,
 				542A4A791A5DEA5100FF865A /* SettingsViewController.swift */,
 				542A4A7E1A5F342700FF865A /* CurrenciesViewController.swift */,
@@ -458,6 +461,7 @@
 				540C218D1A5C855400E9A29A /* keychain.swift in Sources */,
 				54EA37D61BDC109E00EFED87 /* TabBarController.swift in Sources */,
 				54716AEE1AFF750D00F72717 /* Balances.swift in Sources */,
+				5420E9481CC7F86800884368 /* MessageViewController.swift in Sources */,
 				54D612801BDE648C004E2A7A /* HTTPWrapper.swift in Sources */,
 				540C21671A5717E400E9A29A /* Transaction.swift in Sources */,
 				542A4A7A1A5DEA5100FF865A /* SettingsViewController.swift in Sources */,
