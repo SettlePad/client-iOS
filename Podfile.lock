@@ -1,5 +1,8 @@
 PODS:
   - Alamofire (3.3.0)
+  - Crashlytics (3.7.0):
+    - Fabric (~> 1.6.3)
+  - Fabric (1.6.7)
   - GGLInstanceID (1.1.6)
   - Google/CloudMessaging (2.0.4):
     - GGLInstanceID (~> 1.0)
@@ -28,6 +31,8 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 3.0)
+  - Crashlytics
+  - Fabric
   - Google/CloudMessaging
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`)
 
@@ -42,6 +47,8 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Alamofire: 9054db4a1b1ca9e363223183e01cea380159a27c
+  Crashlytics: c3a2333dea9e2733d2777f730910321fc9e25c0d
+  Fabric: caf7580c725e64db144f610ac65cd60956911dc7
   GGLInstanceID: f92465924a9b8a48f712829d22e223653ab8dc72
   Google: d0932824c5b97c96be489aa6f4e8cd6c294d637d
   GoogleCloudMessaging: f37ea14dd0f41d4d889c10b5559dd35bbfd9ac26
