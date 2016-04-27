@@ -46,7 +46,7 @@ class NewUOmeAddressBook: UIView {
 					self.requestAddressBookAccessButton.removeFromSuperview()
 					self.detailLabel.text = "You denied access to your local address book, which is why we can only show contacts you've already exchanged UOmes with. You can allow access to your address book in the iOS settings (Privacy, Contacts)."
 				case .NotDetermined:
-					self.detailLabel.text = "We will not upload any personal data from your contacts to its servers. The technical details: a salted hash of the email addresses and phone numbers of your contacts will at some point in the future created and stored at the servers, to be able to tell you who of your contacts is using our service."
+					self.detailLabel.text = "We will not upload any personal data from your contacts to our servers. The technical details: a hash of the email addresses of your contacts will at some point in the future be cross-references with the email addresses of our registered users, to be able to tell you who of your contacts is using our service."
 				case .Restricted:
 					self.requestAddressBookAccessButton.removeFromSuperview()
 					self.detailLabel.text = "We cannot access your contacts, possibly due to restrictions such as parental controls."

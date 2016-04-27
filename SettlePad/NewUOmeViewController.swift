@@ -162,9 +162,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             newUOmeTableView.allowsSelection = false
             
-            dispatch_async(dispatch_get_main_queue(), {
-                self.newUOmeTableView.reloadData()
-            })
+			newUOmeTableView.reloadData()
         } else if (self.state == .NewUOme){
             actInd.removeFromSuperview()
 
@@ -184,10 +182,7 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             newUOmeTableView.allowsSelection = true
             
-            dispatch_async(dispatch_get_main_queue(), {
-                self.newUOmeTableView.reloadData()
-            })
-
+			newUOmeTableView.reloadData()
         }
   
     }
@@ -195,12 +190,10 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 
     
     func layoutAddressBookFooter() {
-		dispatch_async(dispatch_get_main_queue(), {
-			self.addressBookFooter.frame.size.width = self.newUOmeTableView.frame.width
-			self.addressBookFooter.detailLabel.preferredMaxLayoutWidth = self.newUOmeTableView.frame.width - 40 //margin of 20 left and right
+		addressBookFooter.frame.size.width = newUOmeTableView.frame.width
+		addressBookFooter.detailLabel.preferredMaxLayoutWidth = newUOmeTableView.frame.width - 40 //margin of 20 left and right
 
-			self.addressBookFooter.frame.size.height = self.addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
-		})
+		addressBookFooter.frame.size.height = addressBookFooter.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height //Only works if preferred width is set for the objects that have variable height
     }
     
     @IBAction func formDescriptionEditingChanged(sender: AnyObject) {
@@ -223,8 +216,8 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
             
             dispatch_async(dispatch_get_main_queue(), {
                 self.newUOmeTableView.tableFooterView = self.addressBookFooter
-                self.newUOmeTableView.reloadData()
             })
+			self.newUOmeTableView.reloadData()
         }
 		
 		//Sort currencies
@@ -350,6 +343,12 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
 			cell.textLabel?.text = contactIdentifier.resultingName
 
             cell.detailTextLabel?.text =  contactIdentifier.identifierStr
+			if contactIdentifier.contact != nil {
+				//Is a uoless user
+				cell.backgroundColor = Colors.primary.backgroundToUIColor()
+			} else {
+				cell.backgroundColor = UIColor.whiteColor()
+			}
 			cell.layoutIfNeeded() //to get right layout given dynamic height
 			return cell
         }
@@ -468,11 +467,20 @@ class NewUOmeViewController: UIViewController,UITableViewDelegate, UITableViewDa
     
     func getMatchedContactIdentifiers(needle: String){
 		matchedContactIdentifiers.removeAll()
-        for contactIdentifier in activeUser!.contacts.contactIdentifiers {
+		
+		//First add those that are registered at Settlepad
+        for contactIdentifier in activeUser!.contacts.contactIdentifiers where contactIdentifier.contact != nil {
             if (contactIdentifier.identifierStr.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact?.name.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.contact?.friendlyName.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.localName?.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
                 matchedContactIdentifiers.append(contactIdentifier)
             }
         }
+		
+		//Then add those from local address book only
+		for contactIdentifier in activeUser!.contacts.contactIdentifiers where contactIdentifier.contact == nil {
+			if (contactIdentifier.identifierStr.lowercaseString.rangeOfString(needle.lowercaseString) != nil || contactIdentifier.localName?.lowercaseString.rangeOfString(needle.lowercaseString) != nil) {
+				matchedContactIdentifiers.append(contactIdentifier)
+			}
+		}
     }
 	
 	// Currency picker delegate
