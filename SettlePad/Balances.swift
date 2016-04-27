@@ -19,7 +19,9 @@ class Balances {
 	}
 	
 	func getBalancesForCurrency(currency: Currency)->[Balance] {
-		return balances.filter { $0.currency == currency}
+		return balances.filter { $0.currency == currency}.sort({ (Balance1, Balance2) -> Bool in
+			return Balance1.balance > Balance2.balance
+		})
 	}
 	
 	/*func getBalancesForContact(contact: Contact)->[Balance] {
