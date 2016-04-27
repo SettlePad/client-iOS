@@ -168,7 +168,7 @@ class Transactions {
         let requestDate = NSDate()
 
 		if oneAtATime && blockingRequestActive {
-			failure(error: SettlePadError(errorCode: "another_request_pending", errorText: "Another request is already sent out"))
+			//failure(error: SettlePadError(errorCode: "another_request_pending", errorText: "Another request is already sent out"))
 		} else {
 			if oneAtATime {
 				self.blockingRequestActive = true
