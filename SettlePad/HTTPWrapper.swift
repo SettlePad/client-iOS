@@ -42,13 +42,15 @@ class HTTPWrapper  {
 		
 		let request = Alamofire.request(method, server+url, parameters: parameters, encoding: encoding, headers: headers)
 
-		print("URL:" + server+url)
-		print("Parameters:" + parameters.debugDescription)
-		request.responseString {response in
-			if let val = response.result.value {
-				print("Return:" + val)
+		#if DEBUG
+			print("URL:" + server+url)
+			print("Parameters:" + parameters.debugDescription)
+			request.responseString {response in
+				if let val = response.result.value {
+					print("Return:" + val)
+				}
 			}
-		}
+		#endif		
 		
 		request.responseJSON {response in
 			switch response.result {
