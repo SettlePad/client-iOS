@@ -230,6 +230,11 @@ class TransactionsViewController: UIViewController, UITableViewDelegate, UITable
 		if let transaction = activeUser!.transactions.getTransaction(indexPath.row)  {
 			if transaction.canBeCanceled {
 				let alertController = UIAlertController(title: nil, message: "Do you want to recall this memo?", preferredStyle: .ActionSheet)
+				
+				//For iPad
+				alertController.popoverPresentationController?.sourceView = tableView.cellForRowAtIndexPath(indexPath)
+				alertController.popoverPresentationController?.sourceRect = tableView.cellForRowAtIndexPath(indexPath)!.bounds
+				
 				let recallAction = UIAlertAction(title: "Recall", style: .Destructive) { (action) in
 					transaction.cancel(
 						{
@@ -254,6 +259,11 @@ class TransactionsViewController: UIViewController, UITableViewDelegate, UITable
 				//mutually exclusive with canBeCanceled, which can happen if user is sender. This can only happen if user is recipient
 				
 				let alertController = UIAlertController(title: nil, message: "Do you want to accept this memo?", preferredStyle: .ActionSheet)
+				
+				//For iPad
+				alertController.popoverPresentationController?.sourceView = tableView.cellForRowAtIndexPath(indexPath)
+				alertController.popoverPresentationController?.sourceRect = tableView.cellForRowAtIndexPath(indexPath)!.bounds
+				
 				let AcceptAction = UIAlertAction(title: "Accept", style: .Default) { (action) in
 					transaction.accept(
 						{

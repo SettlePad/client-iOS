@@ -190,6 +190,10 @@ class IdentifiersViewController: UITableViewController {
 
 		let actionSheetController: UIAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
 		
+		//For iPad
+		actionSheetController.popoverPresentationController?.sourceView = tableView.cellForRowAtIndexPath(indexPath)
+		actionSheetController.popoverPresentationController?.sourceRect = tableView.cellForRowAtIndexPath(indexPath)!.bounds
+		
 		let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
 			//Just dismiss the action sheet
 		}

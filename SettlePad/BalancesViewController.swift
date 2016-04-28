@@ -204,6 +204,10 @@ class BalancesViewController: UITableViewController, NewUOmeModalDelegate, Conta
 			//Remind
 			let alertController = UIAlertController(title: nil, message: "Do you want to remind " + balance.name + " to pay you?", preferredStyle: .ActionSheet)
 			
+			//For iPad
+			alertController.popoverPresentationController?.sourceView = tableView.cellForRowAtIndexPath(indexPath)
+			alertController.popoverPresentationController?.sourceRect = tableView.cellForRowAtIndexPath(indexPath)!.bounds
+			
 			let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
 				// ...
 			}

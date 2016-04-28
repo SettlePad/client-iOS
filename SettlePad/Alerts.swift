@@ -24,7 +24,6 @@ func displayError(errorMessage: String, viewController: UIViewController) {
 
     dispatch_async(dispatch_get_main_queue(), { () -> Void in
         viewController.presentViewController(alertController, animated: true, completion: nil)
-
     })
 }
 
